@@ -146,6 +146,11 @@ def get_outcome_analyses(nct_ids, con=None, db_path=None) -> list[dict]:
               AND oa.ci_lower_limit IS NOT NULL
               AND oa.ci_upper_limit IS NOT NULL
             GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12
+            -- deterministic order: per trial, the lowest-id (earliest-registered)
+            -- analysis is kept by effect_extraction's per-trial dedup. Without
+            -- this ORDER BY, trials with multiple mortality analyses pick an
+            -- arbitrary row across runs (non-reproducible capsules).
+            ORDER BY oa.nct_id, CAST(oa.id AS BIGINT)
         """
         out = []
         for r in con.execute(sql, list(nct_ids)).fetchall():
