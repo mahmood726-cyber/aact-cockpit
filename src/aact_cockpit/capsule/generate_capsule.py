@@ -83,7 +83,14 @@ def normalize_dataset(ds: dict) -> dict:
 
     measure = ds["measure"]
     studies = []
+    skipped: list[str] = []
     for s in ds.get("studies", []):
+        nct = s.get("nct_id") or s.get("study") or "?"
+        # a ratio capsule only accepts ratio-scale records; non-ratio measures
+        # (e.g. Risk/Mean Difference, which can be <=0) are not poolable here.
+        if s.get("measure_type") and s["measure_type"] not in ("HR", "OR", "RR"):
+            skipped.append(f"{nct}: non-ratio measure {s['measure_type']} excluded from ratio MA")
+            continue
         hr = lci = uci = None
         if s.get("point_estimate") and s.get("ci_lower") and s.get("ci_upper"):
             hr, lci, uci = s["point_estimate"], s["ci_lower"], s["ci_upper"]
@@ -91,8 +98,13 @@ def normalize_dataset(ds: dict) -> dict:
             hr, lci, uci = _counts_to_ratio_ci(s["events1"], s["n1"], s["events2"], s["n2"])
         if hr is None:
             continue
-        if not all(math.isfinite(x) and x > 0 for x in (hr, lci, uci)):
-            raise CapsuleInputError(f"non-finite/non-positive effect for {s.get('nct_id')}")
+        # skip (don't crash) on a non-finite/non-positive/mis-ordered effect.
+        if not all(isinstance(x, (int, float)) and math.isfinite(x) and x > 0 for x in (hr, lci, uci)):
+            skipped.append(f"{nct}: non-finite/non-positive ratio effect excluded")
+            continue
+        if not (lci <= hr <= uci):
+            skipped.append(f"{nct}: CI does not bracket estimate ({lci},{hr},{uci}) excluded")
+            continue
         exp_arm = (s.get("arm_experimental") or {})
         cmp_arm = (s.get("arm_comparator") or {})
         studies.append({
@@ -121,7 +133,7 @@ def normalize_dataset(ds: dict) -> dict:
         "favours_low": f"favours {pico.get('intervention') or 'intervention'}",
         "favours_high": f"favours {pico.get('comparator') or 'comparator'}",
         "studies": studies,
-        "notes": ds.get("notes", []),
+        "notes": list(ds.get("notes", [])) + skipped,
     }
 
 

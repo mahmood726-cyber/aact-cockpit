@@ -96,6 +96,21 @@ def test_e156_body_validates():
     assert res["validation"]["word_count"] <= 156
 
 
+def test_bad_study_skipped_not_crashed():
+    # one non-ratio (MD) study and one non-positive study must be skipped, not raise
+    ds = _dataset(5)
+    ds["studies"].append({"nct_id": "NCT0BAD1", "study_label": "MD trial", "year": 2020,
+                          "measure_type": "MD", "point_estimate": -0.3, "ci_lower": -0.6, "ci_upper": 0.1,
+                          "arm_experimental": {"label": "Drug"}, "arm_comparator": {"label": "Placebo"}})
+    ds["studies"].append({"nct_id": "NCT0BAD2", "study_label": "neg trial", "year": 2020,
+                          "point_estimate": -1.0, "ci_lower": -2.0, "ci_upper": 0.5,
+                          "arm_experimental": {"label": "Drug"}, "arm_comparator": {"label": "Placebo"}})
+    res = gc.render_capsule_html(ds)
+    assert res["capsule"]["pooled"]["k"] == 5  # the 2 bad ones excluded
+    notes = " ".join(res["capsule"]["notes"])
+    assert "NCT0BAD1" in notes and "NCT0BAD2" in notes
+
+
 def test_emit_writes_files(tmp_path):
     man = gc.emit(_dataset(5), tmp_path)
     cdir = tmp_path / man["slug"]

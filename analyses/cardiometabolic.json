@@ -1,0 +1,21 @@
+{
+  "comment": "Batch of pairwise meta-analyses produced from one AACT warehouse, one engine. Each is config only — no new engine code. Endpoints map via aact_engine.taxonomy.classify_endpoint.",
+  "analyses": [
+    {"population": "heart failure", "outcome": "all-cause mortality", "endpoint": "acm",
+     "estimand": "hazard ratio for all-cause mortality"},
+    {"population": "heart failure", "outcome": "cardiovascular death", "endpoint": "cv_death",
+     "estimand": "hazard ratio for cardiovascular death"},
+    {"population": "heart failure", "outcome": "heart failure hospitalization", "endpoint": "hf_hosp",
+     "estimand": "hazard ratio for heart failure hospitalization"},
+    {"population": "type 2 diabetes", "outcome": "major adverse cardiovascular events", "endpoint": "mace",
+     "estimand": "hazard ratio for MACE"},
+    {"population": "chronic kidney disease", "outcome": "renal composite", "endpoint": "renal",
+     "estimand": "hazard ratio for the renal composite"},
+    {"population": "atrial fibrillation", "outcome": "all-cause mortality", "endpoint": "acm",
+     "estimand": "hazard ratio for all-cause mortality"},
+    {"population": "myocardial infarction", "outcome": "all-cause mortality", "endpoint": "acm",
+     "estimand": "hazard ratio for all-cause mortality"},
+    {"population": "stroke", "outcome": "all-cause mortality", "endpoint": "acm",
+     "estimand": "hazard ratio for all-cause mortality"}
+  ]
+}
