@@ -9,6 +9,7 @@ description = "Local DuckDB-backed cockpit for large-scale ClinicalTrials.gov/AA
 requires-python = ">=3.11"
 dependencies = [
     "duckdb>=1.5",
+    "numpy>=1.26",
     "fastapi>=0.110",
     "uvicorn>=0.27",
     "pydantic>=2",
