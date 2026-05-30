@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AACT Cockpit</title>
+<style>
+  :root{--bg:#f6f7f9;--ink:#1a1a1f;--mut:#5a5a66;--line:#e1e3ea;--card:#fff;--accent:#2456c6;--ok:#1f8a4c;--warn:#c47f17}
+  @media (prefers-color-scheme:dark){:root{--bg:#14151a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1c1e24}}
+  *{box-sizing:border-box} body{margin:0;font:15px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;gap:14px;align-items:baseline}
+  h1{font-size:18px;margin:0} .pill{font-size:12px;color:var(--mut)}
+  .wrap{max-width:980px;margin:0 auto;padding:18px 20px 80px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
+  label{display:block;font-size:12.5px;color:var(--mut);margin:8px 0 3px}
+  input,select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  button{font:inherit;font-weight:600;padding:9px 16px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;margin-top:12px}
+  button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  th,td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  .muted{color:var(--mut);font-size:12.5px} .big{font-size:22px;font-weight:700}
+  .tier{display:inline-block;font-weight:800;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
+  .gold{background:#b8860b}.silver{background:#8a8f99}.bronze{background:#a9712e}.none{background:#b33}
+  .step{font-size:12px;letter-spacing:.05em;color:var(--mut);text-transform:uppercase;margin-bottom:6px}
+  a.dl{display:inline-block;margin-top:10px;color:var(--accent);font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>AACT Cockpit</h1>
+  <span class="pill" id="health">connecting…</span>
+  <span class="pill" style="margin-left:auto">ClinicalTrials.gov / AACT → self-auditing e156 capsule</span>
+</header>
+<div class="wrap">
+
+  <div class="card">
+    <div class="step">1 · Define the question (PICO)</div>
+    <div class="row">
+      <div><label>Population / condition</label><input id="population" value="heart failure"/></div>
+      <div><label>Outcome</label><input id="outcome" value="all-cause mortality"/></div>
+    </div>
+    <div class="row">
+      <div><label>Intervention (optional, for wording)</label><input id="intervention" placeholder="e.g. SGLT2 inhibitor"/></div>
+      <div><label>Comparator (optional)</label><input id="comparator" placeholder="e.g. placebo"/></div>
+    </div>
+    <div class="row">
+      <div><label>Endpoint class</label><select id="endpoint">
+        <option value="acm">all-cause mortality</option>
+        <option value="cv_death">cardiovascular death</option>
+        <option value="hf_hosp">HF hospitalization</option>
+        <option value="mace">MACE</option>
+        <option value="renal">renal composite</option>
+      </select></div>
+      <div><label>Named primary estimand</label><input id="estimand" value="hazard ratio for all-cause mortality"/></div>
+    </div>
+    <button id="searchBtn">Search cohort &amp; extract effects</button>
+    <span class="muted" id="searchStatus"></span>
+  </div>
+
+  <div class="card" id="effectsCard" style="display:none">
+    <div class="step">2 · Extracted effects</div>
+    <div id="effectsSummary" class="muted"></div>
+    <div style="max-height:320px;overflow:auto"><table id="effectsTable"></table></div>
+    <div class="row">
+      <div><label>Between-study estimator</label><select id="method">
+        <option value="PM">Paule-Mandel (default; unbiased small k)</option>
+        <option value="REML">REML</option>
+        <option value="DL">DerSimonian-Laird (flagged for k&lt;10)</option>
+      </select></div>
+      <div><label>HKSJ small-sample CI</label><select id="hksj">
+        <option value="false">off (z-based)</option>
+        <option value="true">on (t-based, HKSJ)</option>
+      </select></div>
+    </div>
+    <button id="buildBtn">Build self-auditing capsule</button>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <div class="step">3 · Capsule</div>
+    <div><span class="tier" id="tier"></span> <span class="big" id="pooledLine"></span></div>
+    <div class="muted" id="auditLine" style="margin-top:6px"></div>
+    <a class="dl" id="dl" target="_blank" rel="noopener">open the capsule ↗</a>
+  </div>
+
+</div>
+<script>
+const $ = id => document.getElementById(id);
+let lastEffects = null;
+
+async function jpost(url, body){
+  const r = await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!r.ok){throw new Error((await r.json()).detail || r.statusText);}
+  return r.json();
+}
+
+(async () => {
+  try{const h = await (await fetch("/api/health")).json();
+    $("health").textContent = `snapshot ${h.snapshot_date} · ${h.n_tables} tables`;}
+  catch(e){$("health").textContent = "warehouse not built — run scripts/build_warehouse.py";}
+})();
+
+$("searchBtn").addEventListener("click", async () => {
+  $("searchStatus").textContent = " searching…"; $("searchBtn").disabled = true;
+  try{
+    const req = {population:$("population").value, outcome:$("outcome").value,
+      intervention:$("intervention").value||null, comparator:$("comparator").value||null,
+      endpoint:$("endpoint").value, estimand:$("estimand").value};
+    const ds = await jpost("/api/effects", req);
+    lastEffects = ds;
+    $("searchStatus").textContent = ` ${ds.cohort_n} trials searched`;
+    $("effectsSummary").textContent =
+      `${ds.n_studies} trials with extractable ${ds.measure} for the endpoint · ${ds.notes.length} analyses skipped · snapshot ${ds.snapshot_date}`;
+    const rows = ds.studies.map(s =>
+      `<tr><td>${s.study_label}</td><td>${s.year||""}</td><td>${s.measure_type}</td>`+
+      `<td>${s.point_estimate}</td><td>${s.ci_lower}</td><td>${s.ci_upper}</td></tr>`).join("");
+    $("effectsTable").innerHTML =
+      "<tr><th>Trial</th><th>Year</th><th>Measure</th><th>Est.</th><th>LCI</th><th>UCI</th></tr>"+rows;
+    $("effectsCard").style.display = ds.n_studies ? "block" : "none";
+    if(!ds.n_studies) $("searchStatus").textContent += " — no extractable effects for this endpoint";
+  }catch(e){$("searchStatus").textContent = " error: "+e.message;}
+  $("searchBtn").disabled = false;
+});
+
+$("buildBtn").addEventListener("click", async () => {
+  if(!lastEffects) return;
+  $("buildBtn").disabled = true;
+  try{
+    const man = await jpost("/api/build", {effects:lastEffects,
+      method:$("method").value, hksj:$("hksj").value === "true"});
+    const p = lastEffects;
+    $("tier").textContent = man.tier; $("tier").className = "tier "+man.tier;
+    $("pooledLine").textContent = `${p.measure}, ${man.k} trials`;
+    $("auditLine").textContent = man.ok ? "E156 body validated · self-audit recorded in assurance.json" : "body validation failed";
+    $("dl").href = man.download_url;
+    $("resultCard").style.display = "block";
+    $("resultCard").scrollIntoView({behavior:"smooth"});
+  }catch(e){alert("build failed: "+e.message);}
+  $("buildBtn").disabled = false;
+});
+</script>
+</body>
+</html>

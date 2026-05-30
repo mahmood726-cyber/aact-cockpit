@@ -1,0 +1,23 @@
+# Warehouse + large artifacts (never commit the snapshot or the DB)
+data/warehouse/
+*.duckdb
+*.duckdb.wal
+
+# Effects datasets + generated capsules are build outputs
+effects/*.json
+capsules/
+
+# Local state / progress
+PROGRESS.md
+.env
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Node
+node_modules/
