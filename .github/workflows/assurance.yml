@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - run: pip install -e .
+      - run: pip install -e ".[dev]"
       - run: python -m pytest -q
     # Note: F:\E156 is absent in CI, so the vendored validate_e156/compute_tier
     # are exercised here (test_vendor_parity skips its canonical-comparison).
