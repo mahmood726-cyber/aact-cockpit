@@ -282,22 +282,34 @@ def render_capsule_html(ds: dict, *, method: str = "PM", hksj: bool = False,
             "validation": vres, "audit": audit}
 
 
-_LEAK_PATTERNS = [
-    (re.compile(r"[,:\[(]\s*None\b"), "bare Python None in JS"),
-    (re.compile(r"\bwith n participants\b"), "unfilled 'n participants' token"),
-    (re.compile(r"\bNone (?:trials|participants|studies)\b"), "None count"),
-    (re.compile(r"\bNaN\b"), "NaN literal"),
-    (re.compile(r"\bInfinity\b"), "Infinity literal"),
-    (re.compile(r"__AACT_\w+"), "residual template token"),
+# Patterns that may only appear via Python->JS interpolation (the CAPSULE JSON
+# literal). The static engine code legitimately uses Infinity/NaN handling, so
+# it is NOT scanned (FP-audit lesson: narrow the match to the interpolation point).
+_PAYLOAD_LEAK_PATTERNS = [
+    (re.compile(r"[,:\[(]\s*None\b"), "bare Python None in JS payload"),
+    (re.compile(r"\bNaN\b"), "NaN literal in JS payload"),
+    (re.compile(r"\bInfinity\b"), "Infinity literal in JS payload"),
+    (re.compile(r"__AACT_\w+"), "residual template token in payload"),
 ]
+# Patterns checked across the whole rendered document (prose).
+_PROSE_LEAK_PATTERNS = [
+    (re.compile(r"\bwith n participants\b"), "unfilled 'n participants' token"),
+    (re.compile(r"\bNone (?:trials|participants|studies)\b"), "leaked None count"),
+]
+_CAPSULE_LITERAL_RE = re.compile(r"const\s+CAPSULE\s*=\s*(\{.*\});")
 
 
 def _emit_guard(html: str) -> None:
-    """L2 defense: scan the rendered <script> region for leak patterns."""
-    scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", html, re.DOTALL | re.IGNORECASE)
-    blob = "\n".join(scripts)
-    for rx, why in _LEAK_PATTERNS:
-        if rx.search(blob):
+    """L2 defense: scan the interpolated CAPSULE JSON literal for payload leaks
+    and the whole document for prose leaks. The static JS engine (which may use
+    Infinity/NaN legitimately) is intentionally not scanned."""
+    m = _CAPSULE_LITERAL_RE.search(html)
+    payload = m.group(1) if m else ""
+    for rx, why in _PAYLOAD_LEAK_PATTERNS:
+        if rx.search(payload):
+            raise CapsuleEmitError(f"placeholder leak detected ({why}) — refusing to emit")
+    for rx, why in _PROSE_LEAK_PATTERNS:
+        if rx.search(html):
             raise CapsuleEmitError(f"placeholder leak detected ({why}) — refusing to emit")
 
 

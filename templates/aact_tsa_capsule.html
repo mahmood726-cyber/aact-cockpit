@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>e156 capsule · trial sequential analysis</title>
+<meta property="og:title" content="e156 living evidence capsule — trial sequential analysis"/>
+<meta property="og:description" content="Self-auditing cumulative meta-analysis with O'Brien-Fleming boundaries over ClinicalTrials.gov/AACT data."/>
+<style>
+  :root{--bg:#fbfbfd;--ink:#1a1a1f;--mut:#5a5a66;--line:#e3e3ea;--card:#fff;--accent:#7a2cc6;
+        --ok:#1f8a4c;--warn:#c47f17;--pend:#9aa0ab;--gold:#b8860b;--silver:#8a8f99;--bronze:#a9712e;--bound:#c0392b;}
+  @media (prefers-color-scheme:dark){:root{--bg:#15161a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1d1f25;}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 18px 80px}
+  .ribbon{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+          padding:8px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .tier{font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
+  .tier.gold{background:var(--gold)} .tier.silver{background:var(--silver)}
+  .tier.bronze{background:var(--bronze)} .tier.none{background:#b33}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mut)}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.pending{background:var(--pend)}
+  h1{font-size:24px;margin:22px 0 4px} h2{font-size:18px;margin:30px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  td[contenteditable]{background:rgba(122,44,198,.06);border-radius:4px}
+  td[contenteditable]:focus{outline:2px solid var(--accent)}
+  .verdict{font-size:19px;font-weight:700} .motto{font-style:italic;color:var(--mut);font-size:13px}
+  pre{background:#0d1117;color:#d6deeb;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.4}
+  .body156{background:var(--card);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0}
+  button{font:inherit;padding:5px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;cursor:pointer}
+  .muted{color:var(--mut);font-size:12.5px}
+  svg{max-width:100%;height:auto}
+  .grid{stroke:var(--line)} .nullline{stroke:var(--mut);stroke-dasharray:3 3}
+  .conv{stroke:#888;stroke-dasharray:2 3} .bound{stroke:var(--bound);fill:none;stroke-width:2}
+  .ris{stroke:var(--accent);stroke-dasharray:5 4} .traj{stroke:var(--accent);fill:none;stroke-width:2}
+  .pt{fill:var(--accent)} .tick{fill:var(--mut);font-size:11px} .axlbl{fill:var(--mut);font-size:12px}
+</style>
+</head>
+<body>
+<div class="ribbon">
+  <span class="tier" id="tier">—</span>
+  <span class="chk"><span class="dot pending" id="d-stats"></span><span id="t-stats">TSA invariants</span></span>
+  <span class="chk"><span class="dot pending" id="d-match"></span>dashboard match</span>
+  <span class="chk"><span class="dot pending" id="d-snap"></span><span id="t-snap">snapshot</span></span>
+  <span class="motto" style="margin-left:auto">the capsule must agree with itself before asking the world to agree with it</span>
+</div>
+<div class="wrap">
+  <h1 id="title">trial sequential analysis</h1>
+  <div class="sub" id="subtitle"></div>
+  <div class="card muted" id="provBox"></div>
+
+  <h2>01 · Question</h2>
+  <div class="card" id="picoBox"></div>
+
+  <h2>02 · Verdict</h2>
+  <div class="card"><div class="verdict" id="verdictLine">—</div><div class="muted" id="verdictSub"></div></div>
+
+  <h2>03 · Trial sequential analysis plot</h2>
+  <div class="muted">Cumulative Z-score (chronological) versus the fraction of the required information size.
+    Red curves are the O'Brien-Fleming monitoring boundaries; grey dashes are the conventional ±1.96 lines;
+    the purple dashed vertical is the required information size (RIS).</div>
+  <div class="card"><svg id="tsaPlot" role="img" aria-label="Trial sequential analysis plot"></svg></div>
+
+  <h2>04 · Cumulative evidence (editable — re-runs live)</h2>
+  <div class="card"><table id="dataTable"><thead><tr>
+    <th>Trial</th><th>Year</th><th>Est.</th><th>LCI</th><th>UCI</th><th>Cum. Z</th><th>Info frac.</th><th>Incl.</th>
+  </tr></thead><tbody id="dataBody"></tbody></table>
+  <div style="margin-top:8px"><button id="resetBtn">reset to AACT data</button></div></div>
+
+  <h2>05 · 156-word summary (E156)</h2>
+  <div class="body156" id="bodyBox"></div>
+  <div class="muted" id="bodyMeta"></div>
+
+  <h2>06 · R cross-validation (RTSA / metafor)</h2>
+  <div class="card"><pre id="rcode"></pre></div>
+
+  <h2>07 · Assurance &amp; inspector</h2>
+  <div class="card" id="auditBox"></div>
+  <div class="card"><button id="inspectBtn">show the exact TSA code that ran</button>
+    <pre id="inspectOut" style="display:none"></pre></div>
+  <p class="muted" id="notesBox"></p>
+</div>
+<script>
+"use strict";
+const CAPSULE = __AACT_CAPSULE_JSON__;
+const SLUG = CAPSULE.slug, LSKEY = "e156:" + SLUG;
+const Z = 1.959963984540054, ZB = 0.8416212335729143, MU_FLOOR = Math.abs(Math.log(0.90));
+const T975 = {1:12.706,2:4.303,3:3.182,4:2.776,5:2.571,6:2.447,7:2.365,8:2.306,9:2.262,10:2.228,12:2.179,15:2.131,20:2.086,30:2.042};
+function tcrit(df){ if(df<=0)return Z; if(T975[df])return T975[df];
+  const ks=Object.keys(T975).map(Number).sort((a,b)=>a-b); for(const k of ks)if(df<=k)return T975[k]; return 1.962; }
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const f = x => (x==null||!isFinite(x)) ? "n/a" : x.toFixed(2);
+
+const METHOD = CAPSULE.method || "PM";
+function wmean(y,v,t2){const w=v.map(x=>1/(x+t2));const sw=w.reduce((a,b)=>a+b,0);return {w,sw,m:y.reduce((a,e,i)=>a+w[i]*e,0)/sw};}
+function genQ(y,v,t2){const {w,m}=wmean(y,v,t2);return y.reduce((a,e,i)=>a+w[i]*(e-m)**2,0);}
+function tau2DL(y,v){const {w,sw,m}=wmean(y,v,0);const Q=y.reduce((a,e,i)=>a+w[i]*(e-m)**2,0),df=y.length-1;
+  const C=sw-w.reduce((a,e)=>a+e*e,0)/sw;return (df>0&&C>0)?Math.max(0,(Q-df)/C):0;}
+function tau2PM(y,v){const df=y.length-1;if(df<1)return 0;if(genQ(y,v,0)<=df)return 0;
+  let lo=0,hi=1;for(let i=0;i<80&&genQ(y,v,hi)>df;i++)hi*=2;
+  for(let i=0;i<100;i++){const mid=(lo+hi)/2;if(genQ(y,v,mid)>df)lo=mid;else hi=mid;}return (lo+hi)/2;}
+function tau2est(y,v){return METHOD==='DL'?tau2DL(y,v):tau2PM(y,v);}
+function valid(t){return t.hr>0&&t.lci>0&&t.uci>0&&t.lci<=t.hr&&t.hr<=t.uci;}
+function poolLog(items){
+  const use=items.filter(t=>valid(t));const k=use.length;if(k<1)return null;
+  const y=use.map(t=>Math.log(t.hr)), v=use.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z))**2);
+  const tau2=tau2est(y,v);const {sw,m}=wmean(y,v,tau2);const se=Math.sqrt(1/sw);
+  return {re:m,se,est:Math.exp(m),ciL:Math.exp(m-Z*se),ciU:Math.exp(m+Z*se),tau2,k,y,v};
+}
+function cumulative(model){
+  const items=model.filter(t=>t.inc&&valid(t))
+    .sort((a,b)=>((a.year||9999)-(b.year||9999))||String(a.nct).localeCompare(String(b.nct)));
+  const full=poolLog(items);if(!full||full.k<2)return null;
+  const v=full.v, sw=v.reduce((a,vi)=>a+1/vi,0), sw2=v.reduce((a,vi)=>a+1/(vi*vi),0), k=v.length;
+  let deff=1+full.tau2*(sw2/(sw*sw)*k-1);deff=Math.max(1,deff);
+  const mu=Math.max(Math.abs(full.re),MU_FLOOR);
+  const iRis=((Z+ZB)/mu)**2*deff;
+  const steps=[];let crossed=null,run=[];
+  for(const s of items){run.push(s);const r=poolLog(run);if(!r)continue;
+    const info=1/(r.se*r.se), z=r.re/r.se, t=iRis>0?info/iRis:0, obf=t>0?Z/Math.sqrt(t):Infinity;
+    steps.push({k:run.length,year:s.year,name:s.name,est:r.est,ciL:r.ciL,ciU:r.ciU,z,info,t,obf});
+    if(crossed===null&&Math.abs(z)>=obf&&isFinite(obf))crossed=run.length;}
+  const fin=steps[steps.length-1];
+  const conclusion=crossed!==null?"firm":(fin.t>=1?"ris_reached_null":"insufficient");
+  return {steps,ris:iRis,deff,mu,final_z:fin.z,final_t:fin.t,crossed,conclusion,k};
+}
+
+function defaults(){return CAPSULE.studies.map(t=>({...t}));}
+function load(){try{const raw=localStorage.getItem(LSKEY);if(raw){const s=JSON.parse(raw);if(Array.isArray(s)&&s.length)return s;}}catch(e){}return defaults();}
+let model=load();
+function persist(){try{localStorage.setItem(LSKEY,JSON.stringify(model));}catch(e){}}
+
+// ---- TSA plot ----
+const W=720,H=380,padL=52,padR=18,padT=18,padB=44,plotW=W-padL-padR,plotH=H-padT-padB;
+function renderPlot(res){
+  const svg=document.getElementById('tsaPlot');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  if(!res){svg.innerHTML='<text x="20" y="40" class="axlbl">not enough trials to pool</text>';return;}
+  const tmax=Math.max(1.05,res.final_t*1.1);
+  const zvals=res.steps.map(s=>Math.abs(s.z)).concat([4]);const zmax=Math.max(4,Math.ceil(Math.max(...zvals)));
+  const xOf=t=>padL+(t/tmax)*plotW;
+  const yOf=z=>padT+plotH/2-(z/zmax)*(plotH/2);
+  let s='';
+  // axes
+  s+=`<line class="grid" x1="${padL}" y1="${yOf(0)}" x2="${W-padR}" y2="${yOf(0)}"/>`;
+  for(let z=-zmax;z<=zmax;z+=2){s+=`<line class="grid" x1="${padL}" y1="${yOf(z)}" x2="${W-padR}" y2="${yOf(z)}"/>`+
+    `<text class="tick" x="${padL-6}" y="${yOf(z)+4}" text-anchor="end">${z}</text>`;}
+  for(let t=0;t<=tmax;t+=0.25){s+=`<text class="tick" x="${xOf(t)}" y="${H-padB+16}" text-anchor="middle">${t.toFixed(2)}</text>`;}
+  s+=`<text class="axlbl" x="${padL+plotW/2}" y="${H-6}" text-anchor="middle">information fraction (accrued / required)</text>`;
+  s+=`<text class="axlbl" transform="translate(14,${padT+plotH/2}) rotate(-90)" text-anchor="middle">cumulative Z</text>`;
+  // conventional +-1.96
+  s+=`<line class="conv" x1="${padL}" y1="${yOf(1.96)}" x2="${W-padR}" y2="${yOf(1.96)}"/>`;
+  s+=`<line class="conv" x1="${padL}" y1="${yOf(-1.96)}" x2="${W-padR}" y2="${yOf(-1.96)}"/>`;
+  // OBF boundary curves for t in (tmin,1]
+  let up='',dn='';const t0=Math.max(0.02,res.steps[0].t/2);
+  for(let t=t0;t<=1.0001;t+=0.01){const zb=Z/Math.sqrt(t);up+=`${xOf(t)},${yOf(Math.min(zmax,zb))} `;dn+=`${xOf(t)},${yOf(Math.max(-zmax,-zb))} `;}
+  s+=`<polyline class="bound" points="${up.trim()}"/><polyline class="bound" points="${dn.trim()}"/>`;
+  // RIS vertical at t=1
+  s+=`<line class="ris" x1="${xOf(1)}" y1="${padT}" x2="${xOf(1)}" y2="${H-padB}"/>`+
+     `<text class="tick" x="${xOf(1)}" y="${padT-4}" text-anchor="middle">RIS</text>`;
+  // trajectory
+  let traj='';res.steps.forEach(p=>{traj+=`${xOf(p.t)},${yOf(p.z)} `;});
+  s+=`<polyline class="traj" points="${traj.trim()}"/>`;
+  res.steps.forEach(p=>{s+=`<circle class="pt" cx="${xOf(p.t)}" cy="${yOf(p.z)}" r="3"/>`;});
+  svg.innerHTML=s;
+}
+
+function renderTable(res){
+  const zmap=new Map();if(res)res.steps.forEach(st=>zmap.set(st.k,st));
+  // map cumulative step to displayed (chronological) order
+  const ordered=[...model].map((t,i)=>({t,i}));
+  const tb=document.getElementById('dataBody');tb.innerHTML='';
+  const chron=model.map((t,i)=>({t,i})).filter(o=>o.t.inc&&valid(o.t))
+    .sort((a,b)=>((a.t.year||9999)-(b.t.year||9999))||String(a.t.nct).localeCompare(String(b.t.nct)));
+  const stepByNct=new Map();chron.forEach((o,idx)=>{const st=res&&res.steps[idx];if(st)stepByNct.set(o.t.nct,st);});
+  model.forEach((t,i)=>{const st=stepByNct.get(t.nct);const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${esc(t.name).slice(0,34)}</td><td>${esc(String(t.year||''))}</td>`+
+      `<td contenteditable data-i="${i}" data-k="hr">${f(t.hr)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="lci">${f(t.lci)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="uci">${f(t.uci)}</td>`+
+      `<td>${st?st.z.toFixed(2):'—'}</td><td>${st?(st.t*100).toFixed(0)+'%':'—'}</td>`+
+      `<td><input type="checkbox" data-i="${i}" ${t.inc?'checked':''}/></td>`;
+    tb.appendChild(tr);});
+  tb.querySelectorAll('td[contenteditable]').forEach(td=>td.addEventListener('blur',e=>{
+    const v=parseFloat(e.target.textContent);if(isFinite(v)){model[e.target.dataset.i][e.target.dataset.k]=v;persist();render();}}));
+  tb.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',e=>{
+    model[e.target.dataset.i].inc=e.target.checked;persist();render();}));
+}
+
+function rCode(res){
+  const items=model.filter(t=>t.inc&&valid(t)).sort((a,b)=>(a.year||9999)-(b.year||9999));
+  const yi=items.map(t=>Math.log(t.hr).toFixed(5)).join(', ');
+  const sei=items.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z)).toFixed(5)).join(', ');
+  return `# Cumulative MA + TSA (AACT snapshot ${CAPSULE.snapshot_date})\n`+
+    `library(metafor)\n`+
+    `yi  <- c(${yi})   # chronological order\n`+
+    `sei <- c(${sei})\n`+
+    `cum <- cumul(rma(yi=yi, sei=sei, method="${METHOD==='DL'?'DL':'PM'}"), order=1:length(yi))\n`+
+    `print(cum)   # cumulative pooled estimate after each trial\n`+
+    `# For O'Brien-Fleming TSA boundaries with diversity-adjusted RIS, see the RTSA package:\n`+
+    `# library(RTSA); RTSA(outcome="MD", ...)`;
+}
+
+function setDot(id,st){const d=document.getElementById(id);if(d)d.className='dot '+st;}
+function render(){
+  const res=cumulative(model);
+  renderPlot(res);renderTable(res);document.getElementById('rcode').textContent=rCode(res);
+  if(res){const fin=res.steps[res.steps.length-1];
+    const verdict={firm:"Firm evidence — monitoring boundary crossed",
+      ris_reached_null:"Information size reached without crossing the boundary",
+      insufficient:"Inconclusive — insufficient information accrued"}[res.conclusion];
+    document.getElementById('verdictLine').textContent=verdict;
+    document.getElementById('verdictSub').textContent=
+      `Cumulative ${CAPSULE.measure} ${f(fin.est)} (${f(fin.ciL)}–${f(fin.ciU)}) · final Z ${fin.z.toFixed(2)} · `+
+      `${(fin.t*100).toFixed(0)}% of RIS · ${res.k} trials`+(res.crossed?` · boundary crossed at trial ${res.crossed}`:'');
+  }
+  let match=false;
+  if(res&&CAPSULE.tsa&&isFinite(CAPSULE.tsa.final_z)){
+    match=Math.abs(res.final_z-CAPSULE.tsa.final_z)<1e-6&&JSON.stringify(model)===JSON.stringify(CAPSULE.studies);}
+  setDot('d-match',match?'ok':'warn');
+  const statsOk=Object.values(CAPSULE.self_audit.aact_stats).every(v=>v==='pass');
+  setDot('d-stats',statsOk?'ok':'warn');document.getElementById('t-stats').textContent=statsOk?'TSA invariants passed':'TSA invariant issue';
+  setDot('d-snap',CAPSULE.snapshot_date?'ok':'warn');document.getElementById('t-snap').textContent='snapshot '+(CAPSULE.snapshot_date||'?');
+  const tier=document.getElementById('tier');tier.textContent=CAPSULE.tier;tier.className='tier '+CAPSULE.tier;
+}
+
+document.getElementById('title').textContent=CAPSULE.title;
+document.getElementById('subtitle').textContent='Primary estimand: '+CAPSULE.primary_estimand;
+document.getElementById('provBox').innerHTML=
+  `Source: ${esc(CAPSULE.provenance.source||'ClinicalTrials.gov via AACT')} · snapshot <b>${esc(CAPSULE.snapshot_date)}</b>. `+
+  `Required information size uses a diversity (heterogeneity) design effect; futility is non-binding (efficacy boundary only). Fixed snapshot — not live.`;
+const p=CAPSULE.pico;
+document.getElementById('picoBox').innerHTML=
+  `<b>Population:</b> ${esc(p.population)}<br><b>Intervention:</b> ${esc(p.intervention||'(any)')}<br>`+
+  `<b>Comparator:</b> ${esc(p.comparator||'(any)')}<br><b>Outcome:</b> ${esc(p.outcome)}`;
+document.getElementById('bodyBox').textContent=CAPSULE.e156_body;
+document.getElementById('bodyMeta').textContent=
+  `${CAPSULE.e156_validation.sentence_count} sentences · ${CAPSULE.e156_validation.word_count} words · E156 ${CAPSULE.e156_validation.ok?'PASS':'FAIL'}`;
+const ck=CAPSULE.self_audit;
+document.getElementById('auditBox').innerHTML='<b>Tier checks</b><br>'+Object.entries(ck.checks).map(([k,v])=>`${k}: ${v}`).join(' · ')+
+  '<br><br><b>TSA invariants</b><br>'+Object.entries(ck.aact_stats).map(([k,v])=>`${k}: ${v}`).join(' · ');
+document.getElementById('notesBox').textContent=CAPSULE.notes&&CAPSULE.notes.length?('Extraction notes: '+CAPSULE.notes.length+' analyses skipped (see sidecar JSON).'):'';
+document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults();persist();render();});
+document.getElementById('inspectBtn').addEventListener('click',()=>{const o=document.getElementById('inspectOut');
+  o.style.display=o.style.display==='none'?'block':'none';o.textContent=[poolLog,cumulative].map(fn=>fn.toString()).join('\n\n');});
+render();
+</script>
+</body>
+</html>
