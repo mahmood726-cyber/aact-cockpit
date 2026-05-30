@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>e156 capsule · pairwise meta-analysis</title>
+<meta property="og:title" content="e156 living evidence capsule — pairwise meta-analysis"/>
+<meta property="og:description" content="Self-auditing single-file meta-analysis of ClinicalTrials.gov/AACT data."/>
+<style>
+  :root{--bg:#fbfbfd;--ink:#1a1a1f;--mut:#5a5a66;--line:#e3e3ea;--card:#fff;--accent:#2456c6;
+        --ok:#1f8a4c;--warn:#c47f17;--pend:#9aa0ab;--gold:#b8860b;--silver:#8a8f99;--bronze:#a9712e;}
+  @media (prefers-color-scheme:dark){:root{--bg:#15161a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1d1f25;}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 18px 80px}
+  .ribbon{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+          padding:8px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .tier{font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
+  .tier.gold{background:var(--gold)} .tier.silver{background:var(--silver)}
+  .tier.bronze{background:var(--bronze)} .tier.none{background:#b33}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mut)}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.pending{background:var(--pend)}
+  h1{font-size:24px;margin:22px 0 4px} h2{font-size:18px;margin:30px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+  .prov{font-size:12.5px;color:var(--mut)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{padding:5px 7px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  td[contenteditable]{background:rgba(36,86,198,.05);border-radius:4px;cursor:text}
+  td[contenteditable]:focus{outline:2px solid var(--accent)}
+  .pooled{font-size:20px;font-weight:700} .motto{font-style:italic;color:var(--mut);font-size:13px}
+  pre{background:#0d1117;color:#d6deeb;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.4}
+  .body156{background:var(--card);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0}
+  button{font:inherit;padding:5px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;cursor:pointer}
+  .muted{color:var(--mut);font-size:12.5px}
+  svg{max-width:100%;height:auto}
+  .grid{stroke:var(--line)} .nullline{stroke:var(--mut);stroke-dasharray:3 3} .tick{fill:var(--mut);font-size:11px}
+  .whisk{stroke:var(--ink)} .box{fill:var(--accent)} .diamond{fill:var(--accent)} .piband{fill:var(--accent);opacity:.18}
+  .lbl{fill:var(--ink);font-size:12px;font-weight:600} .yr{fill:var(--mut);font-size:10.5px} .val{fill:var(--ink);font-size:11.5px}
+</style>
+</head>
+<body>
+<div class="ribbon">
+  <span class="tier" id="tier">—</span>
+  <span class="chk"><span class="dot pending" id="d-stats"></span><span id="t-stats">self-audit</span></span>
+  <span class="chk"><span class="dot pending" id="d-match"></span>dashboard match</span>
+  <span class="chk"><span class="dot pending" id="d-snap"></span><span id="t-snap">snapshot</span></span>
+  <span class="chk"><span class="dot pending" id="d-rerun"></span>independent reproduction</span>
+  <span class="motto" style="margin-left:auto">the capsule must agree with itself before asking the world to agree with it</span>
+</div>
+
+<div class="wrap">
+  <h1 id="title">pairwise meta-analysis</h1>
+  <div class="sub" id="subtitle"></div>
+
+  <div class="card prov" id="provBox"></div>
+
+  <h2>01 · Question (PICO)</h2>
+  <div class="card" id="picoBox"></div>
+
+  <h2>02 · Data (editable — re-pools live)</h2>
+  <div class="muted">Edit any estimate or CI; toggle inclusion. Stored locally; reload to reset to the AACT extraction.</div>
+  <div class="card"><table id="dataTable"><thead><tr>
+    <th>Trial</th><th>Year</th><th>Comparison</th><th>Est.</th><th>LCI</th><th>UCI</th><th>Incl.</th>
+  </tr></thead><tbody id="dataBody"></tbody></table>
+  <div style="margin-top:8px"><button id="resetBtn">reset to AACT data</button></div></div>
+
+  <h2>03 · Forest plot</h2>
+  <div class="card"><svg id="forest" role="img" aria-label="Forest plot"></svg></div>
+
+  <h2>04 · Pooled result (random-effects)</h2>
+  <div class="card"><div class="pooled" id="pooledLine">—</div><div class="muted" id="hetLine"></div></div>
+
+  <h2>05 · 156-word summary (E156)</h2>
+  <div class="body156" id="bodyBox"></div>
+  <div class="muted" id="bodyMeta"></div>
+
+  <h2>06 · R cross-validation (metafor)</h2>
+  <div class="muted">Copy-paste into R; uses the live-edited data and regenerates the pooled estimate.</div>
+  <div class="card"><pre id="rcode"></pre></div>
+
+  <h2>07 · Assurance &amp; inspector</h2>
+  <div class="card" id="auditBox"></div>
+  <div class="card"><button id="inspectBtn">show the exact pooling code that ran</button>
+    <pre id="inspectOut" style="display:none"></pre></div>
+  <p class="muted" id="notesBox"></p>
+</div>
+
+<script id="capsule-data" type="application/json">
+</script>
+<script>
+"use strict";
+const CAPSULE = {"slug": "hr-for-heart-failure-hospitalization-in-heart-failure", "title": "HR for heart failure hospitalization in heart failure", "measure": "HR", "pico": {"population": "heart failure", "outcome": "heart failure hospitalization", "intervention": null, "comparator": null}, "primary_estimand": "hazard ratio for heart failure hospitalization", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-05-30T20:25:40Z"}, "favours_low": "favours intervention", "favours_high": "favours comparator", "method": "PM", "hksj": false, "studies": [{"nct": "NCT00354159", "name": "Reducing Decompensation Events Utilizing Intracardiac Pressures in Patients With Chronic HF (REDUCEhf)", "year": 2006, "agent": "Treatment Arm", "comparator": "Control Arm", "hr": 0.87, "lci": 0.57, "uci": 1.32, "inc": true}, {"nct": "NCT00358215", "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Darbepoetin Alfa Treatment on Mortality and Morbidity in Heart Failure (HF) Subjects With Symptomatic Left Ventricular Systolic Dysfunction and Anemia", "year": 2006, "agent": "Darbepoetin Alfa", "comparator": "Placebo", "hr": 1.01, "lci": 0.9, "uci": 1.13, "inc": true}, {"nct": "NCT01215253", "name": "Late Sodium Current Blockade in High-Risk ICD Patients", "year": 2011, "agent": "Ranolazine", "comparator": "Placebo", "hr": 1.07, "lci": 0.84, "uci": 1.37, "inc": true}, {"nct": "NCT01685840", "name": "Guiding Evidence Based Therapy Using Biomarker Intensified Treatment in Heart Failure.", "year": 2012, "agent": "Biomarker-Guided Care", "comparator": "Usual Care", "hr": 0.98, "lci": 0.79, "uci": 1.22, "inc": true}, {"nct": "NCT01920711", "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Valsartan, on Morbidity and Mortality in Heart Failure Patients (NYHA Class II-IV) With Preserved Ejection Fraction (PARAGON-HF)", "year": 2014, "agent": "LCZ696", "comparator": "Valsartan", "hr": 0.8698, "lci": 0.7526, "uci": 1.0052, "inc": true}, {"nct": "NCT02064868", "name": "A Multicenter, Prospective, Randomized, Open-label Study to Assess the Effect of Serelaxin Versus Standard of Care in Acute Heart Failure (AHF) Patients", "year": 2014, "agent": "Standard of Care (SOC)", "comparator": "Serelaxin + Standard of Care", "hr": 0.71, "lci": 0.51, "uci": 0.98, "inc": true}, {"nct": "NCT02235077", "name": "Aldosterone Targeted Neurohormonal Combined With Natriuresis Therapy - HF (ATHENA-HF)", "year": 2014, "agent": "Spironolactone", "comparator": "Placebo", "hr": 1.11, "lci": 0.56, "uci": 2.23, "inc": true}, {"nct": "NCT02271230", "name": "Intervention With Vitamin D and Omega-3 Supplements and Incident Heart Failure", "year": 2014, "agent": "Active Vitamin D", "comparator": "Vitamin D Placebo", "hr": 0.93, "lci": 0.78, "uci": 1.11, "inc": true}, {"nct": "NCT02441218", "name": "Effects of Ivabradine on Cardiovascular Events in Patients With Moderate to Severe Chronic Heart Failure and Left Ventricular Systolic Dysfunction. A Three-year International Multicentre Study", "year": 2006, "agent": "Ivabradine", "comparator": "Placebo", "hr": 0.82, "lci": 0.75, "uci": 0.9, "inc": true}, {"nct": "NCT02468232", "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Enalapril on Morbidity and Mortality in Japanese Patients With Chronic Heart Failure and Reduced Ejection Fraction.", "year": 2015, "agent": "LCZ696", "comparator": "Enalapril", "hr": 0.8699, "lci": 0.4763, "uci": 1.5887, "inc": true}, {"nct": "NCT02861534", "name": "A Randomized Parallel-Group, Placebo-Controlled, Double-Blind, Event-Driven, Multi-Center Pivotal Phase III Clinical Outcome Trial of Efficacy and Safety of the Oral sGC Stimulator Vericiguat in Subjects With Heart Failure With Reduced Ejection Fraction (HFrEF) - VerICiguaT GlObal Study in Subjects With Heart Failure With Reduced EjectIon FrAction (VICTORIA)", "year": 2016, "agent": "Vericiguat", "comparator": "Placebo", "hr": 0.9, "lci": 0.81, "uci": 1.0, "inc": true}, {"nct": "NCT02929329", "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Omecamtiv Mecarbil on Mortality and Morbidity in Subjects With Chronic Heart Failure With Reduced Ejection Fraction (GALACTIC-HF)", "year": 2017, "agent": "Omecamtiv Mecarbil", "comparator": "Placebo", "hr": 0.95, "lci": 0.87, "uci": 1.03, "inc": true}, {"nct": "NCT02937454", "name": "A Randomised, Double-Blind Placebo Controlled Trial Comparing the Effect of Intravenous Ferric Carboxymaltose on Hospitalisations and Mortality in Iron Deficient Patients Admitted for Acute Heart Failure (Affirm-AHF)", "year": 2017, "agent": "FCM (Ferric Carboxymaltose)", "comparator": "Placebo (Normal Saline (NaCl 0.9%))", "hr": 0.79, "lci": 0.62, "uci": 1.01, "inc": true}, {"nct": "NCT02946853", "name": "Junctional AV Ablation in CRT-D Patients With Atrial Fibrillation (JAVA-CRT Trial)", "year": 2016, "agent": "CRT-D", "comparator": "CRT-D and AVJ Ablation", "hr": 1.0, "lci": 0.1, "uci": 84.4, "inc": true}, {"nct": "NCT03387813", "name": "Hemodynamic-GUIDEd Management of Heart Failure", "year": 2018, "agent": "Single Arm - Previous HF Hospitalization Only (One Year Prior to Implant)", "comparator": "Single Arm - Previous HF Hospitalization (One Year After Implant)", "hr": 0.46, "lci": 0.39, "uci": 0.54, "inc": true}, {"nct": "NCT04180696", "name": "Mid-Q Response Study", "year": 2020, "agent": "AdaptivCRT ON (aCRT ON, Treatment Group)", "comparator": "AdaptivCRT OFF (aCRT OFF, Control Group)", "hr": 1.25, "lci": 0.492, "uci": 3.175, "inc": true}, {"nct": "NCT05093933", "name": "A Pivotal Phase 3 Randomized, Placebo-controlled Clinical Study to Evaluate the Efficacy and Safety of the sGC Stimulator Vericiguat/MK-1242 in Adults With Chronic Heart Failure With Reduced Ejection Fraction", "year": 2021, "agent": "Vericiguat", "comparator": "Placebo", "hr": 0.95, "lci": 0.82, "uci": 1.1, "inc": true}], "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"estimator_for_k": "pass", "pi_t_dist": "pass", "log_scale_pooling": "pass", "heterogeneity_reported": "pass", "hksj_floor": "pass", "no_nan": "pass", "rows_parse": "pass"}}, "pooled": {"est": 0.8652170997301574, "ci_lower": 0.7804282030607083, "ci_upper": 0.9592178072621919, "i2": 80.13389108974522, "tau2": 0.028717985224093287, "k": 17, "df": 16, "Q": 80.53917388795185, "pi_lower": 0.5975440963851504, "pi_upper": 1.2527956249490755, "ci_note": "z", "method": "PM"}, "e156_body": "In heart failure, does the intervention compared with control change heart failure hospitalization? This synthesis aggregates 17 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for heart failure hospitalization was 0.87 (95% CI 0.78 to 0.96). Between-trial heterogeneity was I-squared 80 percent and the 95% prediction interval spanned 0.60 to 1.25. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.", "e156_validation": {"ok": true, "word_count": 120, "sentence_count": 7}, "tier": "silver", "notes": ["skipped NCT01626079 analysis 105519904 (param_type='Win Ratio', no usable estimate)", "skipped NCT04593823 analysis 105432918 (param_type='Median Difference (Final Values)', no usable estimate)"]};
+const SLUG = CAPSULE.slug, LSKEY = "e156:" + SLUG;
+const Z = 1.959963984540054;
+const T975 = {1:12.706,2:4.303,3:3.182,4:2.776,5:2.571,6:2.447,7:2.365,8:2.306,9:2.262,10:2.228,12:2.179,15:2.131,20:2.086,30:2.042};
+function tcrit(df){ if(df<=0)return Z; if(T975[df])return T975[df];
+  const ks=Object.keys(T975).map(Number).sort((a,b)=>a-b); for(const k of ks)if(df<=k)return T975[k]; return 1.962; }
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const f = x => (x==null||!isFinite(x)) ? "n/a" : x.toFixed(2);
+
+// ---- between-study variance estimators (ported verbatim from the flagship engine) ----
+const METHOD = CAPSULE.method || "PM", HKSJ = !!CAPSULE.hksj;
+function wmean(y,v,t2){const w=v.map(x=>1/(x+t2));const sw=w.reduce((a,b)=>a+b,0);
+  return {w,sw,m:y.reduce((a,e,i)=>a+w[i]*e,0)/sw};}
+function genQ(y,v,t2){const {w,m}=wmean(y,v,t2);return y.reduce((a,e,i)=>a+w[i]*(e-m)**2,0);}
+function tau2DL(y,v){const {w,sw,m}=wmean(y,v,0);const Q=y.reduce((a,e,i)=>a+w[i]*(e-m)**2,0),df=y.length-1;
+  const C=sw-w.reduce((a,e)=>a+e*e,0)/sw;return (df>0&&C>0)?Math.max(0,(Q-df)/C):0;}
+function tau2PM(y,v){const df=y.length-1;if(df<1)return 0;if(genQ(y,v,0)<=df)return 0;
+  let lo=0,hi=1;for(let i=0;i<80&&genQ(y,v,hi)>df;i++)hi*=2;
+  for(let i=0;i<100;i++){const mid=(lo+hi)/2;if(genQ(y,v,mid)>df)lo=mid;else hi=mid;}return (lo+hi)/2;}
+function tau2REML(y,v){const k=y.length;if(k<2)return 0;let t2=tau2DL(y,v);
+  for(let it=0;it<300;it++){const {w,sw,m}=wmean(y,v,t2);const sw2=w.reduce((a,e)=>a+e*e,0);
+    let nt=w.reduce((a,e,i)=>a+e*e*((y[i]-m)**2-v[i]),0)/sw2+1/sw;if(nt<0)nt=0;
+    if(Math.abs(nt-t2)<1e-11){t2=nt;break;}t2=nt;}return t2;}
+function tau2est(y,v){return METHOD==='DL'?tau2DL(y,v):METHOD==='REML'?tau2REML(y,v):tau2PM(y,v);}
+
+function valid(t){return t.hr>0&&t.lci>0&&t.uci>0&&t.lci<=t.hr&&t.hr<=t.uci;}
+function pool(items){
+  const use=items.filter(t=>t.inc&&valid(t));const k=use.length;if(k<1)return null;
+  const y=use.map(t=>Math.log(t.hr)), v=use.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z))**2), df=k-1;
+  const tau2=tau2est(y,v);
+  const {w:wr,sw:swr,m:re}=wmean(y,v,tau2), seRE=Math.sqrt(1/swr);
+  const fx=wmean(y,v,0), Q=y.reduce((a,e,i)=>a+fx.w[i]*(e-fx.m)**2,0);
+  const I2=(k>1&&Q>df)?Math.max(0,(Q-df)/Q)*100:(k>1?0:null);
+  let ciHalf,ciNote;
+  if(HKSJ&&k>=2){const qg=y.reduce((a,e,i)=>a+wr[i]*(e-re)**2,0),mult=Math.max(1,qg/df);
+    ciHalf=tcrit(df)*Math.sqrt(mult/swr);ciNote='HKSJ';}
+  else{ciHalf=Z*seRE;ciNote='z';}
+  let piL=null,piU=null;if(k>=2){const h=tcrit(df)*Math.sqrt(tau2+seRE*seRE);piL=Math.exp(re-h);piU=Math.exp(re+h);}
+  const wmap=new Map();use.forEach((t,i)=>wmap.set(t,wr[i]));
+  return {est:Math.exp(re),ciL:Math.exp(re-ciHalf),ciU:Math.exp(re+ciHalf),i2:I2,tau2,k,df,Q,piL,piU,wmap,ciNote,re,seRE};
+}
+
+// ---- state ----
+function defaults(){return CAPSULE.studies.map(t=>({...t}));}
+function load(){try{const raw=localStorage.getItem(LSKEY);if(raw){const s=JSON.parse(raw);if(Array.isArray(s)&&s.length)return s;}}catch(e){}return defaults();}
+let model=load();
+function persist(){try{localStorage.setItem(LSKEY,JSON.stringify(model));}catch(e){}}
+
+// ---- forest ----
+const W=720,padL=176,padR=150,plotW=W-padL-padR,DMIN=Math.log(0.4),DMAX=Math.log(2.2),rowH=38,top=22;
+const xOf=hr=>padL+(Math.log(hr)-DMIN)/(DMAX-DMIN)*plotW;
+function renderForest(res){
+  const n=model.length,H=top+n*rowH+96,svg=document.getElementById('forest');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const axisY=top+n*rowH+8,diaY=top+n*rowH+30;let s='';
+  [0.5,0.7,1.0,1.5,2.0].forEach(t=>{const x=xOf(t);
+    s+=`<line class="${t===1?'nullline':'grid'}" x1="${x}" y1="${top-8}" x2="${x}" y2="${axisY}"/>`;
+    s+=`<text class="tick" x="${x}" y="${axisY+15}" text-anchor="middle">${t.toFixed(1)}</text>`;});
+  s+=`<text class="yr" x="${xOf(0.5)}" y="${axisY+30}" text-anchor="middle">${esc(CAPSULE.favours_low)}</text>`;
+  s+=`<text class="yr" x="${xOf(1.7)}" y="${axisY+30}" text-anchor="middle">${esc(CAPSULE.favours_high)}</text>`;
+  let maxW=0;if(res)res.wmap.forEach(v=>{if(v>maxW)maxW=v;});if(maxW<=0)maxW=1;
+  model.forEach((t,i)=>{const y=top+i*rowH+rowH/2,ok=valid(t);
+    const x=ok?xOf(Math.min(2.2,Math.max(0.4,t.hr))):padL,xl=ok?xOf(Math.max(0.4,t.lci)):padL,xu=ok?xOf(Math.min(2.2,t.uci)):padL;
+    const wv=(res&&res.wmap.get(t))||0,half=2+Math.sqrt(wv/maxW)*9;
+    s+=`<text class="lbl" x="14" y="${y-1}">${esc(t.name).slice(0,30)}</text>`;
+    s+=`<text class="yr" x="14" y="${y+12}">${esc(String(t.year||''))} · ${esc(t.agent).slice(0,22)}</text>`;
+    if(ok){s+=`<line class="whisk" x1="${xl}" y1="${y}" x2="${xu}" y2="${y}"/>`;
+      s+=`<rect class="box" x="${x-half}" y="${y-half}" width="${2*half}" height="${2*half}"/>`;
+      s+=`<text class="val" x="${W-12}" y="${y+4}" text-anchor="end">${f(t.hr)} (${f(t.lci)}–${f(t.uci)})</text>`;}
+    else s+=`<text class="val" x="${W-12}" y="${y+4}" text-anchor="end">excluded</text>`;
+  });
+  if(res&&res.est){const dcx=xOf(res.est),dxl=xOf(res.ciL),dxu=xOf(res.ciU),h=7;
+    if(res.piL&&res.piU){const pl=xOf(Math.max(0.4,res.piL)),pu=xOf(Math.min(2.2,res.piU));
+      s+=`<rect class="piband" x="${pl}" y="${diaY-4}" width="${Math.max(1,pu-pl)}" height="8" rx="4"/>`;}
+    s+=`<polygon class="diamond" points="${dxl},${diaY} ${dcx},${diaY-h} ${dxu},${diaY} ${dcx},${diaY+h}"/>`;
+    s+=`<text class="lbl" x="14" y="${diaY-1}">Pooled (random-effects)</text>`;
+    s+=`<text class="pooledval val" x="${W-12}" y="${diaY+4}" text-anchor="end">${f(res.est)} (${f(res.ciL)}–${f(res.ciU)})</text>`;}
+  svg.innerHTML=s;
+}
+
+// ---- table ----
+function renderTable(){
+  const tb=document.getElementById('dataBody');tb.innerHTML='';
+  model.forEach((t,i)=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${esc(t.name)}</td><td>${esc(String(t.year||''))}</td>`+
+      `<td style="text-align:left">${esc(t.agent)} vs ${esc(t.comparator||'control')}</td>`+
+      `<td contenteditable data-i="${i}" data-k="hr">${f(t.hr)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="lci">${f(t.lci)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="uci">${f(t.uci)}</td>`+
+      `<td><input type="checkbox" data-i="${i}" ${t.inc?'checked':''}/></td>`;
+    tb.appendChild(tr);});
+  tb.querySelectorAll('td[contenteditable]').forEach(td=>{
+    td.addEventListener('blur',e=>{const v=parseFloat(e.target.textContent);
+      if(isFinite(v)){model[e.target.dataset.i][e.target.dataset.k]=v;persist();render();}});});
+  tb.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change',e=>{model[e.target.dataset.i].inc=e.target.checked;persist();render();});});
+}
+
+// ---- R code ----
+function rCode(){
+  const inc=model.filter(t=>t.inc&&valid(t));
+  const yi=inc.map(t=>Math.log(t.hr).toFixed(6)).join(', ');
+  const sei=inc.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z)).toFixed(6)).join(', ');
+  const meth=METHOD==='PM'?'PM':METHOD==='REML'?'REML':'DL';
+  return `# ${CAPSULE.measure} pooled on the log scale (AACT snapshot ${CAPSULE.snapshot_date})\n`+
+    `library(metafor)\n`+
+    `yi  <- c(${yi})\n`+
+    `sei <- c(${sei})\n`+
+    `res <- rma(yi = yi, sei = sei, method = "${meth}")\n`+
+    `pred <- predict(res, transf = exp)   # pooled ${CAPSULE.measure} + 95% CI\n`+
+    `print(pred); print(confint(res))     # tau^2, I^2; t-based PI: rma(..., test="knha")`;
+}
+
+// ---- assurance ribbon + self-audit ----
+function setDot(id,state){const d=document.getElementById(id);if(d)d.className='dot '+state;}
+function render(){
+  const res=pool(model);
+  renderForest(res);renderTable();
+  document.getElementById('rcode').textContent=rCode();
+  if(res){document.getElementById('pooledLine').textContent=
+      `${CAPSULE.measure} ${f(res.est)} (95% CI ${f(res.ciL)}–${f(res.ciU)}), ${res.k} trials`;
+    document.getElementById('hetLine').textContent=
+      `I² ${res.i2==null?'n/a':res.i2.toFixed(0)}% · τ² ${res.tau2.toFixed(3)} · 95% PI `+
+      `${res.piL?f(res.piL):'n/a'}–${res.piU?f(res.piU):'n/a'} · CI by ${res.ciNote}`;
+  } else {document.getElementById('pooledLine').textContent='no valid included trials';}
+
+  // dashboard_match: live JS pooled est vs the Python-embedded estimate
+  let match=false;
+  if(res&&CAPSULE.pooled&&isFinite(CAPSULE.pooled.est)){
+    match=Math.abs(res.est-CAPSULE.pooled.est)<1e-6 &&
+          JSON.stringify(model)===JSON.stringify(CAPSULE.studies);}
+  setDot('d-match',match?'ok':'warn');
+  const statsOk=Object.values(CAPSULE.self_audit.aact_stats).every(v=>v==='pass');
+  setDot('d-stats',statsOk?'ok':'warn');
+  document.getElementById('t-stats').textContent=statsOk?'self-audit passed':'self-audit issue';
+  const snapOk=!!CAPSULE.snapshot_date;
+  setDot('d-snap',snapOk?'ok':'warn');
+  document.getElementById('t-snap').textContent='snapshot '+(CAPSULE.snapshot_date||'?');
+  setDot('d-rerun',CAPSULE.self_audit.checks.external_review==='pass'?'ok':'pending');
+  const tier=document.getElementById('tier');tier.textContent=CAPSULE.tier;tier.className='tier '+CAPSULE.tier;
+}
+
+// ---- static fill ----
+document.getElementById('title').textContent=CAPSULE.title;
+document.getElementById('subtitle').textContent='Primary estimand: '+CAPSULE.primary_estimand;
+document.getElementById('provBox').innerHTML=
+  `Source: ${esc(CAPSULE.provenance.source||'ClinicalTrials.gov via AACT')} · `+
+  `snapshot <b>${esc(CAPSULE.snapshot_date)}</b> · extracted ${esc(CAPSULE.provenance.extracted_at||'')}. `+
+  `This capsule reflects a fixed registry snapshot; it does not update live.`;
+const p=CAPSULE.pico;
+document.getElementById('picoBox').innerHTML=
+  `<b>Population:</b> ${esc(p.population)}<br><b>Intervention:</b> ${esc(p.intervention||'(any)')}<br>`+
+  `<b>Comparator:</b> ${esc(p.comparator||'(any)')}<br><b>Outcome:</b> ${esc(p.outcome)}`;
+document.getElementById('bodyBox').textContent=CAPSULE.e156_body;
+document.getElementById('bodyMeta').textContent=
+  `${CAPSULE.e156_validation.sentence_count} sentences · ${CAPSULE.e156_validation.word_count} words · `+
+  `E156 validation ${CAPSULE.e156_validation.ok?'PASS':'FAIL'}`;
+const ck=CAPSULE.self_audit;
+document.getElementById('auditBox').innerHTML=
+  '<b>Tier checks</b><br>'+Object.entries(ck.checks).map(([k,v])=>`${k}: ${v}`).join(' · ')+
+  '<br><br><b>AACT statistical invariants</b><br>'+Object.entries(ck.aact_stats).map(([k,v])=>`${k}: ${v}`).join(' · ');
+document.getElementById('notesBox').textContent=
+  CAPSULE.notes&&CAPSULE.notes.length?('Extraction notes: '+CAPSULE.notes.length+' analyses skipped (see sidecar JSON).'):'';
+
+document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults();persist();render();});
+document.getElementById('inspectBtn').addEventListener('click',()=>{
+  const o=document.getElementById('inspectOut');
+  o.style.display=o.style.display==='none'?'block':'none';
+  o.textContent=[tcrit,wmean,tau2DL,tau2PM,tau2est,pool].map(fn=>fn.toString()).join('\n\n');});
+
+render();
+</script>
+</body>
+</html>

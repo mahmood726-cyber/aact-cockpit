@@ -1,0 +1,141 @@
+{
+  "slug": "hr-for-major-adverse-cardiovascular-events-in-type-2-diabetes",
+  "title": "HR for major adverse cardiovascular events in type 2 diabetes",
+  "measure": "HR",
+  "pico": {
+    "population": "type 2 diabetes",
+    "outcome": "major adverse cardiovascular events",
+    "intervention": null,
+    "comparator": null
+  },
+  "primary_estimand": "hazard ratio for MACE",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-05-30T20:25:41Z"
+  },
+  "favours_low": "favours intervention",
+  "favours_high": "favours comparator",
+  "method": "PM",
+  "hksj": false,
+  "studies": [
+    {
+      "nct": "NCT00790205",
+      "name": "TECOS: A Randomized, Placebo Controlled Clinical Trial to Evaluate Cardiovascular Outcomes After Treatment With Sitagliptin in Patients With Type 2 Diabetes Mellitus and Inadequate Glycemic Control",
+      "year": 2008,
+      "agent": "Sitagliptin",
+      "comparator": "Placebo",
+      "hr": 0.98,
+      "lci": 0.88,
+      "uci": 1.09,
+      "inc": true
+    },
+    {
+      "nct": "NCT01144338",
+      "name": "Exenatide Study of Cardiovascular Event Lowering Trial (EXSCEL). A Randomized, Placebo Controlled Clinical Trial to Evaluate Cardiovascular Outcomes After Treatment With Exenatide Once Weekly in Patients With Type 2 Diabetes Mellitus.",
+      "year": 2010,
+      "agent": "Exenatide Once Weekly",
+      "comparator": "Placebo",
+      "hr": 0.91,
+      "lci": 0.832,
+      "uci": 1.004,
+      "inc": true
+    },
+    {
+      "nct": "NCT01703208",
+      "name": "A Randomized, Double-blind, Placebo-controlled, Multicenter Study to Assess Cardiovascular Outcomes Following Treatment With MK-3102 in Subjects With Type 2 Diabetes Mellitus",
+      "year": 2012,
+      "agent": "Omarigliptin 25 mg",
+      "comparator": "Placebo",
+      "hr": 1.0,
+      "lci": 0.77,
+      "uci": 1.29,
+      "inc": true
+    },
+    {
+      "nct": "NCT01986881",
+      "name": "Randomized, Double-Blind, Placebo-Controlled, Parallel-Group Study to Assess Cardiovascular Outcomes Following Treatment With Ertugliflozin (MK-8835/PF-04971729) in Subjects With Type 2 Diabetes Mellitus and Established Vascular Disease, The VERTIS CV Study",
+      "year": 2013,
+      "agent": "All Ertugliflozin (Overall Cardiovascular Study)",
+      "comparator": "Placebo (Overall Cardiovascular Study)",
+      "hr": 0.92,
+      "lci": 0.823,
+      "uci": 1.038,
+      "inc": true
+    },
+    {
+      "nct": "NCT02019264",
+      "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group Study to Evaluate the Effect of Long-term Treatment With BELVIQ (Lorcaserin HCl) on the Incidence of Major Adverse Cardiovascular Events and Conversion to Type 2 Diabetes Mellitus in Obese and Overweight Subjects With Cardiovascular Disease or Multiple Cardiovascular Risk Factors",
+      "year": 2014,
+      "agent": "Lorcaserin 10 mg",
+      "comparator": "Placebo",
+      "hr": 0.969,
+      "lci": 0.873,
+      "uci": 1.074,
+      "inc": true
+    },
+    {
+      "nct": "NCT03496298",
+      "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Evaluate the Effect of Efpeglenatide on Cardiovascular Outcomes in Type 2 Diabetes Patients at High Cardiovascular Risk",
+      "year": 2018,
+      "agent": "Efpeglenatide 4 mg+6 mg",
+      "comparator": "Placebo",
+      "hr": 0.732,
+      "lci": 0.583,
+      "uci": 0.918,
+      "inc": true
+    }
+  ],
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "estimator_for_k": "pass",
+      "pi_t_dist": "pass",
+      "log_scale_pooling": "pass",
+      "heterogeneity_reported": "pass",
+      "hksj_floor": "pass",
+      "no_nan": "pass",
+      "rows_parse": "pass"
+    }
+  },
+  "pooled": {
+    "est": 0.9302042140996226,
+    "ci_lower": 0.8723318527569326,
+    "ci_upper": 0.9919159517035301,
+    "i2": 20.83182602134542,
+    "tau2": 0.002052479065122844,
+    "k": 6,
+    "df": 5,
+    "Q": 6.315669225045037,
+    "pi_lower": 0.8056464646824881,
+    "pi_upper": 1.074019334609394,
+    "ci_note": "z",
+    "method": "PM"
+  },
+  "e156_body": "In type 2 diabetes, does the intervention compared with control change major adverse cardiovascular events? This synthesis aggregates 6 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for major adverse cardiovascular events was 0.93 (95% CI 0.87 to 0.99). Between-trial heterogeneity was I-squared 21 percent and the 95% prediction interval spanned 0.81 to 1.07. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 123,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": [
+    "skipped NCT01986881 analysis 105378233 (param_type='Hazard Ratio (HR)', no usable estimate)",
+    "skipped NCT01986881 analysis 105378234 (param_type='Hazard Ratio (HR)', no usable estimate)",
+    "skipped NCT01986881 analysis 105378235 (param_type='Hazard Ratio (HR)', no usable estimate)",
+    "skipped NCT02019264 analysis 105557292 (param_type='Hazard Ratio (HR)', no usable estimate)",
+    "skipped NCT02019264 analysis 105557295 (param_type='Hazard Ratio (HR)', no usable estimate)",
+    "skipped NCT02019264 analysis 105557296 (param_type='Hazard Ratio (HR)', no usable estimate)",
+    "skipped NCT02019264 analysis 105557297 (param_type='Hazard Ratio (HR)', no usable estimate)"
+  ]
+}
