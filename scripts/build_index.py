@@ -48,13 +48,21 @@ def collect(d: Path) -> list[dict]:
             fin = (t.get("steps") or [{}])[-1]
             headline = (f"cum. {c.get('measure','')} {fin.get('est',0):.2f} · "
                         f"{t.get('conclusion','')}" if fin else c.get("measure", ""))
+        elif kind == "nma":
+            nm = c.get("nma", {})
+            sucra = nm.get("sucra", {})
+            best = max(sucra, key=sucra.get) if sucra else "?"
+            headline = (f"{len(nm.get('treatments', []))} treatments · best: {best} "
+                        f"(SUCRA {sucra.get(best, 0)*100:.0f}%) vs {nm.get('reference','')}")
         else:
             p = c.get("pooled", {})
             headline = (f"{c.get('measure','')} {p.get('est',0):.2f} "
                         f"({p.get('ci_lower',0):.2f}–{p.get('ci_upper',0):.2f}) · I²{p.get('i2',0):.0f}%")
         rows.append({
             "title": f"{pico.get('outcome','')} in {pico.get('population','')}",
-            "kind": kind, "k": c.get("pooled", {}).get("k") or c.get("tsa", {}).get("k", ""),
+            "kind": kind,
+            "k": (c.get("pooled", {}).get("k") or c.get("tsa", {}).get("k")
+                  or c.get("nma", {}).get("k", "")),
             "tier": c["tier"], "html": html, "headline": headline,
             "snapshot": c.get("snapshot_date", "?"),
         })

@@ -42,8 +42,9 @@ def verify(docs: Path) -> int:
         for rx, why in _PAYLOAD_LEAKS:
             if rx.search(payload):
                 failures.append(f"{html.name}: payload leak {why}")
-        # numeric witness
-        witness = "tests/node/tsa_check.mjs" if kind == "tsa" else "tests/node/repool_check.mjs"
+        # numeric witness (per capsule kind)
+        witness = {"tsa": "tests/node/tsa_check.mjs",
+                   "nma": "tests/node/nma_check.mjs"}.get(kind, "tests/node/repool_check.mjs")
         r = subprocess.run(["node", str(_ROOT / witness), str(html)],
                            capture_output=True, text=True)
         status = "PASS" if r.returncode == 0 else "FAIL"

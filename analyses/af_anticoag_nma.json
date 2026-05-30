@@ -1,0 +1,22 @@
+{
+  "comment": "Network meta-analysis of oral anticoagulants for stroke/systemic embolism in atrial fibrillation. Nodes are individual drugs; warfarin is the network reference (the standard-of-care hub).",
+  "condition": "atrial fibrillation",
+  "outcome_like": ["stroke", "systemic embol"],
+  "measure_like": "hazard",
+  "reference": "warfarin",
+  "nodes": {
+    "apixaban": ["apixaban"],
+    "rivaroxaban": ["rivaroxaban"],
+    "dabigatran": ["dabigatran"],
+    "edoxaban": ["edoxaban"],
+    "warfarin": ["warfarin", "vitamin k antagonist"],
+    "aspirin": ["aspirin", "acetylsalicylic"]
+  },
+  "pico": {
+    "population": "atrial fibrillation",
+    "outcome": "stroke or systemic embolism",
+    "intervention": "oral anticoagulants",
+    "comparator": "warfarin"
+  },
+  "primary_estimand": "hazard ratio for stroke or systemic embolism versus warfarin"
+}
