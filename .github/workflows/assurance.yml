@@ -1,0 +1,48 @@
+name: assurance
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: pytest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -e .
+      - run: python -m pytest -q
+    # Note: F:\E156 is absent in CI, so the vendored validate_e156/compute_tier
+    # are exercised here (test_vendor_parity skips its canonical-comparison).
+
+  capsule-witness:
+    name: capsule numeric witness + leak scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: verify every published capsule (JS engine == Python, no payload leaks)
+        run: python scripts/verify_docs.py docs
+
+  r-cross-validation:
+    name: metafor cross-validation (Gold witness)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - name: install jsonlite + metafor
+        run: Rscript -e 'install.packages(c("jsonlite","metafor"))'
+      - name: re-pool every pairwise capsule with metafor (|Δ| < 1e-4)
+        run: Rscript scripts/r_validate.R docs

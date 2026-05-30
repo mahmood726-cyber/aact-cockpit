@@ -23,25 +23,28 @@ from pathlib import Path
 from .pooling import pool
 
 # --------------------------------------------------------------------------- #
-# locate the E156 scripts (reuse validate_e156 + compute_tier, do not fork)
+# validate_e156 + compute_tier: prefer the canonical F:\E156 scripts (local dev,
+# no drift), fall back to the vendored copies so the package is importable in CI
+# and fresh clones that can't reach F:\E156.
 # --------------------------------------------------------------------------- #
-def _e156_scripts_dir() -> Path:
+def _load_e156():
     env = os.environ.get("E156_SCRIPTS")
-    cands = [env] if env else []
-    cands += [r"F:\E156\scripts", r"C:\E156\scripts"]
-    for c in cands:
+    for c in ([env] if env else []) + [r"F:\E156\scripts", r"C:\E156\scripts"]:
         if c and (Path(c) / "validate_e156.py").is_file():
-            return Path(c)
-    raise SystemExit(
-        "E156 scripts not found. Set E156_SCRIPTS to the dir holding validate_e156.py."
-    )
+            if c not in sys.path:
+                sys.path.insert(0, c)
+            try:
+                from validate_e156 import validate
+                from build_assurance_jsons import compute_tier as ct
+                return validate, ct
+            except Exception:
+                break
+    from aact_cockpit._vendor.e156_validate import validate
+    from aact_cockpit._vendor.assurance import compute_tier as ct
+    return validate, ct
 
 
-_E156 = _e156_scripts_dir()
-if str(_E156) not in sys.path:
-    sys.path.insert(0, str(_E156))
-from validate_e156 import validate as validate_e156          # noqa: E402
-from build_assurance_jsons import compute_tier               # noqa: E402
+validate_e156, compute_tier = _load_e156()
 
 TEMPLATE = Path(__file__).resolve().parents[3] / "templates" / "aact_pairwise_capsule.html"
 _TOKEN = "__AACT_CAPSULE_JSON__"
