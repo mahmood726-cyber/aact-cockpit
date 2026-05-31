@@ -1,0 +1,22 @@
+{
+  "comment": "NMA of systemic therapies for advanced non-small-cell lung cancer, overall survival (HRs). A denser, LOOPY network (immunotherapies vs chemotherapy/docetaxel with multiple direct comparisons) so loop consistency is assessable. Mixes lines/histologies/PD-L1 strata — an honest limitation stated in the capsule.",
+  "condition": "non-small cell lung",
+  "outcome_like": ["overall survival"],
+  "measure_like": "hazard",
+  "reference": "chemotherapy",
+  "nodes": {
+    "pembrolizumab": ["pembrolizumab", "keytruda"],
+    "nivolumab": ["nivolumab", "opdivo"],
+    "atezolizumab": ["atezolizumab", "tecentriq"],
+    "docetaxel": ["docetaxel"],
+    "chemotherapy": ["platinum", "chemotherapy", "pemetrexed", "carboplatin", "cisplatin"]
+  },
+  "pico": {
+    "population": "advanced non-small-cell lung cancer",
+    "outcome": "overall survival",
+    "intervention": "immunotherapy",
+    "comparator": "chemotherapy"
+  },
+  "primary_estimand": "hazard ratio for overall survival versus chemotherapy",
+  "lower_is_better": true
+}

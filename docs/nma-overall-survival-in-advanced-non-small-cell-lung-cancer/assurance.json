@@ -1,0 +1,20 @@
+{
+  "slug": "nma-overall-survival-in-advanced-non-small-cell-lung-cancer",
+  "tier": "silver",
+  "checks": {
+    "citation_cascade": "pass",
+    "data_file_present": "pass",
+    "code_runs": "pass",
+    "dashboard_match": "pass",
+    "claim_language": "pass",
+    "analysis_rerun": "pass",
+    "external_review": "not-run"
+  },
+  "aact_stats": {
+    "connectivity": "pass",
+    "direction_oriented": "pass",
+    "consistency": "pass",
+    "no_nan": "pass"
+  },
+  "snapshot_date": "2026-04-12"
+}

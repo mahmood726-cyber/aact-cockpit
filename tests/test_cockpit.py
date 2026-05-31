@@ -50,3 +50,17 @@ def test_nma_presets_lists_configs():
 def test_build_nma_unknown_preset_404():
     r = client.post("/api/build_nma", json={"preset": "does_not_exist"})
     assert r.status_code == 404
+
+
+def test_nma_presets_includes_nsclc():
+    ids = {p["id"] for p in client.get("/api/nma_presets").json()["presets"]}
+    assert "nsclc_os_nma" in ids
+
+
+def test_capsules_library_lists():
+    r = client.get("/api/capsules")
+    assert r.status_code == 200
+    caps = r.json()["capsules"]
+    assert isinstance(caps, list)
+    for c in caps:
+        assert {"slug", "title", "kind", "tier", "download_url"} <= set(c)

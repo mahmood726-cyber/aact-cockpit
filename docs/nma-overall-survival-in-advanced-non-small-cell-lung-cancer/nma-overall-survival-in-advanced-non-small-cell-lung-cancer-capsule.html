@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>e156 capsule · network meta-analysis</title>
+<meta property="og:title" content="e156 living evidence capsule — network meta-analysis"/>
+<meta property="og:description" content="Self-auditing network meta-analysis over ClinicalTrials.gov/AACT, cross-validated against R netmeta."/>
+<style>
+  :root{--bg:#fbfbfd;--ink:#1a1a1f;--mut:#5a5a66;--line:#e3e3ea;--card:#fff;--accent:#0e7c66;
+        --ok:#1f8a4c;--warn:#c47f17;--pend:#9aa0ab;--gold:#b8860b;--silver:#8a8f99;--bronze:#a9712e;--node:#0e7c66;}
+  @media (prefers-color-scheme:dark){:root{--bg:#15161a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1d1f25;}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 18px 80px}
+  .ribbon{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+          padding:8px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .tier{font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
+  .tier.gold{background:var(--gold)} .tier.silver{background:var(--silver)} .tier.bronze{background:var(--bronze)} .tier.none{background:#b33}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mut)}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.pending{background:var(--pend)}
+  h1{font-size:24px;margin:22px 0 4px} h2{font-size:18px;margin:30px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  td[contenteditable]{background:rgba(14,124,102,.07);border-radius:4px}
+  td[contenteditable]:focus{outline:2px solid var(--accent)}
+  .motto{font-style:italic;color:var(--mut);font-size:13px}
+  pre{background:#0d1117;color:#d6deeb;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.4}
+  .body156{background:var(--card);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0}
+  button{font:inherit;padding:5px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;cursor:pointer}
+  .muted{color:var(--mut);font-size:12.5px}
+  svg{max-width:100%;height:auto}
+  .edge{stroke:var(--mut)} .nodec{fill:var(--node)} .nodet{fill:#fff;font-size:12px;font-weight:600}
+  .leaguecell{text-align:center;font-size:12px} .ref{font-weight:700}
+  .bar{fill:var(--accent)} .barbg{fill:var(--line)}
+  .tick{fill:var(--mut);font-size:11px} .whisk{stroke:var(--ink)} .diamond{fill:var(--accent)} .nullline{stroke:var(--mut);stroke-dasharray:3 3}
+</style>
+</head>
+<body>
+<div class="ribbon">
+  <span class="tier" id="tier">—</span>
+  <span class="chk"><span class="dot pending" id="d-conn"></span>network connected</span>
+  <span class="chk"><span class="dot pending" id="d-cons"></span><span id="t-cons">consistency</span></span>
+  <span class="chk"><span class="dot pending" id="d-match"></span>dashboard match</span>
+  <span class="chk"><span class="dot pending" id="d-r"></span>R netmeta</span>
+  <span class="motto" style="margin-left:auto">the capsule must agree with itself before asking the world to agree with it</span>
+</div>
+<div class="wrap">
+  <h1 id="title">network meta-analysis</h1>
+  <div class="sub" id="subtitle"></div>
+  <div class="card muted" id="provBox"></div>
+
+  <h2>01 · Question</h2>
+  <div class="card" id="picoBox"></div>
+
+  <h2>02 · Treatment network</h2>
+  <div class="muted">Nodes are treatments (size ∝ direct trials); edges are direct comparisons (width ∝ trials).</div>
+  <div class="card"><svg id="netPlot" role="img" aria-label="Treatment network"></svg>
+    <div class="muted" id="netNote"></div></div>
+
+  <h2>03 · Ranking (SUCRA)</h2>
+  <div class="card"><svg id="sucraPlot" role="img" aria-label="SUCRA ranking"></svg></div>
+
+  <h2>04 · Forest vs reference</h2>
+  <div class="card"><svg id="forest" role="img" aria-label="Forest vs reference"></svg></div>
+
+  <h2>05 · League table (row vs column)</h2>
+  <div class="muted">HR &lt; 1 favours the row treatment. Diagonal = treatment name.</div>
+  <div class="card" style="overflow:auto"><table id="league"></table></div>
+
+  <h2>06 · Loop consistency (Bucher)</h2>
+  <div class="muted">For each closed loop, direct evidence is compared with indirect evidence; an inconsistency factor (IF) far from 1 with a small p-value signals disagreement.</div>
+  <div class="card" id="consBox"></div>
+
+  <h2>07 · Contrast data (editable — re-fits live)</h2>
+  <div class="card"><table id="dataTable"><thead><tr>
+    <th>Trial</th><th>Comparison</th><th>HR</th><th>LCI</th><th>UCI</th>
+  </tr></thead><tbody id="dataBody"></tbody></table>
+  <div style="margin-top:8px"><button id="resetBtn">reset to AACT data</button></div></div>
+
+  <h2>07 · 156-word summary (E156)</h2>
+  <div class="body156" id="bodyBox"></div>
+  <div class="muted" id="bodyMeta"></div>
+
+  <h2>08 · R cross-validation (netmeta)</h2>
+  <div class="card"><pre id="rcode"></pre></div>
+
+  <h2>09 · Assurance &amp; inspector</h2>
+  <div class="card" id="auditBox"></div>
+  <div class="card"><button id="inspectBtn">show the exact NMA code that ran</button>
+    <pre id="inspectOut" style="display:none"></pre></div>
+  <p class="muted" id="notesBox"></p>
+</div>
+<script>
+"use strict";
+const CAPSULE = {"slug": "nma-overall-survival-in-advanced-non-small-cell-lung-cancer", "title": "NMA — overall survival in advanced non-small-cell lung cancer", "measure": "HR", "pico": {"population": "advanced non-small-cell lung cancer", "outcome": "overall survival", "intervention": "immunotherapy", "comparator": "chemotherapy"}, "primary_estimand": "hazard ratio for overall survival versus chemotherapy", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-05-31T13:05:53Z"}, "kind": "nma", "reference": "chemotherapy", "treatments": ["atezolizumab", "chemotherapy", "docetaxel", "nivolumab", "pembrolizumab"], "lower_is_better": true, "favours_low": "lower HR is better", "favours_high": "higher HR is worse", "contrasts": [{"nct": "NCT00391274", "study": "Phase 3 Study of Pemetrexed Versus Docetaxel in Patients With Locally Advanced or Metastatic Non-Small Cell Lung Cancer Who Have Had Prior Chemotherapy", "t1": "chemotherapy", "t2": "docetaxel", "t1_label": "Pemetrexed", "t2_label": "Docetaxel", "hr": 1.14, "lci": 0.78, "uci": 1.68, "yi": 0.131028262406404, "sei": 0.19573195190464668, "source_outcome_analysis_id": "105679446"}, {"nct": "NCT00520676", "study": "A Randomized Phase 3 Study Comparing Pemetrexed-Carboplatin With Docetaxel-Carboplatin as First-Line Treatment for Patients With Locally Advanced or Metastatic Non-Small Cell Lung Cancer", "t1": "chemotherapy", "t2": "docetaxel", "t1_label": "Pemetrexed Plus Carboplatin", "t2_label": "Docetaxel Plus Carboplatin", "hr": 1.01, "lci": 0.72, "uci": 1.42, "yi": 0.009950330853168092, "sei": 0.17325852514187512, "source_outcome_analysis_id": "105479525"}, {"nct": "NCT01642004", "study": "An Open-Label Randomized Phase III Trial of BMS-936558 (Nivolumab) Versus Docetaxel in Previously Treated Advanced or Metastatic Squamous Cell Non-small Cell Lung Cancer (NSCLC)", "t1": "nivolumab", "t2": "docetaxel", "t1_label": "Nivolumab", "t2_label": "Docetaxel", "hr": 0.59, "lci": 0.43, "uci": 0.81, "yi": -0.527632742082372, "sei": 0.16154609063581374, "source_outcome_analysis_id": "105496938"}, {"nct": "NCT01673867", "study": "An Open-Label Randomized Phase III Trial of BMS-936558 (Nivolumab) Versus Docetaxel in Previously Treated Metastatic Non-squamous Non-small Cell Lung Cancer (NSCLC)", "t1": "nivolumab", "t2": "docetaxel", "t1_label": "Nivolumab", "t2_label": "Docetaxel", "hr": 0.73, "lci": 0.59, "uci": 0.89, "yi": -0.31471074483970024, "sei": 0.10487410204195495, "source_outcome_analysis_id": "105669463"}, {"nct": "NCT01903993", "study": "A Phase II, Open-label, Multicenter, Randomized Study to Investigate the Efficacy and Safety of MPDL3280A (Anti-PD-L1 Antibody) Compared With Docetaxel in Patients With Non-Small Cell Lung Cancer After Platinum Failure", "t1": "docetaxel", "t2": "atezolizumab", "t1_label": "Docetaxel", "t2_label": "Atezolizumab", "hr": 0.69, "lci": 0.52, "uci": 0.92, "yi": -0.37106368139083207, "sei": 0.1455498322846741, "source_outcome_analysis_id": "105576742"}, {"nct": "NCT02008227", "study": "A Phase III, Open-Label, Multicenter, Randomized Study to Investigate the Efficacy and Safety of Atezolizumab (Anti-PD-L1 Antibody) Compared With Docetaxel in Patients With Non-Small Cell Lung Cancer After Failure With Platinum Containing Chemotherapy", "t1": "docetaxel", "t2": "atezolizumab", "t1_label": "Docetaxel", "t2_label": "Atezolizumab", "hr": 0.73, "lci": 0.62, "uci": 0.87, "yi": -0.31471074483970024, "sei": 0.0864234588700854, "source_outcome_analysis_id": "105619917"}, {"nct": "NCT02041533", "study": "An Open-Label, Randomized, Phase 3 Trial of Nivolumab Versus Investigator's Choice Chemotherapy as First-Line Therapy for Stage IV or Recurrent PD-L1+ Non-Small Cell Lung Cancer", "t1": "nivolumab", "t2": "chemotherapy", "t1_label": "Nivolumab", "t2_label": "Investigator Choice of Chemotherapy", "hr": 0.97, "lci": 0.79, "uci": 1.2, "yi": -0.030459207484708574, "sei": 0.10664580921192973, "source_outcome_analysis_id": "105499742"}, {"nct": "NCT02142738", "study": "A Randomized Open-Label Phase III Trial of Pembrolizumab Versus Platinum Based Chemotherapy in 1L Subjects With PD-L1 Strong Metastatic Non-Small Cell Lung Cancer", "t1": "pembrolizumab", "t2": "chemotherapy", "t1_label": "Pembrolizumab", "t2_label": "SOC Chemotherapy", "hr": 0.63, "lci": 0.47, "uci": 0.86, "yi": -0.4620354595965587, "sei": 0.1541354074129166, "source_outcome_analysis_id": "105454362"}, {"nct": "NCT02220894", "study": "A Randomized, Open Label, Phase III Study of Overall Survival Comparing Pembrolizumab (MK-3475) Versus Platinum Based Chemotherapy in Treatment Naïve Subjects With PD-L1 Positive Advanced or Metastatic Non-Small Cell Lung Cancer (Keynote 042)", "t1": "pembrolizumab", "t2": "chemotherapy", "t1_label": "Pembrolizumab", "t2_label": "Chemotherapy (SOC Treatment)", "hr": 0.7, "lci": 0.58, "uci": 0.86, "yi": -0.35667494393873245, "sei": 0.10048763365402508, "source_outcome_analysis_id": "105383808"}, {"nct": "NCT02367781", "study": "A Phase III Multicenter, Randomized, Open-Label Study Evaluating the Efficacy and Safety of Atezolizumab (MPDL3280A, Anti-PD-L1 Antibody) in Combination With Carboplatin+Nab-Paclitaxel for Chemotherapy-Naive Patients With Stage IV Non-Squamous Non-Small Cell Lung Cancer", "t1": "atezolizumab", "t2": "chemotherapy", "t1_label": "Arm A (Atezolizumab+Nab-Paclitaxel+Carboplatin)", "t2_label": "Arm B (Nab-Paclitaxel+Carboplatin)", "hr": 0.788, "lci": 0.636, "uci": 0.977, "yi": -0.2382571891242579, "sei": 0.10951427987678096, "source_outcome_analysis_id": "105513213"}, {"nct": "NCT02367794", "study": "A Phase III, Open-Label, Multicenter, Randomized Study Evaluating the Efficacy and Safety of Atezolizumab (MPDL3280A, Anti-PD-L1 Antibody) in Combination With Carboplatin+Paclitaxel or Atezolizumab in Combination With Carboplatin+Nab-Paclitaxel Versus Carboplatin+Nab-Paclitaxel in Chemotherapy-Naive Patients With Stage IV Squamous Non-Small Cell Lung Cancer", "t1": "chemotherapy", "t2": "atezolizumab", "t1_label": "Arm C: Nab-Paclitaxel + Carboplatin", "t2_label": "Arm B: Atezolizumab + Nab-Paclitaxel + Carboplatin", "hr": 0.88, "lci": 0.73, "uci": 1.05, "yi": -0.12783337150988489, "sei": 0.09273152769040174, "source_outcome_analysis_id": "105424163"}, {"nct": "NCT02409342", "study": "A Phase III, Open Label, Randomized Study of Atezolizumab (Anti-PD-L1 Antibody) Compared With a Platinum Agent (Cisplatin or Carboplatin) in Combination With Either Pemetrexed or Gemcitabine for PD-L1-Selected, Chemotherapy-Naive Patients With Stage IV Non-Squamous Or Squamous Non-Small Cell Lung Cancer", "t1": "chemotherapy", "t2": "atezolizumab", "t1_label": "Chemotherapy (Carboplatin/ Cisplatin) + (Pemetrexed/ Gemcitabine)", "t2_label": "Atezolizumab", "hr": 0.595, "lci": 0.398, "uci": 0.89, "yi": -0.5191938734365074, "sei": 0.20530210345436617, "source_outcome_analysis_id": "105620409"}, {"nct": "NCT02477826", "study": "An Open-Label, Randomized Phase 3 Trial of Nivolumab, or Nivolumab Plus Ipilimumab, or Nivolumab Plus Platinum Doublet Chemotherapy Versus Platinum Doublet Chemotherapy in Subjects With Chemotherapy-Naïve Stage IV or Recurrent Non-Small Cell Lung Cancer (NSCLC)", "t1": "nivolumab", "t2": "chemotherapy", "t1_label": "Part 1-Arm A: Nivolumab", "t2_label": "Part 1-Arm C: Chemotherapy", "hr": 0.91, "lci": 0.78, "uci": 1.05, "yi": -0.09431067947124129, "sei": 0.07583086368234665, "source_outcome_analysis_id": "105559878"}, {"nct": "NCT02613507", "study": "An Open-label Randomized Multinational Phase 3 Trial of Nivolumab Versus Docetaxel in Previously Treated Subjects With Advanced or Metastatic Non-small Cell Lung Cancer (CheckMate 078: CHECKpoint Pathway and nivoluMAb Clinical Trial Evaluation 078)", "t1": "nivolumab", "t2": "docetaxel", "t1_label": "Nivolumab", "t2_label": "Docetaxel", "hr": 0.68, "lci": 0.52, "uci": 0.9, "yi": -0.3856624808119846, "sei": 0.1399428652964687, "source_outcome_analysis_id": "105597724"}, {"nct": "NCT02657434", "study": "A Phase III, Open-Label, Randomized Study of Atezolizumab (MPDL3280A, Anti-Pd-L1 Antibody) in Combination With Carboplatin or Cisplatin + Pemetrexed Compared With Carboplatin or Cisplatin + Pemetrexed in Patients Who Are Chemotherapy-Naive and Have Stage IV Non-Squamous Non-Small Cell Lung Cancer", "t1": "chemotherapy", "t2": "atezolizumab", "t1_label": "Arm B (Carboplatin or Cisplatin + Pemetrexed)", "t2_label": "Arm A (Atezolizumab + Carboplatin or Cisplatin + Pemetrexed", "hr": 0.866, "lci": 0.709, "uci": 1.056, "yi": -0.1438703704197019, "sei": 0.10163144345419421, "source_outcome_analysis_id": "105487633"}, {"nct": "NCT02775435", "study": "A Randomized, Double-Blind, Phase III Study of Carboplatin-Paclitaxel/Nab-Paclitaxel Chemotherapy With or Without Pembrolizumab (MK-3475) in First Line Metastatic Squamous Non-small Cell Lung Cancer Subjects (KEYNOTE-407)", "t1": "pembrolizumab", "t2": "chemotherapy", "t1_label": "Pembrolizumab + Chemotherapy Combo", "t2_label": "Placebo + Chemotherapy", "hr": 0.64, "lci": 0.49, "uci": 0.85, "yi": -0.4462871026284195, "sei": 0.14052068372801088, "source_outcome_analysis_id": "105396570"}, {"nct": "NCT03191786", "study": "A Phase III, Open-Label, Multicenter, Randomized Study to Investigate the Efficacy and Safety of Atezolizumab Compared With Chemotherapy in Patients With Treatment Naïve Advanced or Recurrent (Stage IIIb Not Amenable for Multimodality Treatment) or Metastatic (Stage IV) Non-Small Cell Lung Cancer Who Are Deemed Unsuitable for Platinum-Containing Therapy", "t1": "atezolizumab", "t2": "chemotherapy", "t1_label": "Atezolizumab", "t2_label": "Single Agent Chemotherapy (Vinorelbine or Gemcitabine)", "hr": 0.78, "lci": 0.63, "uci": 0.97, "yi": -0.2484613592984996, "sei": 0.1100980057582865, "source_outcome_analysis_id": "105470765"}, {"nct": "NCT03850444", "study": "A Randomized, Open Label, Phase III Study of Overall Survival Comparing Pembrolizumab (MK-3475) Versus Platinum Based Chemotherapy in Treatment Naïve Subjects With PD-L1 Positive Advanced or Metastatic Non-Small Cell Lung Cancer (Keynote 042)", "t1": "pembrolizumab", "t2": "chemotherapy", "t1_label": "Pembrolizumab", "t2_label": "Chemotherapy (SOC Treatment)", "hr": 0.62, "lci": 0.38, "uci": 1.0, "yi": -0.4780358009429998, "sei": 0.24683719545202998, "source_outcome_analysis_id": "105391326"}, {"nct": "NCT03875092", "study": "A Randomized, Double-Blind, Phase III Study of Carboplatin-Paclitaxel/Nab-Paclitaxel Chemotherapy With or Without Pembrolizumab (MK-3475) in First Line Metastatic Squamous Non-small Cell Lung Cancer Subjects (KEYNOTE-407)", "t1": "pembrolizumab", "t2": "chemotherapy", "t1_label": "Pembrolizumab + Chemotherapy", "t2_label": "Chemotherapy", "hr": 0.44, "lci": 0.28, "uci": 0.7, "yi": -0.8209805520698302, "sei": 0.2337519309287669, "source_outcome_analysis_id": "105561196"}, {"nct": "NCT03906071", "study": "A Randomized Phase 3 Study of Sitravatinib in Combination With Nivolumab Versus Docetaxel in Patients With Advanced Non-Squamous Non-Small Cell Lung Cancer With Disease Progression On or After Platinum-Based Chemotherapy and Checkpoint Inhibitor Therapy SAPPHIRE", "t1": "nivolumab", "t2": "docetaxel", "t1_label": "Nivolumab and Sitravatinib", "t2_label": "Docetaxel", "hr": 0.86, "lci": 0.7, "uci": 1.05, "yi": -0.15082288973458366, "sei": 0.10343687723509758, "source_outcome_analysis_id": "105627890"}, {"nct": "NCT03976375", "study": "A Phase 3, Multicenter, Randomized, Open-label Trial to Compare the Efficacy and Safety of Pembrolizumab (MK-3475) in Combination With Lenvatinib (E7080/MK-7902) Versus Docetaxel in Previously Treated Participants With Metastatic Non-small Cell Lung Cancer (NSCLC) and Progressive Disease (PD) After Platinum Doublet Chemotherapy and Immunotherapy (LEAP-008)", "t1": "pembrolizumab", "t2": "docetaxel", "t1_label": "Pembrolizumab+Lenvatinib", "t2_label": "Docetaxel", "hr": 0.98, "lci": 0.78, "uci": 1.23, "yi": -0.020202707317519466, "sei": 0.11619487201692444, "source_outcome_analysis_id": "105588676"}, {"nct": "NCT05226598", "study": "A Randomized, Double-Blind, Phase 3 Study of Pembrolizumab/Vibostolimab Coformulation (MK-7684A) in Combination With Chemotherapy Versus Pembrolizumab Plus Chemotherapy as First Line Treatment for Participants With Metastatic Non-Small Cell Lung Cancer (MK-7684A-007/KEYVIBE-007)", "t1": "chemotherapy", "t2": "pembrolizumab", "t1_label": "MK-7684A + Chemotherapy", "t2_label": "Pembrolizumab + Chemotherapy", "hr": 1.14, "lci": 0.87, "uci": 1.5, "yi": 0.131028262406404, "sei": 0.138963567631449, "source_outcome_analysis_id": "105489657"}], "nma": {"reference": "chemotherapy", "treatments": ["atezolizumab", "chemotherapy", "docetaxel", "nivolumab", "pembrolizumab"], "effects": {"chemotherapy": 0.0, "atezolizumab": 0.0876864953511516, "docetaxel": -0.09739036637908183, "nivolumab": -0.29248314900785427, "pembrolizumab": -0.3628725322983745}, "rel_to_ref": {"atezolizumab": {"est": 1.0916458323329632, "lo": 0.9190378953208811, "hi": 1.2966719101760766}, "chemotherapy": {"est": 1.0, "lo": 1.0, "hi": 1.0}, "docetaxel": {"est": 0.9072017959217213, "lo": 0.7501502285356202, "hi": 1.0971337036452244}, "nivolumab": {"est": 0.7464078226422657, "lo": 0.6043991040461714, "hi": 0.9217826994975293}, "pembrolizumab": {"est": 0.6956751039542446, "lo": 0.579974896839082, "hi": 0.834456547859912}}, "league": {"atezolizumab|chemotherapy": {"est": 1.0916458323329632, "lo": 0.9190378953208811, "hi": 1.2966719101760766, "log": 0.0876864953511516, "se": 0.08781509190889487}, "atezolizumab|docetaxel": {"est": 1.2033109251330856, "lo": 0.9740377966108958, "hi": 1.486551330536371, "log": 0.1850768617302334, "se": 0.10784995741491751}, "atezolizumab|nivolumab": {"est": 1.4625326788089696, "lo": 1.1426724422431027, "hi": 1.87192913516424, "log": 0.38016964435900585, "se": 0.12592061883753403}, "atezolizumab|pembrolizumab": {"est": 1.5691891604687382, "lo": 1.2307434782487991, "hi": 2.0007049924296325, "log": 0.4505590276495261, "se": 0.12395155672722817}, "chemotherapy|atezolizumab": {"est": 0.9160480170229695, "lo": 0.771205107592875, "hi": 1.088094413833557, "log": -0.0876864953511516, "se": 0.08781509190889487}, "chemotherapy|docetaxel": {"est": 1.102290586830238, "lo": 0.9114659377225419, "hi": 1.3330663138663776, "log": 0.09739036637908183, "se": 0.09698720125281206}, "chemotherapy|nivolumab": {"est": 1.3397501602542483, "lo": 1.0848543811302898, "hi": 1.6545358742351937, "log": 0.29248314900785427, "se": 0.10767411219133954}, "chemotherapy|pembrolizumab": {"est": 1.437452618781326, "lo": 1.1983847482108552, "hi": 1.724212557216001, "log": 0.3628725322983745, "se": 0.09280676932161797}, "docetaxel|atezolizumab": {"est": 0.8310404061937695, "lo": 0.6726979280555246, "hi": 1.0266542052879652, "log": -0.1850768617302334, "se": 0.1078499574149175}, "docetaxel|chemotherapy": {"est": 0.9072017959217213, "lo": 0.7501502285356202, "hi": 1.0971337036452244, "log": -0.09739036637908183, "se": 0.09698720125281206}, "docetaxel|nivolumab": {"est": 1.215423751469068, "lo": 1.007405057635908, "hi": 1.4663961476447602, "log": 0.19509278262877244, "se": 0.09577472306037772}, "docetaxel|pembrolizumab": {"est": 1.3040595973108005, "lo": 1.0280271902049318, "hi": 1.6542086138785952, "log": 0.2654821659192927, "se": 0.12134944901869005}, "nivolumab|atezolizumab": {"est": 0.6837454058218798, "lo": 0.5342082567202854, "hi": 0.8751414342652457, "log": -0.38016964435900585, "se": 0.12592061883753403}, "nivolumab|chemotherapy": {"est": 0.7464078226422657, "lo": 0.6043991040461714, "hi": 0.9217826994975293, "log": -0.29248314900785427, "se": 0.10767411219133954}, "nivolumab|docetaxel": {"est": 0.8227583168350232, "lo": 0.6819439628276039, "hi": 0.9926493741720085, "log": -0.19509278262877244, "se": 0.09577472306037774}, "nivolumab|pembrolizumab": {"est": 1.0729258793359924, "lo": 0.8240214396712815, "hi": 1.3970145522040505, "log": 0.07038938329052025, "se": 0.13466987953101076}, "pembrolizumab|atezolizumab": {"est": 0.6372717994695339, "lo": 0.4998238139974908, "hi": 0.8125170010430447, "log": -0.4505590276495261, "se": 0.12395155672722817}, "pembrolizumab|chemotherapy": {"est": 0.6956751039542446, "lo": 0.579974896839082, "hi": 0.834456547859912, "log": -0.3628725322983745, "se": 0.09280676932161797}, "pembrolizumab|docetaxel": {"est": 0.766836118580911, "lo": 0.6045186753412659, "hi": 0.9727369173967619, "log": -0.2654821659192927, "se": 0.12134944901869005}, "pembrolizumab|nivolumab": {"est": 0.93203083200759, "lo": 0.7158121570189185, "hi": 1.213560657352459, "log": -0.07038938329052025, "se": 0.13466987953101076}}, "tau2": 0.03404492100259563, "Q": 57.7307336957986, "df": 18, "k": 22, "sucra": {"atezolizumab": 0.050749999999999997, "chemotherapy": 0.25106249999999997, "docetaxel": 0.459375, "nivolumab": 0.8215625, "pembrolizumab": 0.91725}, "edges": [{"a": "chemotherapy", "b": "docetaxel", "n": 2}, {"a": "docetaxel", "b": "nivolumab", "n": 4}, {"a": "atezolizumab", "b": "docetaxel", "n": 2}, {"a": "chemotherapy", "b": "nivolumab", "n": 2}, {"a": "chemotherapy", "b": "pembrolizumab", "n": 6}, {"a": "atezolizumab", "b": "chemotherapy", "n": 5}, {"a": "docetaxel", "b": "pembrolizumab", "n": 1}], "method": "DL", "consistency": {"loops": [{"nodes": ["atezolizumab", "chemotherapy", "docetaxel"], "if_log": 0.23488868838532567, "se": 0.18917883475046776, "if_ratio": 1.2647679775314218, "lo": 0.8729342732390238, "hi": 1.8324839406905904, "z": 1.2416224504984952, "p": 0.21437589449542616, "multiarm": false}, {"nodes": ["chemotherapy", "docetaxel", "nivolumab"], "if_log": -0.30460979218397516, "se": 0.16223177735615715, "if_ratio": 0.737411061818981, "lo": 0.5365592779198712, "hi": 1.0134482739746853, "z": -1.877621000941431, "p": 0.06043303071238526, "multiarm": false}, {"nodes": ["chemotherapy", "docetaxel", "pembrolizumab"], "if_log": 0.3163458281731541, "se": 0.19048166485010107, "if_ratio": 1.3721046860425625, "lo": 0.9446022168577481, "hi": 1.9930836873564939, "z": 1.6607678666715846, "p": 0.09676007711764179, "multiarm": false}], "assessable": true, "min_p": 0.06043303071238526, "inconsistent": false, "n_multiarm": 0}}, "connected": true, "has_loops": true, "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "pass", "external_review": "not-run"}, "aact_stats": {"connectivity": "pass", "direction_oriented": "pass", "consistency": "pass", "no_nan": "pass"}}, "e156_body": "Among anticoagulants for advanced non-small-cell lung cancer, which option ranks best for overall survival? This network meta-analysis connects 5 treatments across 22 randomized comparisons from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial contrasts were synthesised with a random-effects model on the log scale, taking chemotherapy as the network reference. By surface under the cumulative ranking curve, pembrolizumab ranked highest, with a pooled HR of 0.70 (95% CI 0.58 to 0.83) versus chemotherapy. Its ranking statistic was 92 percent, the network was connected, and rankings should not be read as head-to-head superiority across differing trial populations. Loop inconsistency testing across 3 closed loop or loops showed no significant inconsistency at a smallest p-value of 0.06, though certainty stays observational and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials.", "e156_validation": {"ok": true, "word_count": 145, "sentence_count": 7}, "tier": "silver", "notes": []};
+const SLUG = CAPSULE.slug, LSKEY = "e156:" + SLUG;
+const Z = 1.959963984540054;
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const f = x => (x==null||!isFinite(x)) ? "n/a" : x.toFixed(2);
+const f3 = x => (x==null||!isFinite(x)) ? "n/a" : x.toFixed(3);
+
+// ---- linear algebra ----
+function matT(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
+function matMul(A,B){const n=A.length,p=B.length,m=B[0].length;const C=Array.from({length:n},()=>Array(m).fill(0));
+  for(let i=0;i<n;i++)for(let k=0;k<p;k++){const a=A[i][k];for(let j=0;j<m;j++)C[i][j]+=a*B[k][j];}return C;}
+function matInv(A){const n=A.length;const M=A.map((r,i)=>r.concat(Array.from({length:n},(_,j)=>i===j?1:0)));
+  for(let c=0;c<n;c++){let piv=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[piv][c]))piv=r;
+    [M[c],M[piv]]=[M[piv],M[c]];const d=M[c][c];for(let j=0;j<2*n;j++)M[c][j]/=d;
+    for(let r=0;r<n;r++){if(r===c)continue;const fa=M[r][c];for(let j=0;j<2*n;j++)M[r][j]-=fa*M[c][j];}}
+  return M.map(r=>r.slice(n));}
+function chol(A){const n=A.length;const L=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++)for(let j=0;j<=i;j++){let s=A[i][j];for(let k=0;k<j;k++)s-=L[i][k]*L[j][k];
+    L[i][j]=(i===j)?Math.sqrt(Math.max(s,1e-12)):s/L[j][j];}return L;}
+
+// ---- xorshift32 PRNG (matches Python nma._seeded_normals bit-for-bit) ----
+function rng(seed){let s=seed>>>0;return function(){s^=(s<<13);s^=(s>>>17);s^=(s<<5);s=s>>>0;return (s+0.5)/4294967296;};}
+function seededNormals(n,seed){const out=[];const u=rng(seed);
+  while(out.length<n){const u1=u(),u2=u();const r=Math.sqrt(-2*Math.log(Math.max(u1,1e-12)));
+    out.push(r*Math.cos(2*Math.PI*u2));out.push(r*Math.sin(2*Math.PI*u2));}return out.slice(0,n);}
+
+// ---- NMA fit (mirrors aact_cockpit.capsule.nma) ----
+function nmaFit(contrasts, reference, nSim){
+  nSim=nSim||4000;
+  const ts=new Set();contrasts.forEach(c=>{ts.add(c.t1);ts.add(c.t2);});
+  const treatments=[...ts].sort();
+  let ref=reference;
+  if(!ref){const deg={};treatments.forEach(t=>deg[t]=0);contrasts.forEach(c=>{deg[c.t1]++;deg[c.t2]++;});
+    ref=treatments.reduce((a,b)=>deg[b]>deg[a]?b:a);}
+  const others=treatments.filter(t=>t!==ref);const idx={};others.forEach((t,i)=>idx[t]=i);
+  const m=others.length,n=contrasts.length;
+  const X=Array.from({length:n},()=>Array(m).fill(0)),y=[],v=[];
+  contrasts.forEach((c,i)=>{y.push(c.yi);v.push(c.sei*c.sei);
+    if(c.t1!==ref)X[i][idx[c.t1]]+=1;if(c.t2!==ref)X[i][idx[c.t2]]-=1;});
+  function XtWX(w){const r=Array.from({length:m},()=>Array(m).fill(0));
+    for(let a=0;a<m;a++)for(let b=0;b<m;b++){let s=0;for(let i=0;i<n;i++)s+=X[i][a]*w[i]*X[i][b];r[a][b]=s;}return r;}
+  function XtWy(w){const r=Array(m).fill(0);for(let a=0;a<m;a++){let s=0;for(let i=0;i<n;i++)s+=X[i][a]*w[i]*y[i];r[a]=s;}return r;}
+  const wf=v.map(x=>1/x),A=XtWX(wf),Ainv=matInv(A),b=XtWy(wf);
+  const thetaFE=Ainv.map((row)=>row.reduce((s,_,j)=>s+row[j]*b[j],0));
+  let Q=0;for(let i=0;i<n;i++){let pr=0;for(let a=0;a<m;a++)pr+=X[i][a]*thetaFE[a];Q+=wf[i]*(y[i]-pr)**2;}
+  const df=n-m;let tau2=0;
+  if(df>0&&Q>df){const w2=v.map(x=>1/(x*x));const prod=matMul(Ainv,XtWX(w2));
+    let tr=0;for(let i=0;i<m;i++)tr+=prod[i][i];const trW=wf.reduce((s,x)=>s+x,0);const C=trW-tr;
+    if(C>0)tau2=Math.max(0,(Q-df)/C);}
+  const wr=v.map(x=>1/(x+tau2)),cov=matInv(XtWX(wr)),br=XtWy(wr);
+  const theta=cov.map(row=>row.reduce((s,_,j)=>s+row[j]*br[j],0));
+  const eff={};eff[ref]=0;others.forEach(t=>eff[t]=theta[idx[t]]);
+  const tindex={};treatments.forEach((t,i)=>tindex[t]=i);
+  const fullCov=Array.from({length:treatments.length},()=>Array(treatments.length).fill(0));
+  others.forEach(a=>others.forEach(b2=>{fullCov[tindex[a]][tindex[b2]]=cov[idx[a]][idx[b2]];}));
+  const league={};
+  treatments.forEach(a=>treatments.forEach(bb=>{if(a===bb)return;
+    const d=eff[a]-eff[bb];
+    const va=fullCov[tindex[a]][tindex[a]]+fullCov[tindex[bb]][tindex[bb]]-2*fullCov[tindex[a]][tindex[bb]];
+    const se=Math.sqrt(Math.max(va,0));
+    league[a+"|"+bb]={est:Math.exp(d),lo:Math.exp(d-Z*se),hi:Math.exp(d+Z*se)};}));
+  const rel={};treatments.forEach(t=>{const s=Math.sqrt(Math.max(fullCov[tindex[t]][tindex[t]],0));
+    rel[t]={est:Math.exp(eff[t]),lo:Math.exp(eff[t]-Z*s),hi:Math.exp(eff[t]+Z*s)};});
+  // SUCRA
+  const M=treatments.length;const C=fullCov.map((r,i)=>r.map((x,j)=>x+(i===j?1e-12:0)));const L=chol(C);
+  const mu=treatments.map(t=>eff[t]);const rc=Array.from({length:M},()=>Array(M).fill(0));
+  const normals=seededNormals(nSim*M,2463534242);
+  const lowerBetter=(CAPSULE.lower_is_better!==false);  // default: lower = better
+  for(let s=0;s<nSim;s++){const zv=normals.slice(s*M,(s+1)*M);
+    const draw=mu.map((mi,i)=>{let val=mi;for(let k=0;k<=i;k++)val+=L[i][k]*zv[k];return val;});
+    const order=draw.map((d,i)=>[d,i]).sort((p,q)=>lowerBetter?p[0]-q[0]:q[0]-p[0]).map(p=>p[1]);
+    order.forEach((ti,rank)=>rc[ti][rank]++);}
+  const sucra={};treatments.forEach((t,i)=>{let cum=0;for(let r=0;r<M-1;r++){let p=0;for(let rr=0;rr<=r;rr++)p+=rc[i][rr]/nSim;cum+=p;}sucra[t]=M>1?cum/(M-1):1;});
+  // edges
+  const em={};contrasts.forEach(c=>{const k=[c.t1,c.t2].sort().join("|");em[k]=(em[k]||0)+1;});
+  const edges=Object.keys(em).map(k=>({a:k.split("|")[0],b:k.split("|")[1],n:em[k]}));
+  return {treatments,reference:ref,effects:eff,rel_to_ref:rel,league,tau2,Q,df,k:n,sucra,edges};
+}
+function connected(treatments,edges){if(!treatments.length)return false;const adj={};treatments.forEach(t=>adj[t]=[]);
+  edges.forEach(e=>{adj[e.a].push(e.b);adj[e.b].push(e.a);});const seen=new Set([treatments[0]]),st=[treatments[0]];
+  while(st.length){const x=st.pop();adj[x].forEach(nb=>{if(!seen.has(nb)){seen.add(nb);st.push(nb);}});}return seen.size===treatments.length;}
+function hasLoops(treatments,edges){const d=new Set(edges.map(e=>[e.a,e.b].sort().join("|")));return d.size>=treatments.length;}
+// ---- loop inconsistency (Bucher), mirrors aact_cockpit.capsule.nma ----
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function normcdf(x){return 0.5*(1+erf(x/Math.SQRT2));}
+function directEdge(contrasts,a,b){const ys=[],vs=[];
+  contrasts.forEach(c=>{if((c.t1===a&&c.t2===b)||(c.t1===b&&c.t2===a)){ys.push((c.t1===a&&c.t2===b)?c.yi:-c.yi);vs.push(c.sei*c.sei);}});
+  if(!ys.length)return null;const k=ys.length;const w=vs.map(v=>1/v);const sw=w.reduce((s,x)=>s+x,0);
+  const m=ys.reduce((s,_,i)=>s+w[i]*ys[i],0)/sw;let tau2=0;
+  if(k>1){const Q=ys.reduce((s,_,i)=>s+w[i]*(ys[i]-m)**2,0),df=k-1,C=sw-w.reduce((s,x)=>s+x*x,0)/sw;if(df>0&&C>0)tau2=Math.max(0,(Q-df)/C);}
+  const wr=vs.map(v=>1/(v+tau2)),swr=wr.reduce((s,x)=>s+x,0);
+  return {log:ys.reduce((s,_,i)=>s+wr[i]*ys[i],0)/swr,var:1/swr,k};}
+function bucherLoops(contrasts,treatments){
+  const es=new Set(contrasts.map(c=>[c.t1,c.t2].sort().join("|")));const loops=[];
+  for(let i=0;i<treatments.length;i++)for(let j=i+1;j<treatments.length;j++)for(let k=j+1;k<treatments.length;k++){
+    const a=treatments[i],b=treatments[j],c=treatments[k];
+    if(!(es.has([a,b].sort().join("|"))&&es.has([b,c].sort().join("|"))&&es.has([a,c].sort().join("|"))))continue;
+    const dab=directEdge(contrasts,a,b),dbc=directEdge(contrasts,b,c),dac=directEdge(contrasts,a,c);
+    if(!(dab&&dbc&&dac))continue;
+    const ifl=dac.log-(dab.log+dbc.log),v=dac.var+dab.var+dbc.var,se=Math.sqrt(v),z=se>0?ifl/se:0;
+    loops.push({nodes:[a,b,c],if_log:ifl,se,if_ratio:Math.exp(ifl),lo:Math.exp(ifl-Z*se),hi:Math.exp(ifl+Z*se),z,p:2*(1-normcdf(Math.abs(z)))});}
+  return loops;}
+
+// ---- state ----
+function defaults(){return CAPSULE.contrasts.map(c=>({...c}));}
+function load(){try{const raw=localStorage.getItem(LSKEY);if(raw){const s=JSON.parse(raw);if(Array.isArray(s)&&s.length)return s;}}catch(e){}return defaults();}
+let model=load();
+function persist(){try{localStorage.setItem(LSKEY,JSON.stringify(model));}catch(e){}}
+function recompute(){ // refresh yi/sei from edited hr/lci/uci
+  model.forEach(c=>{if(c.hr>0&&c.lci>0&&c.uci>0){c.yi=Math.log(c.hr);c.sei=(Math.log(c.uci)-Math.log(c.lci))/(2*Z);}});
+}
+
+// ---- network plot ----
+function renderNet(res){
+  const W=520,H=300,cx=W/2,cy=H/2,R=110;const svg=document.getElementById('netPlot');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const T=res.treatments,deg={};T.forEach(t=>deg[t]=0);res.edges.forEach(e=>{deg[e.a]+=e.n;deg[e.b]+=e.n;});
+  const pos={};T.forEach((t,i)=>{const a=-Math.PI/2+2*Math.PI*i/T.length;pos[t]=[cx+R*Math.cos(a),cy+R*Math.sin(a)];});
+  let s='';res.edges.forEach(e=>{const p=pos[e.a],q=pos[e.b];
+    s+=`<line class="edge" x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke-width="${1+e.n}"/>`;});
+  T.forEach(t=>{const p=pos[t],r=8+Math.sqrt(deg[t])*3;
+    s+=`<circle class="nodec" cx="${p[0]}" cy="${p[1]}" r="${r}"/>`;
+    s+=`<text class="nodet" x="${p[0]}" y="${p[1]-r-4}" text-anchor="middle" style="fill:var(--ink)">${esc(t)}</text>`;});
+  svg.innerHTML=s;
+  document.getElementById('netNote').textContent=
+    `${T.length} treatments · ${res.edges.length} direct comparisons · reference ${res.reference} · `+
+    (connected(T,res.edges)?'connected':'DISCONNECTED')+' · '+(hasLoops(T,res.edges)?'has closed loops':'tree (no loops — consistency not assessable)');
+}
+function renderSucra(res){
+  const T=[...res.treatments].sort((a,b)=>res.sucra[b]-res.sucra[a]);
+  const W=520,rowH=26,H=T.length*rowH+10,padL=110,barW=W-padL-60;const svg=document.getElementById('sucraPlot');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);let s='';
+  T.forEach((t,i)=>{const y=i*rowH+6,v=res.sucra[t];
+    s+=`<text x="${padL-6}" y="${y+14}" text-anchor="end" style="fill:var(--ink);font-size:12px">${esc(t)}</text>`;
+    s+=`<rect class="barbg" x="${padL}" y="${y+4}" width="${barW}" height="14" rx="3"/>`;
+    s+=`<rect class="bar" x="${padL}" y="${y+4}" width="${barW*v}" height="14" rx="3"/>`;
+    s+=`<text x="${padL+barW+6}" y="${y+15}" style="fill:var(--mut);font-size:12px">${(v*100).toFixed(0)}%</text>`;});
+  svg.innerHTML=s;
+}
+function renderForest(res){
+  const T=res.treatments,W=620,rowH=30,H=T.length*rowH+50,padL=120,padR=130,plotW=W-padL-padR;
+  const lo=Math.log(0.4),hi=Math.log(2.0);const xOf=v=>padL+(Math.log(Math.min(2,Math.max(0.4,v)))-lo)/(hi-lo)*plotW;
+  const svg=document.getElementById('forest');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);let s='';
+  [0.5,0.7,1,1.5].forEach(t=>{const x=xOf(t);s+=`<line class="${t===1?'nullline':''}" x1="${x}" y1="14" x2="${x}" y2="${T.length*rowH+14}" stroke="var(--line)"/>`;
+    s+=`<text class="tick" x="${x}" y="${T.length*rowH+30}" text-anchor="middle">${t}</text>`;});
+  T.forEach((t,i)=>{const y=i*rowH+rowH/2+10,r=res.rel_to_ref[t];
+    s+=`<text x="14" y="${y+4}" style="fill:var(--ink);font-size:12px">${esc(t)}</text>`;
+    if(t===res.reference){s+=`<text x="${xOf(1)}" y="${y+4}" text-anchor="middle" class="tick">reference</text>`;return;}
+    s+=`<line class="whisk" x1="${xOf(r.lo)}" y1="${y}" x2="${xOf(r.hi)}" y2="${y}"/>`;
+    s+=`<rect class="diamond" x="${xOf(r.est)-3}" y="${y-3}" width="6" height="6"/>`;
+    s+=`<text x="${W-12}" y="${y+4}" text-anchor="end" class="tick">${f(r.est)} (${f(r.lo)}–${f(r.hi)})</text>`;});
+  svg.innerHTML=s;
+}
+function renderLeague(res){
+  const T=res.treatments,tb=document.getElementById('league');let s='<tr><th></th>';
+  T.forEach(t=>s+=`<th class="leaguecell">${esc(t)}</th>`);s+='</tr>';
+  T.forEach(a=>{s+=`<tr><td class="ref">${esc(a)}</td>`;
+    T.forEach(b=>{if(a===b){s+=`<td class="leaguecell ref">${esc(a).slice(0,4)}</td>`;}
+      else{const l=res.league[a+"|"+b];s+=`<td class="leaguecell">${f(l.est)}<br><span class="muted">${f(l.lo)}–${f(l.hi)}</span></td>`;}});
+    s+='</tr>';});
+  tb.innerHTML=s;
+}
+function renderTable(){
+  const tb=document.getElementById('dataBody');tb.innerHTML='';
+  model.forEach((c,i)=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${esc(c.nct)}</td><td style="text-align:left">${esc(c.t1)} vs ${esc(c.t2)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="hr">${f(c.hr)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="lci">${f(c.lci)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="uci">${f(c.uci)}</td>`;
+    tb.appendChild(tr);});
+  tb.querySelectorAll('td[contenteditable]').forEach(td=>td.addEventListener('blur',e=>{
+    const v=parseFloat(e.target.textContent);if(isFinite(v)){model[e.target.dataset.i][e.target.dataset.k]=v;persist();render();}}));
+}
+function rCode(){
+  const t1=model.map(c=>`"${c.t1}"`).join(", "),t2=model.map(c=>`"${c.t2}"`).join(", ");
+  const yi=model.map(c=>Math.log(c.hr).toFixed(5)).join(", "),sei=model.map(c=>((Math.log(c.uci)-Math.log(c.lci))/(2*Z)).toFixed(5)).join(", ");
+  const st=model.map(c=>`"${c.nct}"`).join(", ");
+  return `# Network meta-analysis (AACT snapshot ${CAPSULE.snapshot_date})\n`+
+    `library(netmeta)\n`+
+    `studlab <- c(${st})\n`+`treat1 <- c(${t1})\n`+`treat2 <- c(${t2})\n`+
+    `TE <- c(${yi})\n`+`seTE <- c(${sei})\n`+
+    `net <- netmeta(TE, seTE, treat1, treat2, studlab, sm="HR",\n`+
+    `               reference.group="${CAPSULE.reference}", common=FALSE, random=TRUE, method.tau="DL")\n`+
+    `print(summary(net)); netrank(net)   # ranking (SUCRA)`;
+}
+
+function setDot(id,st){const d=document.getElementById(id);if(d)d.className='dot '+st;}
+function render(){
+  recompute();const res=nmaFit(model,CAPSULE.reference);
+  renderNet(res);renderSucra(res);renderForest(res);renderLeague(res);renderTable();
+  document.getElementById('rcode').textContent=rCode();
+  const conn=connected(res.treatments,res.edges),loops=hasLoops(res.treatments,res.edges);
+  setDot('d-conn',conn?'ok':'warn');
+  // loop consistency
+  const blo=bucherLoops(model,res.treatments);
+  const cbox=document.getElementById('consBox');
+  if(!blo.length){cbox.innerHTML='<span class="muted">No closed loops — the network is a tree, so consistency cannot be assessed (disclosed honestly).</span>';
+    setDot('d-cons','ok');document.getElementById('t-cons').textContent='consistency N/A (tree)';}
+  else{const inc=blo.some(l=>l.p<0.05);
+    let s='<table><tr><th>Loop</th><th>IF (ratio)</th><th>95% CI</th><th>z</th><th>p</th></tr>';
+    blo.forEach(l=>{s+=`<tr><td style="text-align:left">${l.nodes.join(' – ')}</td><td>${f(l.if_ratio)}</td>`+
+      `<td>${f(l.lo)}–${f(l.hi)}</td><td>${l.z.toFixed(2)}</td><td>${l.p<0.001?'<0.001':l.p.toFixed(3)}</td></tr>`;});
+    s+='</table>';cbox.innerHTML=s;
+    setDot('d-cons',inc?'warn':'ok');document.getElementById('t-cons').textContent=inc?'inconsistency detected':'consistency tested (no inconsistency)';}
+  // dashboard match: live JS vs embedded python rel_to_ref
+  let match=false;
+  if(CAPSULE.nma&&JSON.stringify(model)===JSON.stringify(CAPSULE.contrasts)){
+    match=res.treatments.every(t=>Math.abs(res.rel_to_ref[t].est-CAPSULE.nma.rel_to_ref[t].est)<1e-6);}
+  setDot('d-match',match?'ok':'warn');
+  setDot('d-r',CAPSULE.self_audit.checks.analysis_rerun==='pass'?'ok':'pending');
+  const tier=document.getElementById('tier');tier.textContent=CAPSULE.tier;tier.className='tier '+CAPSULE.tier;
+}
+
+document.getElementById('title').textContent=CAPSULE.title;
+document.getElementById('subtitle').textContent='Primary estimand: '+CAPSULE.primary_estimand;
+document.getElementById('provBox').innerHTML=
+  `Source: ${esc(CAPSULE.provenance.source||'ClinicalTrials.gov via AACT')} · snapshot <b>${esc(CAPSULE.snapshot_date)}</b>. `+
+  `Contrasts oriented experimental-vs-comparator; estimates cross-validated against R netmeta. Fixed snapshot — not live.`;
+const p=CAPSULE.pico;
+document.getElementById('picoBox').innerHTML=
+  `<b>Population:</b> ${esc(p.population)}<br><b>Outcome:</b> ${esc(p.outcome)}<br><b>Reference:</b> ${esc(CAPSULE.reference)}`;
+document.getElementById('bodyBox').textContent=CAPSULE.e156_body;
+document.getElementById('bodyMeta').textContent=
+  `${CAPSULE.e156_validation.sentence_count} sentences · ${CAPSULE.e156_validation.word_count} words · E156 ${CAPSULE.e156_validation.ok?'PASS':'FAIL'}`;
+const ck=CAPSULE.self_audit;
+document.getElementById('auditBox').innerHTML='<b>Tier checks</b><br>'+Object.entries(ck.checks).map(([k,v])=>`${k}: ${v}`).join(' · ')+
+  '<br><br><b>NMA invariants</b><br>'+Object.entries(ck.aact_stats).map(([k,v])=>`${k}: ${v}`).join(' · ');
+document.getElementById('notesBox').textContent=CAPSULE.notes&&CAPSULE.notes.length?('Notes: '+CAPSULE.notes.join('; ')):'';
+document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults();persist();render();});
+document.getElementById('inspectBtn').addEventListener('click',()=>{const o=document.getElementById('inspectOut');
+  o.style.display=o.style.display==='none'?'block':'none';o.textContent=[nmaFit,bucherLoops,directEdge,chol,matInv].map(fn=>fn.toString()).join('\n\n');});
+render();
+</script>
+</body>
+</html>

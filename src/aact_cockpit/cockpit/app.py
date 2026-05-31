@@ -163,6 +163,33 @@ def api_build_nma(req: NmaBuildReq):
     return man
 
 
+@app.get("/api/capsules")
+def api_capsules():
+    """List capsules already generated under capsules/, newest first."""
+    out = []
+    for sidecar in _CAPSULES.glob("*/*.json"):
+        if sidecar.name == "assurance.json":
+            continue
+        try:
+            c = json.loads(sidecar.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            continue
+        if "pico" not in c or "tier" not in c:
+            continue
+        slug = c["slug"]
+        html = _CAPSULES / slug / f"{slug}-capsule.html"
+        if not html.is_file():
+            continue
+        n = (c.get("pooled", {}).get("k") or c.get("tsa", {}).get("k")
+             or c.get("nma", {}).get("k") or "")
+        out.append({"slug": slug, "title": c.get("title", slug),
+                    "kind": c.get("kind", "pairwise"), "tier": c["tier"], "n": n,
+                    "download_url": f"/capsules/{slug}/{slug}-capsule.html",
+                    "mtime": html.stat().st_mtime})
+    out.sort(key=lambda x: -x["mtime"])
+    return {"capsules": out}
+
+
 @app.get("/", response_class=HTMLResponse)
 def index():
     idx = _STATIC / "index.html"

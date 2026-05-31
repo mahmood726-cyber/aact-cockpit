@@ -196,6 +196,13 @@
       <a class="dl" id="nmaDl" target="_blank" rel="noopener" style="margin-left:10px">Open the network capsule ↗</a>
     </div>
   </div>
+
+  <!-- LIBRARY -->
+  <div class="card" id="cardLib">
+    <div class="step"><span class="n">≡</span> Your capsules</div>
+    <div class="muted" id="libEmpty">Nothing built yet — your generated capsules will appear here.</div>
+    <table id="libTable" class="hide"></table>
+  </div>
 </div>
 
 <script>
@@ -290,10 +297,28 @@ $("buildBtn").addEventListener("click", async () => {
                                         : "Body validation failed — check the capsule.";
     $("dl").href = man.download_url;
     $("card3").classList.remove("hide"); $("card3").classList.add("row-fade");
-    $("card3").scrollIntoView({behavior:"smooth"});
+    $("card3").scrollIntoView({behavior:"smooth"}); refreshLibrary();
   }catch(e){ alert("Build failed: "+e.message); }
   busy($("buildBtn"),false);
 });
+
+// ----- capsule library -----
+const KIND_LABEL = {pairwise:"pairwise", tsa:"TSA", nma:"network"};
+async function refreshLibrary(){
+  try{
+    const r = await (await fetch("/api/capsules")).json();
+    const rows = r.capsules;
+    $("libEmpty").classList.toggle("hide", rows.length>0);
+    $("libTable").classList.toggle("hide", rows.length===0);
+    $("libTable").innerHTML =
+      "<thead><tr><th>Analysis</th><th>Type</th><th>k</th><th>Assurance</th></tr></thead><tbody>" +
+      rows.map(c => `<tr><td><a href="${c.download_url}" target="_blank" rel="noopener">${c.title}</a></td>`+
+        `<td>${KIND_LABEL[c.kind]||c.kind}</td><td>${c.n}</td>`+
+        `<td><span class="tier ${c.tier}" style="font-size:11px;padding:2px 8px">${c.tier}</span></td></tr>`).join("") +
+      "</tbody>";
+  }catch(e){}
+}
+refreshLibrary();
 
 // ----- Network meta-analysis -----
 (async () => {
@@ -314,7 +339,7 @@ $("nmaBtn").addEventListener("click", async () => {
     $("nmaLine").textContent = `${man.treatments} treatments · ${man.n_contrasts} contrasts`;
     $("nmaDl").href = man.download_url;
     $("nmaResult").classList.remove("hide"); $("nmaResult").classList.add("row-fade");
-    $("nmaStatus").textContent = "";
+    $("nmaStatus").textContent = ""; refreshLibrary();
   }catch(e){ $("nmaStatus").innerHTML = `<span class="err">Build failed: ${e.message}</span>`; }
   busy($("nmaBtn"),false);
 });

@@ -110,7 +110,13 @@ def main():
         build_and_open(driver, wait, "pairwise", "pairwise", "forest")
         build_and_open(driver, wait, "tsa", "tsa", "tsaPlot")
         build_nma(driver, wait)
-        print("\nALL UI FLOWS PASSED (pairwise + TSA + NMA)")
+        # capsule library populated after the builds above
+        driver.get(BASE)
+        wait.until(lambda d: len(d.find_elements(By.CSS_SELECTOR, "#libTable tbody tr")) > 0)
+        lib_rows = len(driver.find_elements(By.CSS_SELECTOR, "#libTable tbody tr"))
+        print(f"\n=== library: {lib_rows} capsules listed ===")
+        assert lib_rows >= 3
+        print("\nALL UI FLOWS PASSED (pairwise + TSA + NMA + library)")
         return 0
     finally:
         driver.quit()
