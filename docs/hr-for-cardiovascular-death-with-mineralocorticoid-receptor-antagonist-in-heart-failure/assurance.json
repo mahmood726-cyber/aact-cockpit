@@ -1,5 +1,5 @@
 {
-  "slug": "hr-for-all-cause-mortality-in-myocardial-infarction",
+  "slug": "hr-for-cardiovascular-death-with-mineralocorticoid-receptor-antagonist-in-heart-failure",
   "tier": "silver",
   "checks": {
     "citation_cascade": "pass",
@@ -17,7 +17,8 @@
     "heterogeneity_reported": "pass",
     "hksj_floor": "pass",
     "no_nan": "pass",
-    "rows_parse": "pass"
+    "rows_parse": "pass",
+    "coherent_estimand": "pass"
   },
   "snapshot_date": "2026-04-12"
 }

@@ -18,7 +18,7 @@ from .guards import assert_columns_exist
 from .ingest import default_db_path, read_provenance
 from .paths import discover_snapshot_root, detect_snapshot_date
 from .provenance import Provenance
-from .taxonomy import classify_endpoint
+from .taxonomy import classify_endpoint, classify_drug, DRUG_CLASS_MAP
 
 _PLACEBO_RE = re.compile(r"\b(placebo|sham|usual care|standard of care|control)\b", re.IGNORECASE)
 _YEAR_RE = re.compile(r"(\d{4})")
@@ -67,7 +67,19 @@ def cohort_search(pico: PICO, con=None, db_path=None, limit: int = 1000) -> dict
         assert_columns_exist(con, "conditions", ("nct_id", "downcase_name"))
 
         cond = f"%{pico.population.lower()}%"
-        sql = """
+        params: list = [cond]
+        # optional intervention filter: keep only trials whose interventions
+        # include the named drug/class — so the pool is a coherent single
+        # intervention vs control rather than a mix of unlike treatments.
+        terms = _intervention_terms(pico.intervention)
+        iv_clause = ""
+        if terms:
+            assert_columns_exist(con, "interventions", ("nct_id", "name"))
+            likes = " OR ".join(["lower(iv.name) LIKE ?"] * len(terms))
+            iv_clause = (f"  AND EXISTS (SELECT 1 FROM interventions iv "
+                         f"WHERE iv.nct_id = s.nct_id AND ({likes}))\n")
+            params += [f"%{t.lower()}%" for t in terms]
+        sql = f"""
             SELECT DISTINCT s.nct_id,
                    COALESCE(s.official_title, s.brief_title) AS title,
                    s.start_date, s.enrollment
@@ -78,10 +90,12 @@ def cohort_search(pico: PICO, con=None, db_path=None, limit: int = 1000) -> dict
               AND lower(d.allocation) = 'randomized'
               AND s.results_first_posted_date IS NOT NULL
               AND c.downcase_name LIKE ?
+            {iv_clause}
             ORDER BY s.start_date DESC NULLS LAST
             LIMIT ?
         """
-        rows = con.execute(sql, [cond, limit]).fetchall()
+        params.append(limit)
+        rows = con.execute(sql, params).fetchall()
         trials = []
         for nct, title, start_date, enrollment in rows:
             yr = _year_of(start_date)
@@ -91,6 +105,7 @@ def cohort_search(pico: PICO, con=None, db_path=None, limit: int = 1000) -> dict
             })
         prov = _provenance(con, db_path)
         return {"trials": trials, "n": len(trials),
+                "intervention_filtered": terms is not None,
                 "pico": pico.to_dict(), "provenance": prov.to_dict()}
     finally:
         if owns:
@@ -234,6 +249,26 @@ def _dominant_measure(records) -> str:
     for r in records:
         counts[r.measure_type] = counts.get(r.measure_type, 0) + 1
     return max(counts, key=counts.get)
+
+
+def _intervention_terms(intervention: str | None) -> list[str] | None:
+    """Map an intervention string to the drug-name terms used to filter the
+    cohort. If it names a known class (or a drug in one), return that class's
+    drug list; otherwise fall back to the raw term. None => no filtering."""
+    if not intervention or not intervention.strip():
+        return None
+    iv = intervention.strip().lower()
+    # direct class id or label match
+    for cid, info in DRUG_CLASS_MAP.items():
+        if cid == "other":
+            continue
+        if iv == cid or iv in info["label"].lower() or info["label"].lower() in iv:
+            return list(info["drugs"])
+    # a specific drug name -> use its whole class so the pool is the class
+    cls = classify_drug(iv)
+    if cls != "other":
+        return list(DRUG_CLASS_MAP[cls]["drugs"])
+    return [iv]   # unknown term: filter on the literal name
 
 
 def _year_of(start_date) -> int | None:

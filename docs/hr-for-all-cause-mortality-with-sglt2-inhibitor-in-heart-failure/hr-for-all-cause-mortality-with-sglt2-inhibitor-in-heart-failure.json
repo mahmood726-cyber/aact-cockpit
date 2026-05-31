@@ -1,0 +1,204 @@
+{
+  "slug": "hr-for-all-cause-mortality-with-sglt2-inhibitor-in-heart-failure",
+  "title": "HR for all-cause mortality with SGLT2 inhibitor in heart failure",
+  "measure": "HR",
+  "pico": {
+    "population": "heart failure",
+    "outcome": "all-cause mortality",
+    "intervention": "SGLT2 inhibitor",
+    "comparator": "placebo"
+  },
+  "primary_estimand": "hazard ratio for all-cause mortality with SGLT2 inhibitors",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-05-31T21:25:38Z"
+  },
+  "favours_low": "favours SGLT2 inhibitor",
+  "favours_high": "favours placebo",
+  "method": "PM",
+  "hksj": false,
+  "studies": [
+    {
+      "nct": "NCT03036124",
+      "name": "Study to Evaluate the Effect of Dapagliflozin on the Incidence of Worsening Heart Failure or Cardiovascular Death in Patients With Chronic Heart Failure With Reduced Ejection Fraction",
+      "year": 2017,
+      "agent": "",
+      "comparator": "",
+      "hr": 0.83,
+      "lci": 0.71,
+      "uci": 0.97,
+      "inc": true
+    },
+    {
+      "nct": "NCT03057951",
+      "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Preserved Ejection Fraction (HFpEF)",
+      "year": 2017,
+      "agent": "10 mg Empagliflozin",
+      "comparator": "Placebo",
+      "hr": 1.0,
+      "lci": 0.87,
+      "uci": 1.15,
+      "inc": true
+    },
+    {
+      "nct": "NCT03057977",
+      "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Reduced Ejection Fraction (HFrEF)",
+      "year": 2017,
+      "agent": "10 mg Empagliflozin",
+      "comparator": "Placebo",
+      "hr": 0.92,
+      "lci": 0.77,
+      "uci": 1.1,
+      "inc": true
+    },
+    {
+      "nct": "NCT03619213",
+      "name": "An International, Double-blind, Randomised, Placebo-Controlled Phase III Study to Evaluate the Effect of Dapagliflozin on Reducing CV Death or Worsening Heart Failure in Patients With Heart Failure With Preserved Ejection Fraction (HFpEF)",
+      "year": 2018,
+      "agent": "Dapa 10 mg",
+      "comparator": "Placebo",
+      "hr": 0.94,
+      "lci": 0.83,
+      "uci": 1.07,
+      "inc": true
+    }
+  ],
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "estimator_for_k": "pass",
+      "pi_t_dist": "pass",
+      "log_scale_pooling": "pass",
+      "heterogeneity_reported": "pass",
+      "hksj_floor": "pass",
+      "no_nan": "pass",
+      "rows_parse": "pass",
+      "coherent_estimand": "pass"
+    }
+  },
+  "pooled": {
+    "est": 0.9266472501593268,
+    "ci_lower": 0.8598117964301787,
+    "ci_upper": 0.9986780011543737,
+    "i2": 3.6967454397107193,
+    "tau2": 0.00022140624537178534,
+    "k": 4,
+    "df": 3,
+    "Q": 3.115159517399168,
+    "pi_lower": 0.8133338060269247,
+    "pi_upper": 1.0557474924378298,
+    "ci_note": "z",
+    "method": "PM"
+  },
+  "diagnostics": {
+    "egger": {
+      "intercept": -3.0224313292154674,
+      "se": 4.555121501852611,
+      "t": -0.6635237562787768,
+      "df": 2,
+      "p": 0.506995169810025,
+      "k": 4
+    },
+    "loo": [
+      {
+        "omitted": "NCT03036124",
+        "name": "Study to Evaluate the Effect of Dapagliflozin on the Incidence of Worsening Heart Failure or Cardiovascular Death in Patients With Chronic Heart Failure With Reduced Ejection Fraction",
+        "est": 0.9563858750366936,
+        "lo": 0.8801269530377053,
+        "hi": 1.0392522792453522
+      },
+      {
+        "omitted": "NCT03057951",
+        "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Preserved Ejection Fraction (HFpEF)",
+        "est": 0.9004077242661293,
+        "lo": 0.826030443386205,
+        "hi": 0.9814820705573639
+      },
+      {
+        "omitted": "NCT03057977",
+        "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Reduced Ejection Fraction (HFrEF)",
+        "est": 0.9256150526977157,
+        "lo": 0.8348559241751974,
+        "hi": 1.0262408170931303
+      },
+      {
+        "omitted": "NCT03619213",
+        "name": "An International, Double-blind, Randomised, Placebo-Controlled Phase III Study to Evaluate the Effect of Dapagliflozin on Reducing CV Death or Worsening Heart Failure in Patients With Heart Failure With Preserved Ejection Fraction (HFpEF)",
+        "est": 0.9180263045399772,
+        "lo": 0.8228142187396742,
+        "hi": 1.024255872872765
+      }
+    ],
+    "trimfill": {
+      "k0": 0,
+      "side": "left",
+      "est": 0.9266472501593268,
+      "lo": 0.8598117964301787,
+      "hi": 0.9986780011543737,
+      "est_observed": 0.9266472501593268
+    },
+    "influence": [
+      {
+        "nct": "NCT03036124",
+        "name": "Study to Evaluate the Effect of Dapagliflozin on the Incidence of Worsening Heart Failure or Cardiovascular Death in Patients With Chronic Heart Failure With Reduced Ejection Fraction",
+        "hat": 0.22245454510132406,
+        "cook": 0.6840078457791969,
+        "resid": -1.571565705699746,
+        "influential": false
+      },
+      {
+        "nct": "NCT03057951",
+        "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Preserved Ejection Fraction (HFpEF)",
+        "hat": 0.27586403909150137,
+        "cook": 0.565628750793324,
+        "resid": 1.2537317761018585,
+        "influential": false
+      },
+      {
+        "nct": "NCT03057977",
+        "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Reduced Ejection Fraction (HFrEF)",
+        "hat": 0.17161151938225985,
+        "cook": 0.0008514981395512436,
+        "resid": -0.050957532757115974,
+        "influential": false
+      },
+      {
+        "nct": "NCT03619213",
+        "name": "An International, Double-blind, Randomised, Placebo-Controlled Phase III Study to Evaluate the Effect of Dapagliflozin on Reducing CV Death or Worsening Heart Failure in Patients With Heart Failure With Preserved Ejection Fraction (HFpEF)",
+        "hat": 0.3300698964249147,
+        "cook": 0.05988804106254663,
+        "resid": 0.23306925012903804,
+        "influential": false
+      }
+    ],
+    "metareg": {
+      "b0": -48.195581635862645,
+      "b1": 0.023852183464967303,
+      "se": 0.10394592868219064,
+      "z": 0.2294672217311573,
+      "p": 0.8185057942371206,
+      "tau2_res": 0.003357574677801411,
+      "r2": 0.0,
+      "k": 4
+    }
+  },
+  "e156_body": "In heart failure, does SGLT2 inhibitor compared with placebo change all-cause mortality? This synthesis aggregates 4 randomized trials of SGLT2 inhibitor drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.93 (95% CI 0.86 to 1.00). Between-trial heterogeneity was I-squared 4 percent, the 95% prediction interval spanned 0.81 to 1.06, and Egger's test for small-study effects returned a p-value of 0.51. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond the included trials.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 133,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": []
+}

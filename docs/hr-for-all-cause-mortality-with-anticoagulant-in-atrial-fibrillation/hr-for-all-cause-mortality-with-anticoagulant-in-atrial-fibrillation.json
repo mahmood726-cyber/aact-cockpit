@@ -1,59 +1,26 @@
 {
-  "slug": "hr-for-all-cause-mortality-in-atrial-fibrillation",
-  "title": "HR for all-cause mortality in atrial fibrillation",
+  "slug": "hr-for-all-cause-mortality-with-anticoagulant-in-atrial-fibrillation",
+  "title": "HR for all-cause mortality with anticoagulant in atrial fibrillation",
   "measure": "HR",
   "pico": {
     "population": "atrial fibrillation",
     "outcome": "all-cause mortality",
-    "intervention": null,
-    "comparator": null
+    "intervention": "anticoagulant",
+    "comparator": "control"
   },
-  "primary_estimand": "hazard ratio for all-cause mortality",
+  "primary_estimand": "hazard ratio for all-cause mortality with anticoagulants",
   "snapshot_date": "2026-04-12",
   "provenance": {
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T20:20:21Z"
+    "extracted_at": "2026-05-31T21:25:42Z"
   },
-  "favours_low": "favours intervention",
-  "favours_high": "favours comparator",
+  "favours_low": "favours anticoagulant",
+  "favours_high": "favours control",
   "method": "PM",
   "hksj": false,
   "studies": [
-    {
-      "nct": "NCT00174785",
-      "name": "A Placebo-controlled,Double-blind,Parallel Arm Trial to Assess the Efficacy of Dronedarone 400mg Bid for the Prevention of Cardiovascular Hospitalization or Death From Any Cause in Patients With Atrial Fibrillation/Atrial Flutter (AF/AFL)",
-      "year": 2005,
-      "agent": "Dronedarone 400mg Bid",
-      "comparator": "Placebo",
-      "hr": 0.76,
-      "lci": 0.69,
-      "uci": 0.84,
-      "inc": true
-    },
-    {
-      "nct": "NCT00249795",
-      "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation",
-      "year": 2003,
-      "agent": "Irbesartan",
-      "comparator": "Placebo",
-      "hr": 1.014,
-      "lci": 0.927,
-      "uci": 1.11,
-      "inc": true
-    },
-    {
-      "nct": "NCT00249873",
-      "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation",
-      "year": 2003,
-      "agent": "Clopidogrel + ASA",
-      "comparator": "Placebo + ASA",
-      "hr": 0.98,
-      "lci": 0.89,
-      "uci": 1.08,
-      "inc": true
-    },
     {
       "nct": "NCT00403767",
       "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation",
@@ -121,17 +88,6 @@
       "inc": true
     },
     {
-      "nct": "NCT01970501",
-      "name": "GENETIC-AF - A Genotype-Directed Comparative Effectiveness Trial of Bucindolol and Toprol-XL for Prevention of Symptomatic Atrial Fibrillation/Atrial Flutter in Patients With Heart Failure",
-      "year": 2014,
-      "agent": "Bucindolol Hydrochloride",
-      "comparator": "Metoprolol Succinate",
-      "hr": 1.02,
-      "lci": 0.72,
-      "uci": 1.45,
-      "inc": true
-    },
-    {
       "nct": "NCT02942407",
       "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial",
       "year": 2016,
@@ -160,228 +116,167 @@
       "heterogeneity_reported": "pass",
       "hksj_floor": "pass",
       "no_nan": "pass",
-      "rows_parse": "pass"
+      "rows_parse": "pass",
+      "coherent_estimand": "pass"
     }
   },
   "pooled": {
-    "est": 0.899906289881737,
-    "ci_lower": 0.8385344288212299,
-    "ci_upper": 0.9657699227772123,
-    "i2": 60.60715262804259,
-    "tau2": 0.00569877626982462,
-    "k": 11,
-    "df": 10,
-    "Q": 25.385319079825397,
-    "pi_lower": 0.7468878210178892,
-    "pi_upper": 1.084274382015015,
+    "est": 0.886467907794318,
+    "ci_lower": 0.8330434404266587,
+    "ci_upper": 0.9433185754956075,
+    "i2": 0.0,
+    "tau2": 0.0,
+    "k": 7,
+    "df": 6,
+    "Q": 3.6790312949685435,
+    "pi_lower": 0.8202750593814697,
+    "pi_upper": 0.9580022488332011,
     "ci_note": "z",
     "method": "PM"
   },
   "diagnostics": {
     "egger": {
-      "intercept": -0.07693999068233381,
-      "se": 0.9117022539956438,
-      "t": -0.08439157668540923,
-      "df": 9,
-      "p": 0.9327451042277999,
-      "k": 11
+      "intercept": -0.06328450403858403,
+      "se": 0.51566558612733,
+      "t": -0.12272392368444301,
+      "df": 5,
+      "p": 0.9023257187068647,
+      "k": 7
     },
     "loo": [
       {
-        "omitted": "NCT00174785",
-        "name": "A Placebo-controlled,Double-blind,Parallel Arm Trial to Assess the Efficacy of Dronedarone 400mg Bid for the Prevention of Cardiovascular Hospitalization or Death From Any Cause in Patients With Atrial Fibrillation/Atrial Flutter (AF/AFL)",
-        "est": 0.9358626865215819,
-        "lo": 0.8884628623035251,
-        "hi": 0.9857913089947257
-      },
-      {
-        "omitted": "NCT00249795",
-        "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation",
-        "est": 0.8783906802445176,
-        "lo": 0.8189757953868406,
-        "hi": 0.9421159837525817
-      },
-      {
-        "omitted": "NCT00249873",
-        "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation",
-        "est": 0.8854482195885773,
-        "lo": 0.8200759833755572,
-        "hi": 0.9560315939816237
-      },
-      {
         "omitted": "NCT00403767",
         "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation",
-        "est": 0.9048147114939995,
-        "lo": 0.8368851778931311,
-        "hi": 0.9782580499239227
+        "est": 0.8910372327516589,
+        "lo": 0.8342499993081418,
+        "hi": 0.9516899620115893
       },
       {
         "omitted": "NCT00412984",
         "name": "A Phase 3, Active (Warfarin) Controlled, Randomized, Double-Blind, Parallel Arm Study to Evaluate Efficacy and Safety of Apixaban in Preventing Stroke and Systemic Embolism in Subjects With Nonvalvular Atrial Fibrillation",
-        "est": 0.9013193025877962,
-        "lo": 0.8306174632607557,
-        "hi": 0.9780392553127938
+        "est": 0.8848827430624085,
+        "lo": 0.8210659496723377,
+        "hi": 0.9536596533836664
       },
       {
         "omitted": "NCT00494871",
         "name": "Evaluation of the Efficacy and Safety of Rivaroxaban (BAY59-7939) for the Prevention of Stroke and Non-central Nervous System Systemic Embolism in Subjects With Non-valvular Atrial Fibrillation",
-        "est": 0.8982861131305757,
-        "lo": 0.8349358061809614,
-        "hi": 0.9664430906779778
+        "est": 0.8853427201964298,
+        "lo": 0.8319106794942318,
+        "hi": 0.9422065992485538
       },
       {
         "omitted": "NCT00496769",
         "name": "Apixaban Versus Acetylsalicylic Acid (ASA) to Prevent Stroke in Atrial Fibrillation Patients Who Have Failed or Are Unsuitable for Vitamin K Antagonist Treatment: A Randomized Double-blind Trial",
-        "est": 0.9074093074405767,
-        "lo": 0.8429132993646838,
-        "hi": 0.976840265600732
+        "est": 0.8932862942153026,
+        "lo": 0.8377454601690663,
+        "hi": 0.9525093735176685
       },
       {
         "omitted": "NCT00781391",
         "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)",
-        "est": 0.8996094718120355,
-        "lo": 0.8281867439758364,
-        "hi": 0.9771916873346406
+        "est": 0.8730799659789309,
+        "lo": 0.7995286531916018,
+        "hi": 0.9533975098339575
       },
       {
         "omitted": "NCT01674647",
         "name": "A Prospective, Randomized, Open-label, Parallel-group, Active-controlled, Multicenter Study Exploring the Efficacy and Safety of Once-daily Oral Rivaroxaban (BAY59-7939) Compared With That of Dose-adjusted Oral Vitamin K Antagonists (VKA) for the Prevention of Cardiovascular Events in Subjects With Nonvalvular Atrial Fibrillation Scheduled for Cardioversion",
-        "est": 0.9019291358558418,
-        "lo": 0.8403666473510211,
-        "hi": 0.9680014891950806
-      },
-      {
-        "omitted": "NCT01970501",
-        "name": "GENETIC-AF - A Genotype-Directed Comparative Effectiveness Trial of Bucindolol and Toprol-XL for Prevention of Symptomatic Atrial Fibrillation/Atrial Flutter in Patients With Heart Failure",
-        "est": 0.8954894667315179,
-        "lo": 0.8309829133008223,
-        "hi": 0.9650034581839877
+        "est": 0.8879951851605842,
+        "lo": 0.834400772398371,
+        "hi": 0.9450320217248156
       },
       {
         "omitted": "NCT02942407",
         "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial",
-        "est": 0.8962610445770173,
-        "lo": 0.8342558967481482,
-        "hi": 0.9628746565141606
+        "est": 0.8834350586987769,
+        "lo": 0.8299022425945644,
+        "hi": 0.9404210072961469
       }
     ],
     "trimfill": {
       "k0": 0,
       "side": "left",
-      "est": 0.899906289881737,
-      "lo": 0.8385344288212299,
-      "hi": 0.9657699227772123,
-      "est_observed": 0.899906289881737
+      "est": 0.886467907794318,
+      "lo": 0.8330434404266587,
+      "hi": 0.9433185754956075,
+      "est_observed": 0.886467907794318
     },
     "influence": [
       {
-        "nct": "NCT00174785",
-        "name": "A Placebo-controlled,Double-blind,Parallel Arm Trial to Assess the Efficacy of Dronedarone 400mg Bid for the Prevention of Cardiovascular Hospitalization or Death From Any Cause in Patients With Atrial Fibrillation/Atrial Flutter (AF/AFL)",
-        "hat": 0.15806264274631995,
-        "cook": 1.1817992193282765,
-        "resid": -3.2422169228581526,
-        "influential": true
-      },
-      {
-        "nct": "NCT00249795",
-        "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation",
-        "hat": 0.16627585110418056,
-        "cook": 0.4508763497196521,
-        "resid": 1.6703301552803056,
-        "influential": true
-      },
-      {
-        "nct": "NCT00249873",
-        "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation",
-        "hat": 0.15964910181704436,
-        "cook": 0.20197939010464996,
-        "resid": 1.036641853872498,
-        "influential": false
-      },
-      {
         "nct": "NCT00403767",
         "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation",
-        "hat": 0.08703467864666176,
-        "cook": 0.022781486108522434,
-        "resid": -0.4718530683198733,
+        "hat": 0.10904146579620902,
+        "cook": 0.026280313400946158,
+        "resid": -0.4633916199142714,
         "influential": false
       },
       {
         "nct": "NCT00412984",
         "name": "A Phase 3, Active (Warfarin) Controlled, Randomized, Double-Blind, Parallel Arm Study to Evaluate Efficacy and Safety of Apixaban in Preventing Stroke and Systemic Embolism in Subjects With Nonvalvular Atrial Fibrillation",
-        "hat": 0.1452918062022872,
-        "cook": 0.0018952758507661607,
-        "resid": -0.11522175207093065,
+        "hat": 0.31038535092663505,
+        "cook": 0.0031848297357613665,
+        "resid": 0.0841193176092386,
         "influential": false
       },
       {
         "nct": "NCT00494871",
         "name": "Evaluation of the Efficacy and Safety of Rivaroxaban (BAY59-7939) for the Prevention of Stroke and Non-central Nervous System Systemic Embolism in Subjects With Non-valvular Atrial Fibrillation",
-        "hat": 0.0036956652076778505,
-        "cook": 0.002500167148084457,
-        "resid": 0.7099364905451331,
+        "hat": 0.0029091272347288,
+        "cook": 0.0016038422606393177,
+        "resid": 0.741424339101237,
         "influential": false
       },
       {
         "nct": "NCT00496769",
         "name": "Apixaban Versus Acetylsalicylic Acid (ASA) to Prevent Stroke in Atrial Fibrillation Patients Who Have Failed or Are Unsuitable for Vitamin K Antagonist Treatment: A Randomized Double-blind Trial",
-        "hat": 0.059501017957552874,
-        "cook": 0.05307930855134155,
-        "resid": -0.9045504032131564,
+        "hat": 0.062358127175268736,
+        "cook": 0.05837053639028414,
+        "resid": -0.9368472951729319,
         "influential": false
       },
       {
         "nct": "NCT00781391",
         "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)",
-        "hat": 0.16854680188428364,
-        "cook": 8.378874880563839e-05,
-        "resid": 0.004164237120567108,
+        "hat": 0.5011185213518887,
+        "cook": 0.23024408768544152,
+        "resid": 0.47876534469146886,
         "influential": false
       },
       {
         "nct": "NCT01674647",
         "name": "A Prospective, Randomized, Open-label, Parallel-group, Active-controlled, Multicenter Study Exploring the Efficacy and Safety of Once-daily Oral Rivaroxaban (BAY59-7939) Compared With That of Dose-adjusted Oral Vitamin K Antagonists (VKA) for the Prevention of Cardiovascular Events in Subjects With Nonvalvular Atrial Fibrillation Scheduled for Cardioversion",
-        "hat": 0.0038055308924548905,
-        "cook": 0.003881611695145408,
-        "resid": -1.0079067742399173,
-        "influential": false
-      },
-      {
-        "nct": "NCT01970501",
-        "name": "GENETIC-AF - A Genotype-Directed Comparative Effectiveness Trial of Bucindolol and Toprol-XL for Prevention of Symptomatic Atrial Fibrillation/Atrial Flutter in Patients With Heart Failure",
-        "hat": 0.034548299924088435,
-        "cook": 0.01863879015041392,
-        "resid": 0.6526647091964738,
+        "hat": 0.002997079098737003,
+        "cook": 0.0029461060216051027,
+        "resid": -0.9899728830170278,
         "influential": false
       },
       {
         "nct": "NCT02942407",
         "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial",
-        "hat": 0.013588603617448439,
-        "cook": 0.012684619887840354,
-        "resid": 0.9367383215371619,
+        "hat": 0.011190328416532752,
+        "cook": 0.011677498147299991,
+        "resid": 1.0158038162518317,
         "influential": false
       }
     ],
     "metareg": {
-      "b0": -0.0626843237929385,
-      "b1": -2.152900540808851e-05,
-      "se": 0.014549456888602055,
-      "z": -0.0014797119626474983,
-      "p": 0.9988193611014125,
-      "tau2_res": 0.009157903098564932,
+      "b0": -35.521194914236425,
+      "b1": 0.017636872554008275,
+      "se": 0.023235875997865463,
+      "z": 0.7590362659720024,
+      "p": 0.44783086281909035,
+      "tau2_res": 0.0,
       "r2": 0.0,
-      "k": 11
+      "k": 7
     }
   },
-  "e156_body": "In atrial fibrillation, does the intervention compared with control change all-cause mortality? This synthesis aggregates 11 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.90 (95% CI 0.84 to 0.97). Between-trial heterogeneity was I-squared 61 percent, the 95% prediction interval spanned 0.75 to 1.08, and Egger's test for small-study effects returned a p-value of 0.93. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
+  "e156_body": "In atrial fibrillation, does anticoagulant compared with control change all-cause mortality? This synthesis aggregates 7 randomized trials of anticoagulant drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.89 (95% CI 0.83 to 0.94). Between-trial heterogeneity was I-squared 0 percent, the 95% prediction interval spanned 0.82 to 0.96, and Egger's test for small-study effects returned a p-value of 0.90. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by combining trials of differing interventions and designs, and does not generalise beyond the included trials.",
   "e156_validation": {
     "ok": true,
-    "word_count": 128,
+    "word_count": 132,
     "sentence_count": 7
   },
   "tier": "silver",
-  "notes": [
-    "skipped NCT00911508 analysis 105498997 (param_type='Cox Proportional Hazard', no usable estimate)"
-  ]
+  "notes": []
 }

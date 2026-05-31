@@ -124,7 +124,13 @@ def normalize_dataset(ds: dict) -> dict:
         raise CapsuleInputError("no usable studies in effects dataset")
 
     pico = ds["pico"]
-    title = f"{measure} for {pico.get('outcome','outcome')} in {pico.get('population','population')}"
+    iv = (pico.get("intervention") or "").strip()
+    out = pico.get("outcome", "outcome")
+    pop = pico.get("population", "population")
+    # include the intervention in the title/slug so two interventions for the
+    # same condition+outcome don't collide (and so the slug is self-describing)
+    title = (f"{measure} for {out} with {iv} in {pop}" if iv
+             else f"{measure} for {out} in {pop}")
     return {
         "slug": slugify(title),
         "title": title,
@@ -182,21 +188,28 @@ def compute_self_audit(payload: dict, method: str = "PM", hksj: bool = False,
     # denominator/validity: every included row has a valid CI ordering
     rows_parse = all(s["lci"] <= s["hr"] <= s["uci"] for s in studies)
     aact_stats["rows_parse"] = "pass" if rows_parse else "fail"
+    # coherent estimand: pooling REQUIRES a single named intervention. Without
+    # one the pool mixes unlike treatments into an uninterpretable average
+    # (the multi-persona review's unanimous flaw) -> WARN, surfaced + caps tier.
+    coherent = bool((payload.get("pico", {}).get("intervention") or "").strip())
+    aact_stats["coherent_estimand"] = "pass" if coherent else "warn"
 
-    stats_ok = all(v == "pass" for v in aact_stats.values())
+    hard_ok = all(v == "pass" for v in aact_stats.values() if v != "warn")
+    has_warn = any(v == "warn" for v in aact_stats.values())
+    # hard failure -> none; a soft warn (e.g. mixed-intervention pool) -> bronze
+    dashboard_match = "fail" if not hard_ok else ("warn" if has_warn else "pass")
 
-    # Map into the existing compute_tier contract (do not fork compute_tier).
     checks = {
         "citation_cascade": "pass" if all(s["nct"].startswith("NCT") for s in studies) else "fail",
         "data_file_present": "pass",          # we always write the {slug}.json sidecar
         "code_runs": "pass",                   # the JS engine runs in-browser
-        # AACT stat failures collapse here -> tier <= bronze
-        "dashboard_match": "pass" if stats_ok else "fail",
+        "dashboard_match": dashboard_match,
         "claim_language": "pass",              # set by caller after body draft
         "analysis_rerun": analysis_rerun,      # R metafor match (Gold)
         "external_review": external_review,    # human countersign (Gold)
     }
-    return {"checks": checks, "aact_stats": aact_stats, "pooled": res, "k": k}
+    return {"checks": checks, "aact_stats": aact_stats, "pooled": res, "k": k,
+            "coherent": coherent}
 
 
 def _fmt(x, nd=2):
@@ -217,12 +230,19 @@ def draft_e156_body(payload: dict, pooled: dict, diag: dict | None = None) -> st
     pil, piu = _fmt(pooled["pi_lower"]), _fmt(pooled["pi_upper"])
     method = {"PM": "Paule-Mandel", "REML": "REML", "DL": "DerSimonian-Laird"}.get(pooled["method"], pooled["method"])
     pop = pico.get("population", "the population")
-    iv = pico.get("intervention") or "the intervention"
+    iv = (pico.get("intervention") or "").strip()
     cmp_ = pico.get("comparator") or "control"
     out = pico.get("outcome", "the outcome")
+    coherent = bool(iv)
 
-    s1 = f"In {pop}, does {iv} compared with {cmp_} change {out}?"
-    s2 = f"This synthesis aggregates {k} randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated {payload['snapshot_date']}."
+    if coherent:
+        s1 = f"In {pop}, does {iv} compared with {cmp_} change {out}?"
+        s2 = f"This synthesis aggregates {k} randomized trials of {iv} drawn from the ClinicalTrials.gov AACT snapshot dated {payload['snapshot_date']}."
+    else:
+        # mixed-intervention pool: no single estimand exists — frame it honestly
+        # as a cross-intervention average (multi-persona review requirement).
+        s1 = f"Across heterogeneous randomized interventions in {pop}, what is the average registry-reported {measure} for {out}?"
+        s2 = f"This synthesis aggregates {k} randomized trials of differing interventions from the ClinicalTrials.gov AACT snapshot dated {payload['snapshot_date']}."
     # Avoid ending a sentence on a word like "interval." — validate_e156 treats
     # the trailing "al." as the abbreviation "al." and merges the next sentence.
     s3 = f"Trial-reported effect estimates were pooled on the log scale using a {method} random-effects model with a prediction interval based on the t-distribution."
@@ -232,8 +252,12 @@ def draft_e156_body(payload: dict, pooled: dict, diag: dict | None = None) -> st
     if egg:
         s5 = (f"Between-trial heterogeneity was I-squared {i2} percent, the 95% prediction interval spanned "
               f"{pil} to {piu}, and Egger's test for small-study effects returned a p-value of {_fmt(egg['p'])}.")
-    s6 = f"These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading."
-    s7 = f"Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them."
+    if coherent:
+        s6 = f"These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading."
+    else:
+        s6 = f"This pooled figure is an average across unlike treatments and does not estimate the effect of any single intervention, so it warrants cautious reading."
+    fewness = "by the small number of contributing trials" if k < 5 else "by combining trials of differing interventions and designs"
+    s7 = f"Interpretation is limited by reliance on a single registry snapshot and {fewness}, and does not generalise beyond the included trials."
     body = " ".join([s1, s2, s3, s4, s5, s6, s7])
 
     # auto-shrink if >156 words: drop the Egger clause, then the PI clause.

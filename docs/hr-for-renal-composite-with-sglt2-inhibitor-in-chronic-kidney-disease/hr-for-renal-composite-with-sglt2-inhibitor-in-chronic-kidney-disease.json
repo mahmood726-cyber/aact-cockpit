@@ -1,0 +1,187 @@
+{
+  "slug": "hr-for-renal-composite-with-sglt2-inhibitor-in-chronic-kidney-disease",
+  "title": "HR for renal composite with SGLT2 inhibitor in chronic kidney disease",
+  "measure": "HR",
+  "pico": {
+    "population": "chronic kidney disease",
+    "outcome": "renal composite",
+    "intervention": "SGLT2 inhibitor",
+    "comparator": "placebo"
+  },
+  "primary_estimand": "hazard ratio for the renal composite with SGLT2 inhibitors",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-05-31T21:25:41Z"
+  },
+  "favours_low": "favours SGLT2 inhibitor",
+  "favours_high": "favours placebo",
+  "method": "PM",
+  "hksj": false,
+  "studies": [
+    {
+      "nct": "NCT03036150",
+      "name": "A Study to Evaluate the Effect of Dapagliflozin on Renal Outcomes and Cardiovascular Mortality in Patients With Chronic Kidney Disease",
+      "year": 2017,
+      "agent": "Dapagliflozin",
+      "comparator": "Placebo",
+      "hr": 0.56,
+      "lci": 0.45,
+      "uci": 0.68,
+      "inc": true
+    },
+    {
+      "nct": "NCT03315143",
+      "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Demonstrate the Effects of Sotagliflozin on Cardiovascular and Renal Events in Patients With Type 2 Diabetes, Cardiovascular Risk Factors and Moderately Impaired Renal Function",
+      "year": 2017,
+      "agent": "Sotagliflozin",
+      "comparator": "Placebo",
+      "hr": 0.71,
+      "lci": 0.46,
+      "uci": 1.08,
+      "inc": true
+    },
+    {
+      "nct": "NCT03594110",
+      "name": "A Multicentre International Randomized Parallel Group Double-blind Placebo-controlled Clinical Trial of EMPAgliflozin Once Daily to Assess Cardio-renal Outcomes in Patients With Chronic KIDNEY Disease",
+      "year": 2019,
+      "agent": "Empagliflozin 10 mg",
+      "comparator": "Placebo",
+      "hr": 0.71,
+      "lci": 0.62,
+      "uci": 0.81,
+      "inc": true
+    }
+  ],
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "estimator_for_k": "pass",
+      "pi_t_dist": "pass",
+      "log_scale_pooling": "pass",
+      "heterogeneity_reported": "pass",
+      "hksj_floor": "pass",
+      "no_nan": "pass",
+      "rows_parse": "pass",
+      "coherent_estimand": "pass"
+    }
+  },
+  "pooled": {
+    "est": 0.6537624324571539,
+    "ci_lower": 0.5589729576751825,
+    "ci_upper": 0.7646261097672968,
+    "i2": 45.575606601228735,
+    "tau2": 0.007277845255516599,
+    "k": 3,
+    "df": 2,
+    "Q": 3.6748227680662655,
+    "pi_lower": 0.3953334885669122,
+    "pi_upper": 1.0811260124752982,
+    "ci_note": "z",
+    "method": "PM"
+  },
+  "diagnostics": {
+    "egger": {
+      "intercept": -0.7890408348279548,
+      "se": 2.693767524226316,
+      "t": -0.2929134855668651,
+      "df": 1,
+      "p": 0.7695882807383558,
+      "k": 3
+    },
+    "loo": [
+      {
+        "omitted": "NCT03036150",
+        "name": "A Study to Evaluate the Effect of Dapagliflozin on Renal Outcomes and Cardiovascular Mortality in Patients With Chronic Kidney Disease",
+        "est": 0.71,
+        "lo": 0.6249784641771945,
+        "hi": 0.8065877928508542
+      },
+      {
+        "omitted": "NCT03315143",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Demonstrate the Effects of Sotagliflozin on Cardiovascular and Renal Events in Patients With Type 2 Diabetes, Cardiovascular Risk Factors and Moderately Impaired Renal Function",
+        "est": 0.6391712573221707,
+        "lo": 0.5073094561503956,
+        "hi": 0.8053070788132323
+      },
+      {
+        "omitted": "NCT03594110",
+        "name": "A Multicentre International Randomized Parallel Group Double-blind Placebo-controlled Clinical Trial of EMPAgliflozin Once Daily to Assess Cardio-renal Outcomes in Patients With Chronic KIDNEY Disease",
+        "est": 0.5857760064731572,
+        "lo": 0.4864396479369812,
+        "hi": 0.7053979485736608
+      }
+    ],
+    "trimfill": {
+      "k0": 0,
+      "side": "left",
+      "est": 0.6537624324571539,
+      "lo": 0.5589729576751825,
+      "hi": 0.7646261097672968,
+      "est_observed": 0.6537624324571539
+    },
+    "influence": [
+      {
+        "nct": "NCT03036150",
+        "name": "A Study to Evaluate the Effect of Dapagliflozin on Renal Outcomes and Cardiovascular Mortality in Patients With Chronic Kidney Disease",
+        "hat": 0.3477081208875945,
+        "cook": 1.0661120643130888,
+        "resid": -1.916982725030736,
+        "influential": false
+      },
+      {
+        "nct": "NCT03315143",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Demonstrate the Effects of Sotagliflozin on Cardiovascular and Renal Events in Patients With Type 2 Diabetes, Cardiovascular Risk Factors and Moderately Impaired Renal Function",
+        "hat": 0.11680465450887226,
+        "cook": 0.07976262778949648,
+        "resid": 0.3679092187449776,
+        "influential": false
+      },
+      {
+        "nct": "NCT03594110",
+        "name": "A Multicentre International Randomized Parallel Group Double-blind Placebo-controlled Clinical Trial of EMPAgliflozin Once Daily to Assess Cardio-renal Outcomes in Patients With Chronic KIDNEY Disease",
+        "hat": 0.5354872246035333,
+        "cook": 1.8876918507798273,
+        "resid": 1.6468125396706967,
+        "influential": true
+      }
+    ],
+    "metareg": {
+      "b0": -194.4970965500586,
+      "b1": 0.09616374751902677,
+      "se": 0.05839386402776315,
+      "z": 1.6468125396412554,
+      "p": 0.09959658310759623,
+      "tau2_res": 0.0,
+      "r2": 1.0,
+      "k": 3
+    }
+  },
+  "e156_body": "In chronic kidney disease, does SGLT2 inhibitor compared with placebo change renal composite? This synthesis aggregates 3 randomized trials of SGLT2 inhibitor drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for renal composite was 0.65 (95% CI 0.56 to 0.76). Between-trial heterogeneity was I-squared 46 percent, the 95% prediction interval spanned 0.40 to 1.08, and Egger's test for small-study effects returned a p-value of 0.77. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond the included trials.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 134,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": [
+    "skipped NCT04724837 analysis 105600207 (param_type='LS mean CFB', no usable estimate)",
+    "skipped NCT04724837 analysis 105600208 (param_type='LS mean CFB', no usable estimate)",
+    "skipped NCT04724837 analysis 105600209 (param_type='LS mean CFB', no usable estimate)",
+    "skipped NCT04724837 analysis 105600210 (param_type='LS mean CFB', no usable estimate)",
+    "skipped NCT04724837 analysis 105600211 (param_type='LS mean CFB', no usable estimate)",
+    "skipped NCT04724837 analysis 105600212 (param_type='LS mean CFB', no usable estimate)",
+    "skipped NCT04724837 analysis 105600213 (param_type='LS mean change', no usable estimate)",
+    "skipped NCT04724837 analysis 105600214 (param_type='LS mean change', no usable estimate)"
+  ]
+}

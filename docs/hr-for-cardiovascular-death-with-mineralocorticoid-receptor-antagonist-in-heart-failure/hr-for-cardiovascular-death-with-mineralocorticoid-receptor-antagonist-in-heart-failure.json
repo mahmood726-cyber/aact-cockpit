@@ -1,0 +1,97 @@
+{
+  "slug": "hr-for-cardiovascular-death-with-mineralocorticoid-receptor-antagonist-in-heart-failure",
+  "title": "HR for cardiovascular death with mineralocorticoid receptor antagonist in heart failure",
+  "measure": "HR",
+  "pico": {
+    "population": "heart failure",
+    "outcome": "cardiovascular death",
+    "intervention": "mineralocorticoid receptor antagonist",
+    "comparator": "placebo"
+  },
+  "primary_estimand": "hazard ratio for cardiovascular death with MRAs",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-05-31T21:25:38Z"
+  },
+  "favours_low": "favours mineralocorticoid receptor antagonist",
+  "favours_high": "favours placebo",
+  "method": "PM",
+  "hksj": false,
+  "studies": [
+    {
+      "nct": "NCT00094302",
+      "name": "Treatment of Preserved Cardiac Function Heart Failure With an Aldosterone Antagonist (TOPCAT)",
+      "year": 2006,
+      "agent": "Spironolactone",
+      "comparator": "Placebo",
+      "hr": 0.89,
+      "lci": 0.77,
+      "uci": 1.04,
+      "inc": true
+    },
+    {
+      "nct": "NCT01115855",
+      "name": "The Effect Of Eplerenone Versus Placebo On Cardiovascular Mortality And Heart Failure Hospitalization In Japanese Subjects With Chronic Heart Failure",
+      "year": 2010,
+      "agent": "Eplerenone",
+      "comparator": "Placebo",
+      "hr": 2.4,
+      "lci": 0.92,
+      "uci": 6.24,
+      "inc": true
+    }
+  ],
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "estimator_for_k": "pass",
+      "pi_t_dist": "pass",
+      "log_scale_pooling": "pass",
+      "heterogeneity_reported": "pass",
+      "hksj_floor": "pass",
+      "no_nan": "pass",
+      "rows_parse": "pass",
+      "coherent_estimand": "pass"
+    }
+  },
+  "pooled": {
+    "est": 1.299810952366176,
+    "ci_lower": 0.505415677982421,
+    "ci_upper": 3.342809860262841,
+    "i2": 75.166179658701,
+    "tau2": 0.3698435611961113,
+    "k": 2,
+    "df": 1,
+    "Q": 4.026766668425096,
+    "pi_lower": 6.79236560776174e-05,
+    "pi_upper": 24873.639162774718,
+    "ci_note": "z",
+    "method": "PM"
+  },
+  "diagnostics": {
+    "egger": null,
+    "loo": [],
+    "trimfill": null,
+    "influence": [],
+    "metareg": null
+  },
+  "e156_body": "In heart failure, does mineralocorticoid receptor antagonist compared with placebo change cardiovascular death? This synthesis aggregates 2 randomized trials of mineralocorticoid receptor antagonist drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for cardiovascular death was 1.30 (95% CI 0.51 to 3.34). Between-trial heterogeneity was I-squared 75 percent and the 95% prediction interval spanned 0.00 to 24873.64. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond the included trials.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 125,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": []
+}

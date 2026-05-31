@@ -7,7 +7,7 @@
     "code_runs": "pass",
     "dashboard_match": "pass",
     "claim_language": "pass",
-    "analysis_rerun": "not-run",
+    "analysis_rerun": "pass",
     "external_review": "not-run"
   },
   "aact_stats": {
