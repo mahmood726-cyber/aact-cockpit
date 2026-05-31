@@ -147,7 +147,12 @@
     <div class="step"><span class="n">2</span> Extracted effects</div>
     <div class="muted" id="effectsSummary"></div>
     <div class="scroll"><table id="effectsTable"></table></div>
-    <div class="grid2" style="margin-top:14px">
+    <label style="margin-top:14px">Capsule type</label>
+    <div class="selwrap"><select id="kind">
+      <option value="pairwise">Pairwise meta-analysis (forest plot + pooled estimate)</option>
+      <option value="tsa">Trial sequential analysis (cumulative + O'Brien-Fleming boundaries)</option>
+    </select></div>
+    <div class="grid2" style="margin-top:12px">
       <div>
         <label>Between-study estimator</label>
         <div class="selwrap"><select id="method">
@@ -156,7 +161,7 @@
           <option value="DL">DerSimonian-Laird (flagged for k&lt;10)</option>
         </select></div>
       </div>
-      <div>
+      <div id="hksjWrap">
         <label>Small-sample CI (HKSJ)</label>
         <div class="selwrap"><select id="hksj">
           <option value="false">Off (z-based)</option>
@@ -175,6 +180,21 @@
     </div>
     <div class="muted" id="auditLine" style="margin-top:8px"></div>
     <a class="dl" id="dl" target="_blank" rel="noopener">Open the capsule ↗</a>
+  </div>
+
+  <!-- NETWORK META-ANALYSIS -->
+  <div class="card" id="cardNma">
+    <div class="step"><span class="n">★</span> Network meta-analysis — compare multiple treatments</div>
+    <p class="muted" style="margin-top:-4px">Builds a connected network from head-to-head and placebo-controlled
+      trials, ranks treatments (SUCRA), and tests loop consistency where closed loops exist. Cross-validated against R <code>netmeta</code>.</p>
+    <label>Network</label>
+    <div class="selwrap"><select id="nmaPreset"><option value="">— loading… —</option></select></div>
+    <button class="btn sec" id="nmaBtn" style="margin-top:14px"><span class="spin"></span><span class="lbl">Build network capsule</span></button>
+    <div class="status" id="nmaStatus"></div>
+    <div class="hide" id="nmaResult" style="margin-top:12px">
+      <span class="tier" id="nmaTier"></span> <span class="big" id="nmaLine"></span>
+      <a class="dl" id="nmaDl" target="_blank" rel="noopener" style="margin-left:10px">Open the network capsule ↗</a>
+    </div>
   </div>
 </div>
 
@@ -251,21 +271,52 @@ $("searchBtn").addEventListener("click", async () => {
   busy($("searchBtn"),false);
 });
 
+$("kind").addEventListener("change", e => {
+  $("hksjWrap").style.visibility = e.target.value === "tsa" ? "hidden" : "visible";
+});
+
 $("buildBtn").addEventListener("click", async () => {
   if(!lastEffects) return;
   busy($("buildBtn"),true);
   try{
-    const man = await jpost("/api/build", {effects:lastEffects, method:$("method").value, hksj:$("hksj").value==="true"});
+    const kind = $("kind").value;
+    const man = await jpost("/api/build", {effects:lastEffects, kind, method:$("method").value, hksj:$("hksj").value==="true"});
     const p = lastEffects;
     $("tier").textContent = man.tier; $("tier").className = "tier "+man.tier;
-    $("pooledLine").textContent = `${p.measure} meta-analysis · ${man.k} trials`;
-    $("auditLine").textContent = man.ok ? "E156 body validated · self-audit recorded in assurance.json · JS engine cross-checks against R."
+    const label = kind==="tsa" ? `trial sequential analysis · ${man.k} trials · ${man.conclusion||""}`
+                               : `${p.measure} meta-analysis · ${man.k} trials`;
+    $("pooledLine").textContent = label;
+    $("auditLine").textContent = man.ok ? "E156 body validated · self-audit recorded · JS engine cross-checks against R."
                                         : "Body validation failed — check the capsule.";
     $("dl").href = man.download_url;
     $("card3").classList.remove("hide"); $("card3").classList.add("row-fade");
     $("card3").scrollIntoView({behavior:"smooth"});
   }catch(e){ alert("Build failed: "+e.message); }
   busy($("buildBtn"),false);
+});
+
+// ----- Network meta-analysis -----
+(async () => {
+  try{
+    const r = await (await fetch("/api/nma_presets")).json();
+    $("nmaPreset").innerHTML = '<option value="">— pick a network —</option>' +
+      r.presets.map(p => `<option value="${p.id}">${p.label}</option>`).join("");
+  }catch(e){ $("nmaPreset").innerHTML = '<option value="">(none available)</option>'; }
+})();
+
+$("nmaBtn").addEventListener("click", async () => {
+  const preset = $("nmaPreset").value;
+  if(!preset){ $("nmaStatus").innerHTML = '<span class="err">Pick a network first.</span>'; return; }
+  busy($("nmaBtn"),true); $("nmaStatus").textContent = "Building the network from AACT contrasts…";
+  try{
+    const man = await jpost("/api/build_nma", {preset});
+    $("nmaTier").textContent = man.tier; $("nmaTier").className = "tier "+man.tier;
+    $("nmaLine").textContent = `${man.treatments} treatments · ${man.n_contrasts} contrasts`;
+    $("nmaDl").href = man.download_url;
+    $("nmaResult").classList.remove("hide"); $("nmaResult").classList.add("row-fade");
+    $("nmaStatus").textContent = "";
+  }catch(e){ $("nmaStatus").innerHTML = `<span class="err">Build failed: ${e.message}</span>`; }
+  busy($("nmaBtn"),false);
 });
 </script>
 </body>

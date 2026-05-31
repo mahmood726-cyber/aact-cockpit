@@ -31,3 +31,22 @@ def test_health_responds():
 def test_build_rejects_garbage():
     r = client.post("/api/build", json={"effects": {"studies": []}, "method": "PM"})
     assert r.status_code == 422  # CapsuleInputError -> missing pico/snapshot_date
+
+
+def test_build_tsa_rejects_garbage():
+    r = client.post("/api/build", json={"effects": {"studies": []}, "kind": "tsa"})
+    assert r.status_code == 422
+
+
+def test_nma_presets_lists_configs():
+    r = client.get("/api/nma_presets")
+    assert r.status_code == 200
+    presets = r.json()["presets"]
+    ids = {p["id"] for p in presets}
+    # the two shipped NMA configs should be discoverable
+    assert "af_anticoag_nma" in ids and "melanoma_os_nma" in ids
+
+
+def test_build_nma_unknown_preset_404():
+    r = client.post("/api/build_nma", json={"preset": "does_not_exist"})
+    assert r.status_code == 404

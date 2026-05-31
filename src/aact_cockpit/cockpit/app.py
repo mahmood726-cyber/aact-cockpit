@@ -15,13 +15,19 @@ from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+import json
+
 from aact_engine.contracts import PICO
+from aact_engine.nma import extract_contrasts
 from aact_engine.query import cohort_search, effect_extraction, open_warehouse
 from aact_cockpit.capsule.generate_capsule import emit, CapsuleInputError, CapsuleEmitError
+from aact_cockpit.capsule.generate_tsa_capsule import emit as tsa_emit
+from aact_cockpit.capsule.generate_nma_capsule import emit as nma_emit
 
 _REPO = Path(__file__).resolve().parents[3]
 _STATIC = Path(__file__).resolve().parent / "static"
 _CAPSULES = _REPO / "capsules"
+_ANALYSES = _REPO / "analyses"
 _CAPSULES.mkdir(exist_ok=True)
 
 app = FastAPI(title="AACT Cockpit", version="0.1.0")
@@ -45,6 +51,11 @@ class BuildReq(BaseModel):
     effects: dict           # an EffectsDataset.to_dict() payload
     method: str = "PM"
     hksj: bool = False
+    kind: str = "pairwise"  # "pairwise" | "tsa"
+
+
+class NmaBuildReq(BaseModel):
+    preset: str             # an analyses/<preset>.json config name (stem)
 
 
 # ------------------------------- endpoints -------------------------------- #
@@ -96,12 +107,59 @@ def api_effects(req: EffectsReq):
 @app.post("/api/build")
 def api_build(req: BuildReq):
     try:
-        man = emit(req.effects, _CAPSULES, method=req.method, hksj=req.hksj)
+        if req.kind == "tsa":
+            man = tsa_emit(req.effects, _CAPSULES, method=req.method)
+        else:
+            man = emit(req.effects, _CAPSULES, method=req.method, hksj=req.hksj)
     except (CapsuleInputError, CapsuleEmitError) as e:
         raise HTTPException(422, str(e))
     slug = man["slug"]
-    pooled = req.effects  # frontend already has effects; pooled is recomputed client-side too
     man["download_url"] = f"/capsules/{slug}/{slug}-capsule.html"
+    return man
+
+
+@app.get("/api/nma_presets")
+def api_nma_presets():
+    """Network-meta-analysis presets (analyses/*_nma.json configs)."""
+    out = []
+    for cfg_path in sorted(_ANALYSES.glob("*_nma.json")):
+        try:
+            cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            continue
+        pico = cfg.get("pico", {})
+        out.append({"id": cfg_path.stem,
+                    "label": f"{pico.get('outcome', '?')} in {pico.get('population', '?')}"})
+    return {"presets": out}
+
+
+@app.post("/api/build_nma")
+def api_build_nma(req: NmaBuildReq):
+    cfg_path = _ANALYSES / f"{req.preset}.json"
+    if not cfg_path.is_file():
+        raise HTTPException(404, f"unknown NMA preset: {req.preset}")
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    con = open_warehouse()
+    try:
+        ex = extract_contrasts(cfg["condition"], cfg["outcome_like"], cfg["nodes"],
+                               measure_like=cfg.get("measure_like", "hazard"), con=con)
+    finally:
+        con.close()
+    if len(ex["contrasts"]) < 2:
+        raise HTTPException(422, f"only {len(ex['contrasts'])} contrasts — not enough for a network")
+    ds = {"pico": cfg["pico"], "primary_estimand": cfg["primary_estimand"],
+          "measure": "HR", "reference": cfg.get("reference"),
+          "lower_is_better": cfg.get("lower_is_better", True),
+          "snapshot_date": ex["provenance"].get("snapshot_date"),
+          "provenance": ex["provenance"], "contrasts": ex["contrasts"],
+          "treatments": ex["treatments"], "notes": ex["notes"]}
+    try:
+        man = nma_emit(ds, _CAPSULES)
+    except (CapsuleInputError, CapsuleEmitError) as e:
+        raise HTTPException(422, str(e))
+    slug = man["slug"]
+    man["download_url"] = f"/capsules/{slug}/{slug}-capsule.html"
+    man["n_contrasts"] = len(ex["contrasts"])
     return man
 
 

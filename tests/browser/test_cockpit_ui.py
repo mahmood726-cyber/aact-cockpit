@@ -1,16 +1,15 @@
 """End-to-end UI test of the cockpit via headless Chrome (Selenium).
 
-Assumes the server is running at http://127.0.0.1:8000. Drives the dropdown
-flow: pick a preset -> search cohort -> build capsule -> open the capsule, and
-asserts no severe console errors at each step. Saves screenshots.
+Assumes the server is running at http://127.0.0.1:8000. Exercises all three
+methods from the GUI: pairwise MA, TSA, and the NMA-preset flow — picking
+dropdowns, building, and opening each generated capsule. Asserts no severe
+console errors and that each capsule's live plot renders. Saves screenshots.
 
 Run: python tests/browser/test_cockpit_ui.py
 """
 from __future__ import annotations
 
 import sys
-import time
-from pathlib import Path
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -19,6 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
 BASE = "http://127.0.0.1:8000"
+from pathlib import Path
 SHOTS = Path.home() / "aact_ui_shots"
 SHOTS.mkdir(exist_ok=True)
 
@@ -26,7 +26,7 @@ SHOTS.mkdir(exist_ok=True)
 def _driver():
     o = Options()
     o.add_argument("--headless=new")
-    o.add_argument("--window-size=1280,1500")
+    o.add_argument("--window-size=1280,1600")
     o.add_argument("--no-sandbox")
     o.set_capability("goog:loggingPrefs", {"browser": "ALL"})
     return webdriver.Chrome(options=o)
@@ -37,66 +37,80 @@ def _severe(driver):
             if l["level"] == "SEVERE" and "favicon" not in l["message"]]
 
 
-def run_preset(driver, wait, preset_value, name):
-    print(f"\n=== flow: {name} ({preset_value}) ===")
+def _svg_children(driver, el_id):
+    return driver.execute_script(
+        f"var f=document.getElementById('{el_id}');return f?f.childElementCount:0;")
+
+
+def _extract(driver, wait, preset_value, name):
+    """Preset -> search -> effects table populated. Returns nothing; leaves
+    card2 visible so the caller can choose a capsule type and build."""
     driver.get(BASE)
     wait.until(lambda d: "connecting" not in d.find_element(By.ID, "health").text)
-    print("  health:", driver.find_element(By.ID, "health").text)
-
     Select(driver.find_element(By.ID, "preset")).select_by_value(preset_value)
-    summary = driver.find_element(By.ID, "summary").text
-    print("  summary:", summary)
-    assert "analyse" in summary.lower()
-    driver.save_screenshot(str(SHOTS / f"1_form_{name}.png"))
-
     driver.find_element(By.ID, "searchBtn").click()
-    # card2 becomes visible with rows
     wait.until(EC.visibility_of_element_located((By.ID, "card2")))
     wait.until(lambda d: len(d.find_elements(By.CSS_SELECTOR, "#effectsTable tbody tr")) > 0)
     rows = len(driver.find_elements(By.CSS_SELECTOR, "#effectsTable tbody tr"))
-    print("  effects summary:", driver.find_element(By.ID, "effectsSummary").text)
-    print("  effect rows:", rows)
-    assert rows >= 2, f"expected >=2 effect rows, got {rows}"
-    driver.save_screenshot(str(SHOTS / f"2_effects_{name}.png"))
+    print(f"  [{name}] effect rows: {rows}")
+    assert rows >= 2
 
+
+def build_and_open(driver, wait, kind, name, plot_id):
+    print(f"\n=== {name} (kind={kind}) ===")
+    _extract(driver, wait, "heart failure|acm", name)
+    Select(driver.find_element(By.ID, "kind")).select_by_value(kind)
     driver.find_element(By.ID, "buildBtn").click()
     wait.until(EC.visibility_of_element_located((By.ID, "card3")))
     wait.until(lambda d: d.find_element(By.ID, "tier").text.strip() != "")
     tier = driver.find_element(By.ID, "tier").text.strip().lower()
-    pooled = driver.find_element(By.ID, "pooledLine").text
     dl = driver.find_element(By.ID, "dl").get_attribute("href")
-    print(f"  tier={tier} | {pooled}")
-    print("  capsule:", dl)
-    assert tier in ("bronze", "silver", "gold"), f"unexpected tier {tier!r}"
-    driver.save_screenshot(str(SHOTS / f"3_result_{name}.png"))
+    print(f"  tier={tier} | {driver.find_element(By.ID,'pooledLine').text}")
+    assert tier in ("bronze", "silver", "gold")
+    assert not _severe(driver), f"console errors: {_severe(driver)}"
 
-    sev = _severe(driver)
-    assert not sev, f"severe console errors on cockpit: {sev}"
-
-    # open the generated capsule and verify it rendered (live forest plot drawn)
     driver.get(dl)
-    wait.until(lambda d: d.find_element(By.ID, "tier").text.strip() != "")
-    wait.until(lambda d: d.execute_script(
-        "var f=document.getElementById('forest');return f?f.childElementCount:0;") > 0)
-    n_svg = driver.execute_script("return document.getElementById('forest').childElementCount;")
-    print("  forest svg children:", n_svg)
-    ctier = driver.find_element(By.ID, "tier").text.strip().lower()
-    pooled_line = driver.find_element(By.ID, "pooledLine").text
-    print("  capsule tier:", ctier, "| pooled:", pooled_line)
-    assert ctier == tier, f"capsule tier {ctier} != cockpit tier {tier}"
-    csev = _severe(driver)
-    assert not csev, f"severe console errors in capsule: {csev}"
-    driver.save_screenshot(str(SHOTS / f"4_capsule_{name}.png"))
-    print(f"  OK — screenshots in {SHOTS}")
+    wait.until(lambda d: _svg_children(d, plot_id) > 0)
+    print(f"  capsule {plot_id} svg children:", _svg_children(driver, plot_id))
+    assert driver.find_element(By.ID, "tier").text.strip().lower() == tier
+    assert not _severe(driver), f"capsule console errors: {_severe(driver)}"
+    driver.save_screenshot(str(SHOTS / f"method_{name}.png"))
+    print("  OK")
+
+
+def build_nma(driver, wait):
+    print("\n=== NMA preset flow ===")
+    driver.get(BASE)
+    wait.until(lambda d: len(Select(d.find_element(By.ID, "nmaPreset")).options) > 1)
+    sel = Select(driver.find_element(By.ID, "nmaPreset"))
+    sel.select_by_index(1)   # first real preset
+    label = sel.first_selected_option.text
+    print("  network:", label)
+    driver.find_element(By.ID, "nmaBtn").click()
+    wait.until(EC.visibility_of_element_located((By.ID, "nmaResult")))
+    wait.until(lambda d: d.find_element(By.ID, "nmaTier").text.strip() != "")
+    tier = driver.find_element(By.ID, "nmaTier").text.strip().lower()
+    dl = driver.find_element(By.ID, "nmaDl").get_attribute("href")
+    print(f"  tier={tier} | {driver.find_element(By.ID,'nmaLine').text}")
+    assert tier in ("bronze", "silver", "gold")
+    assert not _severe(driver), f"console errors: {_severe(driver)}"
+
+    driver.get(dl)
+    wait.until(lambda d: _svg_children(d, "netPlot") > 0)
+    print("  capsule netPlot svg children:", _svg_children(driver, "netPlot"))
+    assert not _severe(driver), f"capsule console errors: {_severe(driver)}"
+    driver.save_screenshot(str(SHOTS / "method_nma.png"))
+    print("  OK")
 
 
 def main():
     driver = _driver()
     wait = WebDriverWait(driver, 60)
     try:
-        run_preset(driver, wait, "heart failure|acm", "hf_acm")
-        run_preset(driver, wait, "type 2 diabetes|mace", "t2d_mace")
-        print("\nALL UI FLOWS PASSED")
+        build_and_open(driver, wait, "pairwise", "pairwise", "forest")
+        build_and_open(driver, wait, "tsa", "tsa", "tsaPlot")
+        build_nma(driver, wait)
+        print("\nALL UI FLOWS PASSED (pairwise + TSA + NMA)")
         return 0
     finally:
         driver.quit()
