@@ -72,6 +72,9 @@ def build_and_open(driver, wait, kind, name, plot_id):
     driver.get(dl)
     wait.until(lambda d: _svg_children(d, plot_id) > 0)
     print(f"  capsule {plot_id} svg children:", _svg_children(driver, plot_id))
+    if kind == "pairwise":  # publication-bias funnel + leave-one-out plots
+        wait.until(lambda d: _svg_children(d, "funnel") > 0 and _svg_children(d, "loo") > 0)
+        print(f"  funnel={_svg_children(driver,'funnel')} loo={_svg_children(driver,'loo')}")
     assert driver.find_element(By.ID, "tier").text.strip().lower() == tier
     assert not _severe(driver), f"capsule console errors: {_severe(driver)}"
     driver.save_screenshot(str(SHOTS / f"method_{name}.png"))

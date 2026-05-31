@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T12:24:57Z"
+    "extracted_at": "2026-05-31T17:06:41Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -243,10 +243,141 @@
     "ci_note": "z",
     "method": "PM"
   },
-  "e156_body": "In heart failure, does the intervention compared with control change heart failure hospitalization? This synthesis aggregates 17 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for heart failure hospitalization was 0.87 (95% CI 0.78 to 0.96). Between-trial heterogeneity was I-squared 80 percent and the 95% prediction interval spanned 0.60 to 1.25. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
+  "diagnostics": {
+    "egger": {
+      "intercept": -0.18250568004424206,
+      "se": 1.0301717028397606,
+      "t": -0.1771604476624128,
+      "df": 15,
+      "p": 0.8593823623800425,
+      "k": 17
+    },
+    "loo": [
+      {
+        "omitted": "NCT00354159",
+        "name": "Reducing Decompensation Events Utilizing Intracardiac Pressures in Patients With Chronic HF (REDUCEhf)",
+        "est": 0.8652646623115642,
+        "lo": 0.7761644979278222,
+        "hi": 0.964593121489006
+      },
+      {
+        "omitted": "NCT00358215",
+        "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Darbepoetin Alfa Treatment on Mortality and Morbidity in Heart Failure (HF) Subjects With Symptomatic Left Ventricular Systolic Dysfunction and Anemia",
+        "est": 0.8527405391132689,
+        "lo": 0.7650112188892638,
+        "hi": 0.9505304093487373
+      },
+      {
+        "omitted": "NCT01215253",
+        "name": "Late Sodium Current Blockade in High-Risk ICD Patients",
+        "est": 0.8530366863556663,
+        "lo": 0.7670834817790457,
+        "hi": 0.9486211156327017
+      },
+      {
+        "omitted": "NCT01685840",
+        "name": "Guiding Evidence Based Therapy Using Biomarker Intensified Treatment in Heart Failure.",
+        "est": 0.8575654326733645,
+        "lo": 0.7690470676971181,
+        "hi": 0.9562723820252474
+      },
+      {
+        "omitted": "NCT01920711",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Valsartan, on Morbidity and Mortality in Heart Failure Patients (NYHA Class II-IV) With Preserved Ejection Fraction (PARAGON-HF)",
+        "est": 0.8650654185644855,
+        "lo": 0.774077224108744,
+        "hi": 0.966748736545981
+      },
+      {
+        "omitted": "NCT02064868",
+        "name": "A Multicenter, Prospective, Randomized, Open-label Study to Assess the Effect of Serelaxin Versus Standard of Care in Acute Heart Failure (AHF) Patients",
+        "est": 0.8742004611949089,
+        "lo": 0.7857018376804948,
+        "hi": 0.9726672507340673
+      },
+      {
+        "omitted": "NCT02235077",
+        "name": "Aldosterone Targeted Neurohormonal Combined With Natriuresis Therapy - HF (ATHENA-HF)",
+        "est": 0.8612673485994836,
+        "lo": 0.7745520686953858,
+        "hi": 0.957690871593696
+      },
+      {
+        "omitted": "NCT02271230",
+        "name": "Intervention With Vitamin D and Omega-3 Supplements and Incident Heart Failure",
+        "est": 0.8603679626910221,
+        "lo": 0.7705328122087362,
+        "hi": 0.9606768452899733
+      },
+      {
+        "omitted": "NCT02441218",
+        "name": "Effects of Ivabradine on Cardiovascular Events in Patients With Moderate to Severe Chronic Heart Failure and Left Ventricular Systolic Dysfunction. A Three-year International Multicentre Study",
+        "est": 0.8699643274553007,
+        "lo": 0.7783590071787672,
+        "hi": 0.9723507071473115
+      },
+      {
+        "omitted": "NCT02468232",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Enalapril on Morbidity and Mortality in Japanese Patients With Chronic Heart Failure and Reduced Ejection Fraction.",
+        "est": 0.8653386318750801,
+        "lo": 0.7768719675772515,
+        "hi": 0.963879479588732
+      },
+      {
+        "omitted": "NCT02861534",
+        "name": "A Randomized Parallel-Group, Placebo-Controlled, Double-Blind, Event-Driven, Multi-Center Pivotal Phase III Clinical Outcome Trial of Efficacy and Safety of the Oral sGC Stimulator Vericiguat in Subjects With Heart Failure With Reduced Ejection Fraction (HFrEF) - VerICiguaT GlObal Study in Subjects With Heart Failure With Reduced EjectIon FrAction (VICTORIA)",
+        "est": 0.8622273534947699,
+        "lo": 0.7713933895059506,
+        "hi": 0.9637572984527889
+      },
+      {
+        "omitted": "NCT02929329",
+        "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Omecamtiv Mecarbil on Mortality and Morbidity in Subjects With Chronic Heart Failure With Reduced Ejection Fraction (GALACTIC-HF)",
+        "est": 0.8574623949918718,
+        "lo": 0.7676885947528395,
+        "hi": 0.9577343780415428
+      },
+      {
+        "omitted": "NCT02937454",
+        "name": "A Randomised, Double-Blind Placebo Controlled Trial Comparing the Effect of Intravenous Ferric Carboxymaltose on Hospitalisations and Mortality in Iron Deficient Patients Admitted for Acute Heart Failure (Affirm-AHF)",
+        "est": 0.8707267606068442,
+        "lo": 0.7804997832829016,
+        "hi": 0.9713841155060032
+      },
+      {
+        "omitted": "NCT02946853",
+        "name": "Junctional AV Ablation in CRT-D Patients With Atrial Fibrillation (JAVA-CRT Trial)",
+        "est": 0.8653200360054378,
+        "lo": 0.7778247876989516,
+        "hi": 0.9626573703411707
+      },
+      {
+        "omitted": "NCT03387813",
+        "name": "Hemodynamic-GUIDEd Management of Heart Failure",
+        "est": 0.91195423400422,
+        "lo": 0.8741055116487285,
+        "hi": 0.9514418040329644
+      },
+      {
+        "omitted": "NCT04180696",
+        "name": "Mid-Q Response Study",
+        "est": 0.8617401198564786,
+        "lo": 0.7756248340981945,
+        "hi": 0.9574165260369227
+      },
+      {
+        "omitted": "NCT05093933",
+        "name": "A Pivotal Phase 3 Randomized, Placebo-controlled Clinical Study to Evaluate the Efficacy and Safety of the sGC Stimulator Vericiguat/MK-1242 in Adults With Chronic Heart Failure With Reduced Ejection Fraction",
+        "est": 0.8583653434794424,
+        "lo": 0.7688343499029896,
+        "hi": 0.9583222484525417
+      }
+    ]
+  },
+  "e156_body": "In heart failure, does the intervention compared with control change heart failure hospitalization? This synthesis aggregates 17 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for heart failure hospitalization was 0.87 (95% CI 0.78 to 0.96). Between-trial heterogeneity was I-squared 80 percent, the 95% prediction interval spanned 0.60 to 1.25, and Egger's test for small-study effects returned a p-value of 0.86. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {
     "ok": true,
-    "word_count": 120,
+    "word_count": 130,
     "sentence_count": 7
   },
   "tier": "silver",

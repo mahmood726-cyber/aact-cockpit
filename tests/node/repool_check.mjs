@@ -22,18 +22,27 @@ const si = html.indexOf(startTok), ei = html.indexOf(endTok);
 if (si < 0 || ei < 0 || ei < si) { console.error("engine block not located"); process.exit(2); }
 const engine = html.slice(si, ei);
 
-// 3) run pool(CAPSULE.studies) using the capsule's exact code
-const runner = new Function("CAPSULE", engine + "\nreturn pool(CAPSULE.studies);");
+// 3) run pool() + diagnostics (egger, leave-one-out) using the capsule's code
+const runner = new Function("CAPSULE",
+  engine + "\nreturn {pool:pool(CAPSULE.studies), egger:egger(CAPSULE.studies), loo:leaveOneOut(CAPSULE.studies)};");
 const res = runner(CAPSULE);
 
 const py = CAPSULE.pooled;
-const dEst = Math.abs(res.est - py.est);
-const dLo = Math.abs(res.ciL - py.ci_lower);
-const dHi = Math.abs(res.ciU - py.ci_upper);
+const dEst = Math.abs(res.pool.est - py.est);
+const dLo = Math.abs(res.pool.ciL - py.ci_lower);
+const dHi = Math.abs(res.pool.ciU - py.ci_upper);
 const TOL = 1e-4;
-const ok = dEst < TOL && dLo < TOL && dHi < TOL;
 
-console.log(`JS  est=${res.est.toFixed(6)} ci=[${res.ciL.toFixed(6)},${res.ciU.toFixed(6)}] k=${res.k}`);
-console.log(`PY  est=${py.est.toFixed(6)} ci=[${py.ci_lower.toFixed(6)},${py.ci_upper.toFixed(6)}] k=${py.k}`);
-console.log(`Δest=${dEst.toExponential(2)} Δlo=${dLo.toExponential(2)} Δhi=${dHi.toExponential(2)}  ${ok ? "PASS" : "FAIL"}`);
+// diagnostics parity (when present)
+const diag = CAPSULE.diagnostics || {};
+let dEg = 0, dLoo = 0;
+if (diag.egger && res.egger) dEg = Math.abs(res.egger.intercept - diag.egger.intercept);
+if (diag.loo && diag.loo.length) {
+  for (let i = 0; i < diag.loo.length; i++) dLoo = Math.max(dLoo, Math.abs((res.loo[i]?.est ?? 0) - diag.loo[i].est));
+}
+const ok = dEst < TOL && dLo < TOL && dHi < TOL && dEg < 1e-6 && dLoo < 1e-4;
+
+console.log(`pool Δest=${dEst.toExponential(2)} Δlo=${dLo.toExponential(2)} Δhi=${dHi.toExponential(2)} (k=${res.pool.k})`);
+console.log(`egger Δintercept=${dEg.toExponential(2)}  leave-one-out maxΔest=${dLoo.toExponential(2)}`);
+console.log(ok ? "PASS" : "FAIL");
 process.exit(ok ? 0 : 1);

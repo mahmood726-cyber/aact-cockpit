@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T12:24:57Z"
+    "extracted_at": "2026-05-31T17:06:42Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -122,10 +122,64 @@
     "ci_note": "z",
     "method": "PM"
   },
-  "e156_body": "In type 2 diabetes, does the intervention compared with control change major adverse cardiovascular events? This synthesis aggregates 6 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for major adverse cardiovascular events was 0.93 (95% CI 0.87 to 0.99). Between-trial heterogeneity was I-squared 21 percent and the 95% prediction interval spanned 0.81 to 1.07. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
+  "diagnostics": {
+    "egger": {
+      "intercept": -1.2507733143606876,
+      "se": 1.4703924784422273,
+      "t": -0.8506390862974149,
+      "df": 4,
+      "p": 0.39496987009592766,
+      "k": 6
+    },
+    "loo": [
+      {
+        "omitted": "NCT00790205",
+        "name": "TECOS: A Randomized, Placebo Controlled Clinical Trial to Evaluate Cardiovascular Outcomes After Treatment With Sitagliptin in Patients With Type 2 Diabetes Mellitus and Inadequate Glycemic Control",
+        "est": 0.915700409492739,
+        "lo": 0.8466783456952723,
+        "hi": 0.9903492208208154
+      },
+      {
+        "omitted": "NCT01144338",
+        "name": "Exenatide Study of Cardiovascular Event Lowering Trial (EXSCEL). A Randomized, Placebo Controlled Clinical Trial to Evaluate Cardiovascular Outcomes After Treatment With Exenatide Once Weekly in Patients With Type 2 Diabetes Mellitus.",
+        "est": 0.9320465549931445,
+        "lo": 0.8528119815391922,
+        "hi": 1.018642795222813
+      },
+      {
+        "omitted": "NCT01703208",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Multicenter Study to Assess Cardiovascular Outcomes Following Treatment With MK-3102 in Subjects With Type 2 Diabetes Mellitus",
+        "est": 0.9227223073881705,
+        "lo": 0.8541858488631967,
+        "hi": 0.9967578574204514
+      },
+      {
+        "omitted": "NCT01986881",
+        "name": "Randomized, Double-Blind, Placebo-Controlled, Parallel-Group Study to Assess Cardiovascular Outcomes Following Treatment With Ertugliflozin (MK-8835/PF-04971729) in Subjects With Type 2 Diabetes Mellitus and Established Vascular Disease, The VERTIS CV Study",
+        "est": 0.9284280485863253,
+        "lo": 0.8502005895209187,
+        "hi": 1.0138532624254355
+      },
+      {
+        "omitted": "NCT02019264",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group Study to Evaluate the Effect of Long-term Treatment With BELVIQ (Lorcaserin HCl) on the Incidence of Major Adverse Cardiovascular Events and Conversion to Type 2 Diabetes Mellitus in Obese and Overweight Subjects With Cardiovascular Disease or Multiple Cardiovascular Risk Factors",
+        "est": 0.917142613047401,
+        "lo": 0.8443830726870066,
+        "hi": 0.9961717612252631
+      },
+      {
+        "omitted": "NCT03496298",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Evaluate the Effect of Efpeglenatide on Cardiovascular Outcomes in Type 2 Diabetes Patients at High Cardiovascular Risk",
+        "est": 0.9452381615360436,
+        "lo": 0.8981550599755516,
+        "hi": 0.9947894543380523
+      }
+    ]
+  },
+  "e156_body": "In type 2 diabetes, does the intervention compared with control change major adverse cardiovascular events? This synthesis aggregates 6 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for major adverse cardiovascular events was 0.93 (95% CI 0.87 to 0.99). Between-trial heterogeneity was I-squared 21 percent, the 95% prediction interval spanned 0.81 to 1.07, and Egger's test for small-study effects returned a p-value of 0.39. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {
     "ok": true,
-    "word_count": 123,
+    "word_count": 133,
     "sentence_count": 7
   },
   "tier": "silver",

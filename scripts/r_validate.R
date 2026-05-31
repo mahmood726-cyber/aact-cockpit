@@ -36,6 +36,27 @@ for (sc in sidecars) {
   status <- if (d < 1e-4) "PASS" else "FAIL"
   cat(sprintf("  [%s] %-44s R=%.4f cap=%.4f d=%.2e\n", status, cap$slug, est_r, est_cap, d))
   if (d >= 1e-4) fail <- fail + 1L
+
+  # diagnostics: Egger (radial OLS via lm) + leave-one-out vs metafor
+  dg <- cap$diagnostics
+  if (!is.null(dg) && !is.null(dg$egger) && length(yi) >= 3) {
+    z <- yi / sei; x <- 1 / sei; fit <- lm(z ~ x)
+    d2 <- abs(as.numeric(coef(fit)[1]) - as.numeric(dg$egger$intercept))
+    checked <- checked + 1L
+    st2 <- if (d2 < 1e-4) "PASS" else "FAIL"
+    cat(sprintf("  [%s]   egger intercept R=%.4f cap=%.4f d=%.2e\n", st2,
+                as.numeric(coef(fit)[1]), as.numeric(dg$egger$intercept), d2))
+    if (d2 >= 1e-4) fail <- fail + 1L
+  }
+  if (!is.null(dg) && !is.null(dg$loo) && length(dg$loo) >= 3) {
+    lo <- exp(leave1out(res)$estimate)
+    cap_loo <- vapply(dg$loo, function(l) as.numeric(l$est), numeric(1))
+    d3 <- max(abs(lo - cap_loo))
+    checked <- checked + 1L
+    st3 <- if (d3 < 1e-3) "PASS" else "FAIL"
+    cat(sprintf("  [%s]   leave-one-out (k=%d) maxdelta=%.2e\n", st3, length(cap_loo), d3))
+    if (d3 >= 1e-3) fail <- fail + 1L
+  }
 }
 cat(sprintf("\n%d pairwise capsules cross-validated with metafor, %d failures\n", checked, fail))
 quit(status = if (fail > 0L) 1L else 0L)

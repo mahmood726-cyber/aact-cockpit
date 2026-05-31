@@ -20,7 +20,7 @@ import re
 import sys
 from pathlib import Path
 
-from .pooling import pool
+from .pooling import pool, diagnostics
 
 # --------------------------------------------------------------------------- #
 # validate_e156 + compute_tier: prefer the canonical F:\E156 scripts (local dev,
@@ -208,7 +208,7 @@ def _fmt(x, nd=2):
 # --------------------------------------------------------------------------- #
 # e156 body auto-draft (S1..S7, <=156 words, hedged)
 # --------------------------------------------------------------------------- #
-def draft_e156_body(payload: dict, pooled: dict) -> str:
+def draft_e156_body(payload: dict, pooled: dict, diag: dict | None = None) -> str:
     pico = payload["pico"]
     measure = payload["measure"]
     k = pooled["k"]
@@ -227,12 +227,19 @@ def draft_e156_body(payload: dict, pooled: dict) -> str:
     # the trailing "al." as the abbreviation "al." and merges the next sentence.
     s3 = f"Trial-reported effect estimates were pooled on the log scale using a {method} random-effects model with a prediction interval based on the t-distribution."
     s4 = f"The pooled {measure} for {out} was {est} (95% CI {lo} to {hi})."
+    egg = (diag or {}).get("egger")
     s5 = f"Between-trial heterogeneity was I-squared {i2} percent and the 95% prediction interval spanned {pil} to {piu}."
+    if egg:
+        s5 = (f"Between-trial heterogeneity was I-squared {i2} percent, the 95% prediction interval spanned "
+              f"{pil} to {piu}, and Egger's test for small-study effects returned a p-value of {_fmt(egg['p'])}.")
     s6 = f"These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading."
     s7 = f"Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them."
     body = " ".join([s1, s2, s3, s4, s5, s6, s7])
 
-    # auto-shrink if >156 words: trim S5's secondary clause first.
+    # auto-shrink if >156 words: drop the Egger clause, then the PI clause.
+    if len(body.split()) > 156:
+        s5 = f"Between-trial heterogeneity was I-squared {i2} percent and the 95% prediction interval spanned {pil} to {piu}."
+        body = " ".join([s1, s2, s3, s4, s5, s6, s7])
     if len(body.split()) > 156:
         s5 = f"Between-trial heterogeneity was I-squared {i2} percent (95% prediction interval {pil} to {piu})."
         body = " ".join([s1, s2, s3, s4, s5, s6, s7])
@@ -247,7 +254,8 @@ def render_capsule_html(ds: dict, *, method: str = "PM", hksj: bool = False,
     payload = normalize_dataset(ds)
     audit = compute_self_audit(payload, method=method, hksj=hksj,
                                analysis_rerun=analysis_rerun, external_review=external_review)
-    body = draft_e156_body(payload, audit["pooled"])
+    diag = diagnostics(payload["studies"], method=method)   # Egger + leave-one-out
+    body = draft_e156_body(payload, audit["pooled"], diag)
     vres = validate_e156(body, strict_words=True)
     if not vres["ok"]:
         bad = [c["name"] for c in vres["checks"] if not c["ok"]]
@@ -268,6 +276,7 @@ def render_capsule_html(ds: dict, *, method: str = "PM", hksj: bool = False,
         "pooled": {kk: audit["pooled"][kk] for kk in
                    ("est", "ci_lower", "ci_upper", "i2", "tau2", "k", "df", "Q",
                     "pi_lower", "pi_upper", "ci_note", "method")},
+        "diagnostics": diag,
         "e156_body": body,
         "e156_validation": {"ok": vres["ok"], "word_count": vres["word_count"],
                             "sentence_count": vres["sentence_count"]},

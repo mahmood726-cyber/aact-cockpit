@@ -8,7 +8,56 @@ import re
 import pytest
 
 from aact_cockpit.capsule import generate_capsule as gc
-from aact_cockpit.capsule.pooling import pool
+from aact_cockpit.capsule.pooling import pool, diagnostics, egger, leave_one_out
+
+
+def _items(triples):
+    return [{"hr": h, "lci": l, "uci": u, "nct": f"NCT0{i}", "name": f"Trial {i}", "inc": True}
+            for i, (h, l, u) in enumerate(triples)]
+
+
+def test_egger_computed_and_finite():
+    import math
+    d = diagnostics(_items([(0.80, 0.66, 0.97), (0.82, 0.70, 0.96), (0.78, 0.60, 1.01),
+                            (0.85, 0.74, 0.98), (0.79, 0.65, 0.96)]))
+    e = d["egger"]
+    assert e["k"] == 5
+    assert all(math.isfinite(e[k]) for k in ("intercept", "se", "t", "p"))
+    assert 0.0 <= e["p"] <= 1.0
+    assert len(d["loo"]) == 5
+    for l in d["loo"]:
+        assert l["lo"] < l["est"] < l["hi"]
+
+
+def test_egger_needs_three():
+    assert egger(_items([(0.8, 0.6, 1.0), (0.9, 0.7, 1.1)])) is None
+    assert leave_one_out(_items([(0.8, 0.6, 1.0), (0.9, 0.7, 1.1)])) == []
+
+
+def test_leave_one_out_each_omits_one():
+    items = _items([(0.80, 0.66, 0.97), (0.74, 0.60, 0.92), (0.83, 0.71, 0.97), (0.90, 0.80, 1.02)])
+    loo = leave_one_out(items)
+    assert len(loo) == 4
+    assert {l["omitted"] for l in loo} == {it["nct"] for it in items}
+
+
+def test_capsule_embeds_diagnostics():
+    # the e156 body + capsule payload carry Egger + LOO when k>=3
+    ds = {
+        "pico": {"population": "x", "outcome": "y"}, "snapshot_date": "2026-04-12",
+        "primary_estimand": "HR for y", "measure": "HR",
+        "provenance": {"source": "AACT"},
+        "studies": [{"nct_id": f"NCT0{i}", "study_label": f"T{i}", "year": 2018 + i,
+                     "point_estimate": h, "ci_lower": l, "ci_upper": u,
+                     "arm_experimental": {"label": "drug"}, "arm_comparator": {"label": "placebo"}}
+                    for i, (h, l, u) in enumerate([(0.8, 0.66, 0.97), (0.82, 0.7, 0.96),
+                                                   (0.78, 0.6, 1.01), (0.85, 0.74, 0.98)])],
+        "notes": [],
+    }
+    res = gc.render_capsule_html(ds)
+    diag = res["capsule"]["diagnostics"]
+    assert diag["egger"]["k"] == 4 and len(diag["loo"]) == 4
+    assert "Egger" in res["body"]
 
 
 def _dataset(k=5, measure="HR"):

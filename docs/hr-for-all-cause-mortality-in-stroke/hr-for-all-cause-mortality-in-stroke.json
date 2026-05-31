@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T12:25:01Z"
+    "extracted_at": "2026-05-31T17:06:45Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -144,10 +144,78 @@
     "ci_note": "z",
     "method": "PM"
   },
-  "e156_body": "In stroke, does the intervention compared with control change all-cause mortality? This synthesis aggregates 8 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.93 (95% CI 0.84 to 1.03). Between-trial heterogeneity was I-squared 22 percent and the 95% prediction interval spanned 0.74 to 1.17. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
+  "diagnostics": {
+    "egger": {
+      "intercept": 0.8681502382393377,
+      "se": 0.7366865222993505,
+      "t": 1.178452723051946,
+      "df": 6,
+      "p": 0.23861616943534614,
+      "k": 8
+    },
+    "loo": [
+      {
+        "omitted": "NCT00091949",
+        "name": "Insulin Resistance Intervention After Stroke (IRIS) Trial",
+        "est": 0.9390197732360472,
+        "lo": 0.8273915528240983,
+        "hi": 1.0657084079703405
+      },
+      {
+        "omitted": "NCT00403767",
+        "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation",
+        "est": 0.9522761704917319,
+        "lo": 0.8451228542067593,
+        "hi": 1.073015479787915
+      },
+      {
+        "omitted": "NCT00781391",
+        "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)",
+        "est": 0.9506872622700744,
+        "lo": 0.8308622115871793,
+        "hi": 1.0877932081133481
+      },
+      {
+        "omitted": "NCT01994720",
+        "name": "A Randomised, Double-Blind, Multinational Study to Prevent Major Vascular Events With Ticagrelor Compared to Aspirin (ASA) in Patients With Acute Ischaemic Stroke or TIA.",
+        "est": 0.9099473871903273,
+        "lo": 0.8289755504021579,
+        "hi": 0.9988283092943051
+      },
+      {
+        "omitted": "NCT02111564",
+        "name": "Medically Ill Patient Assessment of Rivaroxaban Versus Placebo in Reducing Post-Discharge Venous Thrombo-Embolism Risk",
+        "est": 0.9350784180717848,
+        "lo": 0.8607613496077403,
+        "hi": 1.0158119301500859
+      },
+      {
+        "omitted": "NCT02239120",
+        "name": "Randomized, Double-blind, Evaluation in Secondary Stroke Prevention Comparing the EfficaCy and Safety of the Oral Thrombin Inhibitor Dabigatran Etexilate (110 mg or 150 mg, Oral b.i.d.) Versus Acetylsalicylic Acid (100 mg Oral q.d.) in Patients With Embolic Stroke of Undetermined Source (RESPECT ESUS)",
+        "est": 0.9358879205569914,
+        "lo": 0.8282936395741407,
+        "hi": 1.0574585605834401
+      },
+      {
+        "omitted": "NCT02313909",
+        "name": "Multicenter, Randomized, Double-blind, Double-dummy, Active-comparator, Event-driven, Superiority Phase III Study of Secondary Prevention of Stroke and Prevention of Systemic Embolism in Patients With a Recent Embolic Stroke of Undetermined Source (ESUS), Comparing Rivaroxaban 15 mg Once Daily With Aspirin 100 mg",
+        "est": 0.9031748491853477,
+        "lo": 0.8431466876701696,
+        "hi": 0.967476739373824
+      },
+      {
+        "omitted": "NCT03192215",
+        "name": "AtRial Cardiopathy and Antithrombotic Drugs In Prevention After Cryptogenic Stroke",
+        "est": 0.9224143180509669,
+        "lo": 0.8235319417851746,
+        "hi": 1.0331696088205664
+      }
+    ]
+  },
+  "e156_body": "In stroke, does the intervention compared with control change all-cause mortality? This synthesis aggregates 8 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.93 (95% CI 0.84 to 1.03). Between-trial heterogeneity was I-squared 22 percent, the 95% prediction interval spanned 0.74 to 1.17, and Egger's test for small-study effects returned a p-value of 0.24. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {
     "ok": true,
-    "word_count": 117,
+    "word_count": 127,
     "sentence_count": 7
   },
   "tier": "silver",

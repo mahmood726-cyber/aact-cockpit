@@ -73,15 +73,23 @@
   <h2>04 · Pooled result (random-effects)</h2>
   <div class="card"><div class="pooled" id="pooledLine">—</div><div class="muted" id="hetLine"></div></div>
 
-  <h2>05 · 156-word summary (E156)</h2>
+  <h2>05 · Publication bias (funnel + Egger)</h2>
+  <div class="muted">Effect (x) versus precision (y); symmetric points suggest no small-study bias. Egger's test regresses the standard normal deviate on precision.</div>
+  <div class="card"><svg id="funnel" role="img" aria-label="Funnel plot"></svg><div class="muted" id="eggerLine"></div></div>
+
+  <h2>06 · Leave-one-out sensitivity</h2>
+  <div class="muted">The pooled estimate re-computed with each trial omitted; a stable column means no single trial drives the result.</div>
+  <div class="card"><svg id="loo" role="img" aria-label="Leave-one-out plot"></svg></div>
+
+  <h2>07 · 156-word summary (E156)</h2>
   <div class="body156" id="bodyBox"></div>
   <div class="muted" id="bodyMeta"></div>
 
-  <h2>06 · R cross-validation (metafor)</h2>
-  <div class="muted">Copy-paste into R; uses the live-edited data and regenerates the pooled estimate.</div>
+  <h2>08 · R cross-validation (metafor)</h2>
+  <div class="muted">Copy-paste into R; uses the live-edited data and regenerates the pooled estimate, Egger test, and leave-one-out.</div>
   <div class="card"><pre id="rcode"></pre></div>
 
-  <h2>07 · Assurance &amp; inspector</h2>
+  <h2>09 · Assurance &amp; inspector</h2>
   <div class="card" id="auditBox"></div>
   <div class="card"><button id="inspectBtn">show the exact pooling code that ran</button>
     <pre id="inspectOut" style="display:none"></pre></div>
@@ -92,7 +100,7 @@
 </script>
 <script>
 "use strict";
-const CAPSULE = {"slug": "hr-for-all-cause-mortality-in-atrial-fibrillation", "title": "HR for all-cause mortality in atrial fibrillation", "measure": "HR", "pico": {"population": "atrial fibrillation", "outcome": "all-cause mortality", "intervention": null, "comparator": null}, "primary_estimand": "hazard ratio for all-cause mortality", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-05-31T12:24:59Z"}, "favours_low": "favours intervention", "favours_high": "favours comparator", "method": "PM", "hksj": false, "studies": [{"nct": "NCT00174785", "name": "A Placebo-controlled,Double-blind,Parallel Arm Trial to Assess the Efficacy of Dronedarone 400mg Bid for the Prevention of Cardiovascular Hospitalization or Death From Any Cause in Patients With Atrial Fibrillation/Atrial Flutter (AF/AFL)", "year": 2005, "agent": "Dronedarone 400mg Bid", "comparator": "Placebo", "hr": 0.76, "lci": 0.69, "uci": 0.84, "inc": true}, {"nct": "NCT00249795", "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation", "year": 2003, "agent": "Irbesartan", "comparator": "Placebo", "hr": 1.014, "lci": 0.927, "uci": 1.11, "inc": true}, {"nct": "NCT00249873", "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation", "year": 2003, "agent": "Clopidogrel + ASA", "comparator": "Placebo + ASA", "hr": 0.98, "lci": 0.89, "uci": 1.08, "inc": true}, {"nct": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "year": 2006, "agent": "Rivaroxaban", "comparator": "Warfarin", "hr": 0.85, "lci": 0.7, "uci": 1.02, "inc": true}, {"nct": "NCT00412984", "name": "A Phase 3, Active (Warfarin) Controlled, Randomized, Double-Blind, Parallel Arm Study to Evaluate Efficacy and Safety of Apixaban in Preventing Stroke and Systemic Embolism in Subjects With Nonvalvular Atrial Fibrillation", "year": 2006, "agent": "Apixaban", "comparator": "Warfarin", "hr": 0.89, "lci": 0.8, "uci": 1.0, "inc": true}, {"nct": "NCT00494871", "name": "Evaluation of the Efficacy and Safety of Rivaroxaban (BAY59-7939) for the Prevention of Stroke and Non-central Nervous System Systemic Embolism in Subjects With Non-valvular Atrial Fibrillation", "year": 2007, "agent": "Rivaroxaban (Xarelto, BAY59-7939)", "comparator": "Warfarin", "hr": 1.37, "lci": 0.43, "uci": 4.31, "inc": true}, {"nct": "NCT00496769", "name": "Apixaban Versus Acetylsalicylic Acid (ASA) to Prevent Stroke in Atrial Fibrillation Patients Who Have Failed or Are Unsuitable for Vitamin K Antagonist Treatment: A Randomized Double-blind Trial", "year": 2007, "agent": "Apixaban, 2.5 or 5 mg Twice Daily", "comparator": "Acetylsalicylic Acid, 81-324 mg Once Daily", "hr": 0.79, "lci": 0.62, "uci": 1.02, "inc": true}, {"nct": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "year": 2008, "agent": "Warfarin/Placebo Edoxaban", "comparator": "High Dose Edoxaban/Placebo Warfarin", "hr": 0.9, "lci": 0.823, "uci": 0.981, "inc": true}, {"nct": "NCT01674647", "name": "A Prospective, Randomized, Open-label, Parallel-group, Active-controlled, Multicenter Study Exploring the Efficacy and Safety of Once-daily Oral Rivaroxaban (BAY59-7939) Compared With That of Dose-adjusted Oral Vitamin K Antagonists (VKA) for the Prevention of Cardiovascular Events in Subjects With Nonvalvular Atrial Fibrillation Scheduled for Cardioversion", "year": 2012, "agent": "Rivaroxaban (Xarelto, BAY59-7939)", "comparator": "Vitamin K Antagonist (VKA)", "hr": 0.5, "lci": 0.16, "uci": 1.55, "inc": true}, {"nct": "NCT01970501", "name": "GENETIC-AF - A Genotype-Directed Comparative Effectiveness Trial of Bucindolol and Toprol-XL for Prevention of Symptomatic Atrial Fibrillation/Atrial Flutter in Patients With Heart Failure", "year": 2014, "agent": "Bucindolol Hydrochloride", "comparator": "Metoprolol Succinate", "hr": 1.02, "lci": 0.72, "uci": 1.45, "inc": true}, {"nct": "NCT02942407", "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial", "year": 2016, "agent": "Apixaban", "comparator": "Warfarin", "hr": 1.2, "lci": 0.67, "uci": 2.17, "inc": true}], "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"estimator_for_k": "pass", "pi_t_dist": "pass", "log_scale_pooling": "pass", "heterogeneity_reported": "pass", "hksj_floor": "pass", "no_nan": "pass", "rows_parse": "pass"}}, "pooled": {"est": 0.899906289881737, "ci_lower": 0.8385344288212299, "ci_upper": 0.9657699227772123, "i2": 60.60715262804259, "tau2": 0.00569877626982462, "k": 11, "df": 10, "Q": 25.385319079825397, "pi_lower": 0.7468878210178892, "pi_upper": 1.084274382015015, "ci_note": "z", "method": "PM"}, "e156_body": "In atrial fibrillation, does the intervention compared with control change all-cause mortality? This synthesis aggregates 11 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.90 (95% CI 0.84 to 0.97). Between-trial heterogeneity was I-squared 61 percent and the 95% prediction interval spanned 0.75 to 1.08. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.", "e156_validation": {"ok": true, "word_count": 118, "sentence_count": 7}, "tier": "silver", "notes": ["skipped NCT00911508 analysis 105498997 (param_type='Cox Proportional Hazard', no usable estimate)"]};
+const CAPSULE = {"slug": "hr-for-all-cause-mortality-in-atrial-fibrillation", "title": "HR for all-cause mortality in atrial fibrillation", "measure": "HR", "pico": {"population": "atrial fibrillation", "outcome": "all-cause mortality", "intervention": null, "comparator": null}, "primary_estimand": "hazard ratio for all-cause mortality", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-05-31T17:06:44Z"}, "favours_low": "favours intervention", "favours_high": "favours comparator", "method": "PM", "hksj": false, "studies": [{"nct": "NCT00174785", "name": "A Placebo-controlled,Double-blind,Parallel Arm Trial to Assess the Efficacy of Dronedarone 400mg Bid for the Prevention of Cardiovascular Hospitalization or Death From Any Cause in Patients With Atrial Fibrillation/Atrial Flutter (AF/AFL)", "year": 2005, "agent": "Dronedarone 400mg Bid", "comparator": "Placebo", "hr": 0.76, "lci": 0.69, "uci": 0.84, "inc": true}, {"nct": "NCT00249795", "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation", "year": 2003, "agent": "Irbesartan", "comparator": "Placebo", "hr": 1.014, "lci": 0.927, "uci": 1.11, "inc": true}, {"nct": "NCT00249873", "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation", "year": 2003, "agent": "Clopidogrel + ASA", "comparator": "Placebo + ASA", "hr": 0.98, "lci": 0.89, "uci": 1.08, "inc": true}, {"nct": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "year": 2006, "agent": "Rivaroxaban", "comparator": "Warfarin", "hr": 0.85, "lci": 0.7, "uci": 1.02, "inc": true}, {"nct": "NCT00412984", "name": "A Phase 3, Active (Warfarin) Controlled, Randomized, Double-Blind, Parallel Arm Study to Evaluate Efficacy and Safety of Apixaban in Preventing Stroke and Systemic Embolism in Subjects With Nonvalvular Atrial Fibrillation", "year": 2006, "agent": "Apixaban", "comparator": "Warfarin", "hr": 0.89, "lci": 0.8, "uci": 1.0, "inc": true}, {"nct": "NCT00494871", "name": "Evaluation of the Efficacy and Safety of Rivaroxaban (BAY59-7939) for the Prevention of Stroke and Non-central Nervous System Systemic Embolism in Subjects With Non-valvular Atrial Fibrillation", "year": 2007, "agent": "Rivaroxaban (Xarelto, BAY59-7939)", "comparator": "Warfarin", "hr": 1.37, "lci": 0.43, "uci": 4.31, "inc": true}, {"nct": "NCT00496769", "name": "Apixaban Versus Acetylsalicylic Acid (ASA) to Prevent Stroke in Atrial Fibrillation Patients Who Have Failed or Are Unsuitable for Vitamin K Antagonist Treatment: A Randomized Double-blind Trial", "year": 2007, "agent": "Apixaban, 2.5 or 5 mg Twice Daily", "comparator": "Acetylsalicylic Acid, 81-324 mg Once Daily", "hr": 0.79, "lci": 0.62, "uci": 1.02, "inc": true}, {"nct": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "year": 2008, "agent": "Warfarin/Placebo Edoxaban", "comparator": "High Dose Edoxaban/Placebo Warfarin", "hr": 0.9, "lci": 0.823, "uci": 0.981, "inc": true}, {"nct": "NCT01674647", "name": "A Prospective, Randomized, Open-label, Parallel-group, Active-controlled, Multicenter Study Exploring the Efficacy and Safety of Once-daily Oral Rivaroxaban (BAY59-7939) Compared With That of Dose-adjusted Oral Vitamin K Antagonists (VKA) for the Prevention of Cardiovascular Events in Subjects With Nonvalvular Atrial Fibrillation Scheduled for Cardioversion", "year": 2012, "agent": "Rivaroxaban (Xarelto, BAY59-7939)", "comparator": "Vitamin K Antagonist (VKA)", "hr": 0.5, "lci": 0.16, "uci": 1.55, "inc": true}, {"nct": "NCT01970501", "name": "GENETIC-AF - A Genotype-Directed Comparative Effectiveness Trial of Bucindolol and Toprol-XL for Prevention of Symptomatic Atrial Fibrillation/Atrial Flutter in Patients With Heart Failure", "year": 2014, "agent": "Bucindolol Hydrochloride", "comparator": "Metoprolol Succinate", "hr": 1.02, "lci": 0.72, "uci": 1.45, "inc": true}, {"nct": "NCT02942407", "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial", "year": 2016, "agent": "Apixaban", "comparator": "Warfarin", "hr": 1.2, "lci": 0.67, "uci": 2.17, "inc": true}], "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"estimator_for_k": "pass", "pi_t_dist": "pass", "log_scale_pooling": "pass", "heterogeneity_reported": "pass", "hksj_floor": "pass", "no_nan": "pass", "rows_parse": "pass"}}, "pooled": {"est": 0.899906289881737, "ci_lower": 0.8385344288212299, "ci_upper": 0.9657699227772123, "i2": 60.60715262804259, "tau2": 0.00569877626982462, "k": 11, "df": 10, "Q": 25.385319079825397, "pi_lower": 0.7468878210178892, "pi_upper": 1.084274382015015, "ci_note": "z", "method": "PM"}, "diagnostics": {"egger": {"intercept": -0.07693999068233381, "se": 0.9117022539956438, "t": -0.08439157668540923, "df": 9, "p": 0.9327451042277999, "k": 11}, "loo": [{"omitted": "NCT00174785", "name": "A Placebo-controlled,Double-blind,Parallel Arm Trial to Assess the Efficacy of Dronedarone 400mg Bid for the Prevention of Cardiovascular Hospitalization or Death From Any Cause in Patients With Atrial Fibrillation/Atrial Flutter (AF/AFL)", "est": 0.9358626865215819, "lo": 0.8884628623035251, "hi": 0.9857913089947257}, {"omitted": "NCT00249795", "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation", "est": 0.8783906802445176, "lo": 0.8189757953868406, "hi": 0.9421159837525817}, {"omitted": "NCT00249873", "name": "A Parallel Randomized Controlled Evaluation of Clopidogrel Plus Aspirin, With Factorial Evaluation of Irbesartan, for the Prevention of Vascular Events, in Patients With Atrial Fibrillation", "est": 0.8854482195885773, "lo": 0.8200759833755572, "hi": 0.9560315939816237}, {"omitted": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "est": 0.9048147114939995, "lo": 0.8368851778931311, "hi": 0.9782580499239227}, {"omitted": "NCT00412984", "name": "A Phase 3, Active (Warfarin) Controlled, Randomized, Double-Blind, Parallel Arm Study to Evaluate Efficacy and Safety of Apixaban in Preventing Stroke and Systemic Embolism in Subjects With Nonvalvular Atrial Fibrillation", "est": 0.9013193025877962, "lo": 0.8306174632607557, "hi": 0.9780392553127938}, {"omitted": "NCT00494871", "name": "Evaluation of the Efficacy and Safety of Rivaroxaban (BAY59-7939) for the Prevention of Stroke and Non-central Nervous System Systemic Embolism in Subjects With Non-valvular Atrial Fibrillation", "est": 0.8982861131305757, "lo": 0.8349358061809614, "hi": 0.9664430906779778}, {"omitted": "NCT00496769", "name": "Apixaban Versus Acetylsalicylic Acid (ASA) to Prevent Stroke in Atrial Fibrillation Patients Who Have Failed or Are Unsuitable for Vitamin K Antagonist Treatment: A Randomized Double-blind Trial", "est": 0.9074093074405767, "lo": 0.8429132993646838, "hi": 0.976840265600732}, {"omitted": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "est": 0.8996094718120355, "lo": 0.8281867439758364, "hi": 0.9771916873346406}, {"omitted": "NCT01674647", "name": "A Prospective, Randomized, Open-label, Parallel-group, Active-controlled, Multicenter Study Exploring the Efficacy and Safety of Once-daily Oral Rivaroxaban (BAY59-7939) Compared With That of Dose-adjusted Oral Vitamin K Antagonists (VKA) for the Prevention of Cardiovascular Events in Subjects With Nonvalvular Atrial Fibrillation Scheduled for Cardioversion", "est": 0.9019291358558418, "lo": 0.8403666473510211, "hi": 0.9680014891950806}, {"omitted": "NCT01970501", "name": "GENETIC-AF - A Genotype-Directed Comparative Effectiveness Trial of Bucindolol and Toprol-XL for Prevention of Symptomatic Atrial Fibrillation/Atrial Flutter in Patients With Heart Failure", "est": 0.8954894667315179, "lo": 0.8309829133008223, "hi": 0.9650034581839877}, {"omitted": "NCT02942407", "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial", "est": 0.8962610445770173, "lo": 0.8342558967481482, "hi": 0.9628746565141606}]}, "e156_body": "In atrial fibrillation, does the intervention compared with control change all-cause mortality? This synthesis aggregates 11 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.90 (95% CI 0.84 to 0.97). Between-trial heterogeneity was I-squared 61 percent, the 95% prediction interval spanned 0.75 to 1.08, and Egger's test for small-study effects returned a p-value of 0.93. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.", "e156_validation": {"ok": true, "word_count": 128, "sentence_count": 7}, "tier": "silver", "notes": ["skipped NCT00911508 analysis 105498997 (param_type='Cox Proportional Hazard', no usable estimate)"]};
 const SLUG = CAPSULE.slug, LSKEY = "e156:" + SLUG;
 const Z = 1.959963984540054;
 const T975 = {1:12.706,2:4.303,3:3.182,4:2.776,5:2.571,6:2.447,7:2.365,8:2.306,9:2.262,10:2.228,12:2.179,15:2.131,20:2.086,30:2.042};
@@ -132,6 +140,26 @@ function pool(items){
   let piL=null,piU=null;if(k>=2){const h=tcrit(df)*Math.sqrt(tau2+seRE*seRE);piL=Math.exp(re-h);piU=Math.exp(re+h);}
   const wmap=new Map();use.forEach((t,i)=>wmap.set(t,wr[i]));
   return {est:Math.exp(re),ciL:Math.exp(re-ciHalf),ciU:Math.exp(re+ciHalf),i2:I2,tau2,k,df,Q,piL,piU,wmap,ciNote,re,seRE};
+}
+
+// ---- diagnostics: Egger (radial) + leave-one-out (mirror aact_cockpit.capsule.pooling) ----
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function normcdf(x){return 0.5*(1+erf(x/Math.SQRT2));}
+function egger(items){
+  const use=items.filter(t=>t.inc&&valid(t));const k=use.length;if(k<3)return null;
+  const y=use.map(t=>Math.log(t.hr)), v=use.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z))**2);
+  const z=y.map((e,i)=>e/Math.sqrt(v[i])), x=v.map(vi=>1/Math.sqrt(vi));
+  const n=k,sx=x.reduce((a,b)=>a+b,0),sz=z.reduce((a,b)=>a+b,0),sxx=x.reduce((a,b)=>a+b*b,0),sxz=x.reduce((a,b,i)=>a+b*z[i],0);
+  const d=n*sxx-sx*sx;if(d===0)return null;
+  const b=(n*sxz-sx*sz)/d,a=(sz-b*sx)/n;
+  const s2=z.reduce((s,zi,i)=>s+(zi-(a+b*x[i]))**2,0)/(n-2),se=Math.sqrt(s2*sxx/d),t=se>0?a/se:0;
+  return {intercept:a,se,t,df:n-2,p:2*(1-normcdf(Math.abs(t))),k};
+}
+function leaveOneOut(items){
+  const use=items.filter(t=>t.inc&&valid(t));const k=use.length;if(k<3)return [];
+  return use.map((t,i)=>{const sub=use.filter((_,j)=>j!==i);const r=pool(sub);
+    return {omitted:t.nct,name:t.name,est:r.est,lo:r.ciL,hi:r.ciU};});
 }
 
 // ---- state ----
@@ -202,14 +230,55 @@ function rCode(){
     `sei <- c(${sei})\n`+
     `res <- rma(yi = yi, sei = sei, method = "${meth}")\n`+
     `pred <- predict(res, transf = exp)   # pooled ${CAPSULE.measure} + 95% CI\n`+
-    `print(pred); print(confint(res))     # tau^2, I^2; t-based PI: rma(..., test="knha")`;
+    `print(pred); print(confint(res))     # tau^2, I^2; t-based PI: rma(..., test="knha")\n`+
+    `regtest(res, model = "lm", predictor = "sei")   # Egger small-study test\n`+
+    `leave1out(res)                                   # leave-one-out sensitivity`;
 }
 
 // ---- assurance ribbon + self-audit ----
 function setDot(id,state){const d=document.getElementById(id);if(d)d.className='dot '+state;}
+function renderFunnel(){
+  const svg=document.getElementById('funnel');const W=560,H=300,padL=46,padR=18,padT=14,padB=40;
+  const plotW=W-padL-padR,plotH=H-padT-padB;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const use=model.filter(t=>t.inc&&valid(t));
+  if(use.length<3){svg.innerHTML='<text x="20" y="40" class="muted" fill="#888">need ≥3 trials</text>';
+    document.getElementById('eggerLine').textContent='';return;}
+  const res=pool(use);const cx=Math.log(res.est);
+  const lx=use.map(t=>Math.log(t.hr)),se=use.map(t=>(Math.log(t.uci)-Math.log(t.lci))/(2*Z));
+  const seMax=Math.max(...se)*1.1,xspan=Math.max(...lx.map(v=>Math.abs(v-cx)),0.2)*1.2;
+  const xOf=v=>padL+(v-(cx-xspan))/(2*xspan)*plotW, yOf=s=>padT+(s/seMax)*plotH;
+  let s=`<line class="nullline" x1="${xOf(0)}" y1="${padT}" x2="${xOf(0)}" y2="${padT+plotH}"/>`;
+  s+=`<line stroke="var(--accent)" x1="${xOf(cx)}" y1="${padT}" x2="${xOf(cx)}" y2="${padT+plotH}" stroke-dasharray="3 3"/>`;
+  // pseudo 95% funnel
+  const apex=`${xOf(cx)},${padT}`,bl=`${xOf(cx-1.96*seMax)},${yOf(seMax)}`,br=`${xOf(cx+1.96*seMax)},${yOf(seMax)}`;
+  s+=`<polygon points="${apex} ${bl} ${br}" fill="none" stroke="var(--line)"/>`;
+  use.forEach((t,i)=>{s+=`<circle cx="${xOf(lx[i])}" cy="${yOf(se[i])}" r="3.5" fill="var(--accent)" opacity="0.75"/>`;});
+  [cx-xspan,cx,cx+xspan].forEach(v=>{s+=`<text class="tick" x="${xOf(v)}" y="${H-padB+16}" text-anchor="middle">${Math.exp(v).toFixed(2)}</text>`;});
+  s+=`<text class="tick" x="${padL-6}" y="${padT+6}" text-anchor="end">0</text><text class="tick" x="${padL-6}" y="${padT+plotH}" text-anchor="end">SE</text>`;
+  svg.innerHTML=s;
+  const eg=egger(model);
+  document.getElementById('eggerLine').textContent= eg ?
+    `Egger's test: intercept ${eg.intercept.toFixed(2)} (SE ${eg.se.toFixed(2)}), t=${eg.t.toFixed(2)}, p=${eg.p<0.001?'<0.001':eg.p.toFixed(3)} — `+
+    (eg.p<0.10?'possible small-study asymmetry (interpret with caution).':'no significant funnel asymmetry.') : '';
+}
+function renderLoo(){
+  const svg=document.getElementById('loo');const loo=leaveOneOut(model);
+  if(loo.length<3){svg.innerHTML='<text x="20" y="30" fill="#888">need ≥3 trials</text>';return;}
+  const W=620,rowH=22,H=loo.length*rowH+44,padL=200,padR=110,plotW=W-padL-padR;
+  const all=loo.flatMap(l=>[l.lo,l.hi]);const lo=Math.min(...all)*0.98,hi=Math.max(...all)*1.02;
+  const xOf=v=>padL+(v-lo)/(hi-lo)*plotW;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const full=pool(model);let s='';
+  if(full){s+=`<line class="nullline" x1="${xOf(full.est)}" y1="14" x2="${xOf(full.est)}" y2="${loo.length*rowH+14}" stroke="var(--accent)"/>`;}
+  loo.forEach((l,i)=>{const y=i*rowH+rowH/2+10;
+    s+=`<text x="8" y="${y+3}" style="fill:var(--ink);font-size:11px">− ${esc(l.name).slice(0,30)}</text>`;
+    s+=`<line class="whisk" x1="${xOf(l.lo)}" y1="${y}" x2="${xOf(l.hi)}" y2="${y}"/>`;
+    s+=`<rect class="box" x="${xOf(l.est)-2.5}" y="${y-2.5}" width="5" height="5"/>`;
+    s+=`<text class="val" x="${W-12}" y="${y+3}" text-anchor="end">${f(l.est)} (${f(l.lo)}–${f(l.hi)})</text>`;});
+  svg.innerHTML=s;
+}
 function render(){
   const res=pool(model);
-  renderForest(res);renderTable();
+  renderForest(res);renderTable();renderFunnel();renderLoo();
   document.getElementById('rcode').textContent=rCode();
   if(res){document.getElementById('pooledLine').textContent=
       `${CAPSULE.measure} ${f(res.est)} (95% CI ${f(res.ciL)}–${f(res.ciU)}), ${res.k} trials`;
@@ -260,7 +329,7 @@ document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults
 document.getElementById('inspectBtn').addEventListener('click',()=>{
   const o=document.getElementById('inspectOut');
   o.style.display=o.style.display==='none'?'block':'none';
-  o.textContent=[tcrit,wmean,tau2DL,tau2PM,tau2est,pool].map(fn=>fn.toString()).join('\n\n');});
+  o.textContent=[tcrit,wmean,tau2DL,tau2PM,tau2est,pool,egger,leaveOneOut].map(fn=>fn.toString()).join('\n\n');});
 
 render();
 </script>

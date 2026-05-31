@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T12:24:55Z"
+    "extracted_at": "2026-05-31T17:06:39Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -331,10 +331,197 @@
     "ci_note": "z",
     "method": "PM"
   },
-  "e156_body": "In heart failure, does the intervention compared with control change all-cause mortality? This synthesis aggregates 25 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.95 (95% CI 0.92 to 0.98). Between-trial heterogeneity was I-squared 11 percent and the 95% prediction interval spanned 0.89 to 1.01. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
+  "diagnostics": {
+    "egger": {
+      "intercept": -0.13900846530402775,
+      "se": 0.5285646373890971,
+      "t": -0.26299236738703385,
+      "df": 23,
+      "p": 0.7925564620476304,
+      "k": 25
+    },
+    "loo": [
+      {
+        "omitted": "NCT00023595",
+        "name": "Surgical Treatment for Ischemic Heart Failure (STICH)",
+        "est": 0.9507309189156694,
+        "lo": 0.9207378770022391,
+        "hi": 0.981700984350875
+      },
+      {
+        "omitted": "NCT00094302",
+        "name": "Treatment of Preserved Cardiac Function Heart Failure With an Aldosterone Antagonist (TOPCAT)",
+        "est": 0.9487968611572852,
+        "lo": 0.9181086280132381,
+        "hi": 0.9805108636109415
+      },
+      {
+        "omitted": "NCT00358215",
+        "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Darbepoetin Alfa Treatment on Mortality and Morbidity in Heart Failure (HF) Subjects With Symptomatic Left Ventricular Systolic Dysfunction and Anemia",
+        "est": 0.9439142590540529,
+        "lo": 0.9143969424847291,
+        "hi": 0.9743844134304303
+      },
+      {
+        "omitted": "NCT01115855",
+        "name": "The Effect Of Eplerenone Versus Placebo On Cardiovascular Mortality And Heart Failure Hospitalization In Japanese Subjects With Chronic Heart Failure",
+        "est": 0.9482562021646801,
+        "lo": 0.9197586162784886,
+        "hi": 0.977636750587963
+      },
+      {
+        "omitted": "NCT01870778",
+        "name": "A Multicenter, Randomized, Double-blind, Placebo-controlled Phase III Study to Evaluate the Efficacy, Safety and Tolerability of Serelaxin When Added to Standard Therapy in Acute Heart Failure Patients",
+        "est": 0.9476976771236093,
+        "lo": 0.9167088250986275,
+        "hi": 0.9797340907336155
+      },
+      {
+        "omitted": "NCT01877915",
+        "name": "A Randomized, Double-blind, Event-driven, Multicenter Study Comparing the Efficacy and Safety of Rivaroxaban With Placebo for Reducing the Risk of Death, Myocardial Infarction or Stroke in Subjects With Heart Failure and Significant Coronary Artery Disease Following an Episode of Decompensated Heart Failure",
+        "est": 0.9478901265745626,
+        "lo": 0.9165312294064041,
+        "hi": 0.9803219609215666
+      },
+      {
+        "omitted": "NCT01920711",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Valsartan, on Morbidity and Mortality in Heart Failure Patients (NYHA Class II-IV) With Preserved Ejection Fraction (PARAGON-HF)",
+        "est": 0.9464724816831392,
+        "lo": 0.9156291338905864,
+        "hi": 0.9783548004606041
+      },
+      {
+        "omitted": "NCT02111564",
+        "name": "Medically Ill Patient Assessment of Rivaroxaban Versus Placebo in Reducing Post-Discharge Venous Thrombo-Embolism Risk",
+        "est": 0.952300257486277,
+        "lo": 0.9240164202940316,
+        "hi": 0.9814498535857751
+      },
+      {
+        "omitted": "NCT02205359",
+        "name": "AdaptResponse Clinical Trial",
+        "est": 0.9513091293214144,
+        "lo": 0.9208060107602725,
+        "hi": 0.9828227107065196
+      },
+      {
+        "omitted": "NCT02441218",
+        "name": "Effects of Ivabradine on Cardiovascular Events in Patients With Moderate to Severe Chronic Heart Failure and Left Ventricular Systolic Dysfunction. A Three-year International Multicentre Study",
+        "est": 0.9508328777285575,
+        "lo": 0.9200246500811288,
+        "hi": 0.9826727591373199
+      },
+      {
+        "omitted": "NCT02468232",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Enalapril on Morbidity and Mortality in Japanese Patients With Chronic Heart Failure and Reduced Ejection Fraction.",
+        "est": 0.9471731096544126,
+        "lo": 0.91720015773971,
+        "hi": 0.978125540081957
+      },
+      {
+        "omitted": "NCT02656329",
+        "name": "AdreView™ Myocardial Imaging for Risk Evaluation - A Multicentre Trial to Guide ICD Implantation in NYHA Class II & III Heart Failure Patients With 25%≤LVEF≤35%",
+        "est": 0.947306866235118,
+        "lo": 0.9170072855663489,
+        "hi": 0.9786075998970567
+      },
+      {
+        "omitted": "NCT02787044",
+        "name": "INfluenza Vaccine to Effectively Stop Cardio Thoracic Events and Decompensated Heart Failure",
+        "est": 0.9392902635646567,
+        "lo": 0.9107634308403474,
+        "hi": 0.968710610628392
+      },
+      {
+        "omitted": "NCT02861534",
+        "name": "A Randomized Parallel-Group, Placebo-Controlled, Double-Blind, Event-Driven, Multi-Center Pivotal Phase III Clinical Outcome Trial of Efficacy and Safety of the Oral sGC Stimulator Vericiguat in Subjects With Heart Failure With Reduced Ejection Fraction (HFrEF) - VerICiguaT GlObal Study in Subjects With Heart Failure With Reduced EjectIon FrAction (VICTORIA)",
+        "est": 0.9471892455094606,
+        "lo": 0.9159738955694541,
+        "hi": 0.9794683791190566
+      },
+      {
+        "omitted": "NCT02929329",
+        "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Omecamtiv Mecarbil on Mortality and Morbidity in Subjects With Chronic Heart Failure With Reduced Ejection Fraction (GALACTIC-HF)",
+        "est": 0.9423896391330772,
+        "lo": 0.9116219108004938,
+        "hi": 0.9741957947956008
+      },
+      {
+        "omitted": "NCT02937454",
+        "name": "A Randomised, Double-Blind Placebo Controlled Trial Comparing the Effect of Intravenous Ferric Carboxymaltose on Hospitalisations and Mortality in Iron Deficient Patients Admitted for Acute Heart Failure (Affirm-AHF)",
+        "est": 0.9468711891468636,
+        "lo": 0.9164579091502245,
+        "hi": 0.9782937545573978
+      },
+      {
+        "omitted": "NCT03036124",
+        "name": "Study to Evaluate the Effect of Dapagliflozin on the Incidence of Worsening Heart Failure or Cardiovascular Death in Patients With Chronic Heart Failure With Reduced Ejection Fraction",
+        "est": 0.9542719080849513,
+        "lo": 0.9253878111555163,
+        "hi": 0.9840575633074302
+      },
+      {
+        "omitted": "NCT03057951",
+        "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Preserved Ejection Fraction (HFpEF)",
+        "est": 0.9452798156788567,
+        "lo": 0.9147613174180027,
+        "hi": 0.9768164797916802
+      },
+      {
+        "omitted": "NCT03057977",
+        "name": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Reduced Ejection Fraction (HFrEF)",
+        "est": 0.94828005146391,
+        "lo": 0.9175646726744081,
+        "hi": 0.9800236242568197
+      },
+      {
+        "omitted": "NCT03296813",
+        "name": "TRANSFORM-HF: ToRsemide compArisoN With furoSemide FORManagement of Heart Failure",
+        "est": 0.9448450312890693,
+        "lo": 0.9147510064322384,
+        "hi": 0.9759291073464075
+      },
+      {
+        "omitted": "NCT03387813",
+        "name": "Hemodynamic-GUIDEd Management of Heart Failure",
+        "est": 0.9500436345124763,
+        "lo": 0.9197216445186407,
+        "hi": 0.9813652998783834
+      },
+      {
+        "omitted": "NCT03619213",
+        "name": "An International, Double-blind, Randomised, Placebo-Controlled Phase III Study to Evaluate the Effect of Dapagliflozin on Reducing CV Death or Worsening Heart Failure in Patients With Heart Failure With Preserved Ejection Fraction (HFpEF)",
+        "est": 0.9477829938217133,
+        "lo": 0.9166294707717484,
+        "hi": 0.9799953329248077
+      },
+      {
+        "omitted": "NCT04435626",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel-group, Placebo-controlled Study to Evaluate the Efficacy and Safety of Finerenone on Morbidity and Mortality in Participants With Heart Failure (NYHA II-IV) and Left Ventricular Ejection Fraction ≥ 40% (LVEF ≥ 40%)",
+        "est": 0.9484780448352103,
+        "lo": 0.9173005274254763,
+        "hi": 0.9807152341439263
+      },
+      {
+        "omitted": "NCT04847557",
+        "name": "A Randomized, Double-Blind, Placebo-Controlled, Phase 3 Study Comparing the Efficacy and Safety of Tirzepatide Versus Placebo in Patients With Heart Failure With Preserved Ejection Fraction and Obesity (SUMMIT)",
+        "est": 0.9472256494852919,
+        "lo": 0.9173925398000058,
+        "hi": 0.9780289157773543
+      },
+      {
+        "omitted": "NCT05093933",
+        "name": "A Pivotal Phase 3 Randomized, Placebo-controlled Clinical Study to Evaluate the Efficacy and Safety of the sGC Stimulator Vericiguat/MK-1242 in Adults With Chronic Heart Failure With Reduced Ejection Fraction",
+        "est": 0.955558039579824,
+        "lo": 0.9267139450470433,
+        "hi": 0.9852999103831168
+      }
+    ]
+  },
+  "e156_body": "In heart failure, does the intervention compared with control change all-cause mortality? This synthesis aggregates 25 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.95 (95% CI 0.92 to 0.98). Between-trial heterogeneity was I-squared 11 percent, the 95% prediction interval spanned 0.89 to 1.01, and Egger's test for small-study effects returned a p-value of 0.79. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {
     "ok": true,
-    "word_count": 118,
+    "word_count": 128,
     "sentence_count": 7
   },
   "tier": "silver",

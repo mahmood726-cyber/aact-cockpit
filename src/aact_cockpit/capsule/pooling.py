@@ -151,4 +151,59 @@ def _valid(t) -> bool:
         return False
 
 
-__all__ = ["pool", "tcrit", "tau2_dl", "tau2_pm", "tau2_reml", "Z", "T975"]
+def _normcdf(x):
+    return 0.5 * (1.0 + math.erf(x / math.sqrt(2.0)))
+
+
+def egger(items):
+    """Egger's regression test for funnel-plot asymmetry (radial version per
+    advanced-stats.md): OLS of the standard normal deviate z=yi/sei on precision
+    x=1/sei; the intercept tests small-study/publication bias. Needs k>=3."""
+    use = [t for t in items if t.get("inc", True) and _valid(t)]
+    k = len(use)
+    if k < 3:
+        return None
+    y = [math.log(t["hr"]) for t in use]
+    v = [((math.log(t["uci"]) - math.log(t["lci"])) / (2 * Z)) ** 2 for t in use]
+    z = [y[i] / math.sqrt(v[i]) for i in range(k)]
+    x = [1.0 / math.sqrt(v[i]) for i in range(k)]
+    n = k
+    sx, sz = sum(x), sum(z)
+    sxx = sum(xi * xi for xi in x)
+    sxz = sum(x[i] * z[i] for i in range(k))
+    d = n * sxx - sx * sx
+    if d == 0:
+        return None
+    b = (n * sxz - sx * sz) / d          # slope
+    a = (sz - b * sx) / n                # intercept = bias estimate
+    s2 = sum((z[i] - (a + b * x[i])) ** 2 for i in range(k)) / (n - 2)
+    se = math.sqrt(s2 * sxx / d)
+    t = a / se if se > 0 else 0.0
+    p = 2.0 * (1.0 - _normcdf(abs(t)))   # normal approx (matches the JS engine)
+    return {"intercept": a, "se": se, "t": t, "df": n - 2, "p": p, "k": k}
+
+
+def leave_one_out(items, method="PM"):
+    """Re-pool omitting each included study in turn. Returns a list ordered as
+    the input's included studies. Needs k>=3 to be meaningful."""
+    use = [t for t in items if t.get("inc", True) and _valid(t)]
+    k = len(use)
+    if k < 3:
+        return []
+    out = []
+    for i, t in enumerate(use):
+        sub = [u for j, u in enumerate(use) if j != i]
+        r = pool(sub, method=method)
+        out.append({"omitted": t.get("nct") or t.get("name", f"study {i+1}"),
+                    "name": t.get("name", ""),
+                    "est": r["est"], "lo": r["ci_lower"], "hi": r["ci_upper"]})
+    return out
+
+
+def diagnostics(items, method="PM"):
+    """Publication-bias (Egger) + leave-one-out sensitivity for a pairwise set."""
+    return {"egger": egger(items), "loo": leave_one_out(items, method=method)}
+
+
+__all__ = ["pool", "tcrit", "tau2_dl", "tau2_pm", "tau2_reml", "Z", "T975",
+           "egger", "leave_one_out", "diagnostics"]
