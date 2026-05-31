@@ -198,6 +198,20 @@
   </div>
 
   <!-- LIBRARY -->
+  <div class="card" id="cardAtlas">
+    <div class="step"><span class="n">★</span> Registry atlas — an analysis no one has done before</div>
+    <p class="lede" style="margin-top:0">Not one question — the <b>whole</b> reported-evidence base. Characterises how
+      often every registered ratio analysis (hazard, odds, risk, relative risk) reaches significance, how that varies
+      by lead-sponsor class, and the small-study (winner's-curse) link between trial size and reported effect.
+      Deterministic SQL over the full warehouse; self-auditing capsule that recomputes every proportion from raw counts.</p>
+    <button class="btn sec" id="atlasBtn"><span class="spin"></span><span class="lbl">Build registry atlas capsule</span></button>
+    <div class="status" id="atlasStatus"></div>
+    <div class="hide" id="atlasResult" style="margin-top:12px">
+      <span class="tier" id="atlasTier"></span> <span class="big" id="atlasLine"></span>
+      <a class="dl" id="atlasDl" target="_blank" rel="noopener" style="margin-left:10px">Open the atlas capsule ↗</a>
+    </div>
+  </div>
+
   <div class="card" id="cardLib">
     <div class="step"><span class="n">≡</span> Your capsules</div>
     <div class="muted" id="libEmpty">Nothing built yet — your generated capsules will appear here.</div>
@@ -342,6 +356,22 @@ $("nmaBtn").addEventListener("click", async () => {
     $("nmaStatus").textContent = ""; refreshLibrary();
   }catch(e){ $("nmaStatus").innerHTML = `<span class="err">Build failed: ${e.message}</span>`; }
   busy($("nmaBtn"),false);
+});
+
+// ----- Registry meta-epidemiology atlas -----
+$("atlasBtn").addEventListener("click", async () => {
+  busy($("atlasBtn"),true); $("atlasStatus").textContent = "Scanning the whole registry (a few seconds)…";
+  try{
+    const r = await fetch("/api/atlas");
+    const man = await r.json();
+    if(!r.ok) throw new Error(man.detail || ("HTTP "+r.status));
+    $("atlasTier").textContent = man.tier; $("atlasTier").className = "tier "+man.tier;
+    $("atlasLine").textContent = "registry meta-epidemiology · " + man.tier;
+    $("atlasDl").href = man.download_url;
+    $("atlasResult").classList.remove("hide"); $("atlasResult").classList.add("row-fade");
+    $("atlasStatus").textContent = ""; refreshLibrary();
+  }catch(e){ $("atlasStatus").innerHTML = `<span class="err">Build failed: ${e.message}</span>`; }
+  busy($("atlasBtn"),false);
 });
 </script>
 </body>

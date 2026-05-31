@@ -174,20 +174,43 @@ def api_capsules():
             c = json.loads(sidecar.read_text(encoding="utf-8"))
         except (ValueError, OSError):
             continue
-        if "pico" not in c or "tier" not in c:
+        if "tier" not in c:
+            continue
+        if "pico" not in c and c.get("kind") != "atlas":
             continue
         slug = c["slug"]
         html = _CAPSULES / slug / f"{slug}-capsule.html"
         if not html.is_file():
             continue
         n = (c.get("pooled", {}).get("k") or c.get("tsa", {}).get("k")
-             or c.get("nma", {}).get("k") or "")
+             or c.get("nma", {}).get("k") or c.get("scope", {}).get("n_analyses") or "")
         out.append({"slug": slug, "title": c.get("title", slug),
                     "kind": c.get("kind", "pairwise"), "tier": c["tier"], "n": n,
                     "download_url": f"/capsules/{slug}/{slug}-capsule.html",
                     "mtime": html.stat().st_mtime})
     out.sort(key=lambda x: -x["mtime"])
     return {"capsules": out}
+
+
+@app.get("/api/atlas")
+def api_atlas():
+    """Registry-wide meta-epidemiology atlas over the WHOLE warehouse — how often
+    reported ratio analyses are significant, by sponsor class and trial size.
+    Deterministic SQL (a few seconds); emits a self-auditing capsule."""
+    from aact_engine.metaepi import registry_atlas
+    from aact_cockpit.capsule.generate_atlas_capsule import emit as atlas_emit
+    con = open_warehouse()
+    try:
+        data = registry_atlas(con=con)
+    finally:
+        con.close()
+    try:
+        man = atlas_emit(data, _CAPSULES)
+    except (CapsuleInputError, CapsuleEmitError) as e:
+        raise HTTPException(422, str(e))
+    slug = man["slug"]
+    man["download_url"] = f"/capsules/{slug}/{slug}-capsule.html"
+    return man
 
 
 @app.get("/", response_class=HTMLResponse)

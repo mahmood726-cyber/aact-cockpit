@@ -35,14 +35,27 @@ def collect(d: Path) -> list[dict]:
             c = json.loads(sidecar.read_text(encoding="utf-8"))
         except (ValueError, OSError):
             continue
-        if "pico" not in c or "tier" not in c:
+        if "tier" not in c:
+            continue
+        kind = c.get("kind", "pairwise")
+        if "pico" not in c and kind != "atlas":
             continue
         slug = c["slug"]
         html = f"{slug}/{slug}-capsule.html"
         if not (d / html).is_file():
             continue
-        pico = c["pico"]
-        kind = c.get("kind", "pairwise")
+        pico = c.get("pico", {})
+        if kind == "atlas":
+            sc = c.get("scope", {})
+            rows.append({
+                "title": c.get("title", "registry meta-epidemiology atlas"),
+                "kind": kind, "k": sc.get("n_analyses", ""),
+                "tier": c["tier"], "html": html,
+                "headline": (f"{sc.get('n_analyses', 0):,} analyses · {sc.get('n_trials', 0):,} trials · "
+                             f"{sc.get('pct_significant', 0):.1f}% significant"),
+                "snapshot": c.get("snapshot_date", "?"),
+            })
+            continue
         if kind == "tsa":
             t = c.get("tsa", {})
             fin = (t.get("steps") or [{}])[-1]

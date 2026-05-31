@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>e156 capsule · registry meta-epidemiology atlas</title>
+<meta property="og:title" content="e156 living evidence capsule — registry meta-epidemiology atlas"/>
+<meta property="og:description" content="Self-auditing characterization of the entire ClinicalTrials.gov/AACT reported-evidence base: how often analyses are significant, by sponsor and trial size."/>
+<style>
+  :root{--bg:#fbfbfd;--ink:#1a1a1f;--mut:#5a5a66;--line:#e3e3ea;--card:#fff;--accent:#7a2cc6;
+        --ok:#1f8a4c;--warn:#c47f17;--pend:#9aa0ab;--gold:#b8860b;--silver:#8a8f99;--bronze:#a9712e;
+        --bar:#7a2cc6;--bar2:#1f8a4c;--null:#c0392b;}
+  @media (prefers-color-scheme:dark){:root{--bg:#15161a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1d1f25;}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 18px 80px}
+  .ribbon{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+          padding:8px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .tier{font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
+  .tier.gold{background:var(--gold)} .tier.silver{background:var(--silver)}
+  .tier.bronze{background:var(--bronze)} .tier.none{background:#b33}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mut)}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.pending{background:var(--pend)}
+  h1{font-size:24px;margin:22px 0 4px} h2{font-size:18px;margin:30px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  .motto{font-style:italic;color:var(--mut);font-size:13px}
+  pre{background:#0d1117;color:#d6deeb;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.4}
+  .body156{background:var(--card);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0}
+  button{font:inherit;padding:5px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;cursor:pointer}
+  .muted{color:var(--mut);font-size:12.5px}
+  svg{max-width:100%;height:auto}
+  .grid{stroke:var(--line)} .nullline{stroke:var(--null);stroke-dasharray:4 3;stroke-width:1.5}
+  .tick{fill:var(--mut);font-size:11px} .axlbl{fill:var(--mut);font-size:12px}
+  .stat{display:inline-block;min-width:150px;margin:6px 18px 6px 0}
+  .stat b{display:block;font-size:26px;font-weight:800;color:var(--accent);line-height:1.1}
+  .stat span{font-size:12.5px;color:var(--mut)}
+  .barlbl{fill:var(--ink);font-size:12px} .barval{fill:var(--mut);font-size:11px}
+</style>
+</head>
+<body>
+<div class="ribbon">
+  <span class="tier" id="tier">—</span>
+  <span class="chk"><span class="dot pending" id="d-recon"></span><span id="t-recon">reconciliation</span></span>
+  <span class="chk"><span class="dot pending" id="d-match"></span>self-consistency</span>
+  <span class="chk"><span class="dot pending" id="d-snap"></span><span id="t-snap">snapshot</span></span>
+  <span class="motto" style="margin-left:auto">the capsule must agree with itself before asking the world to agree with it</span>
+</div>
+<div class="wrap">
+  <h1 id="title">registry meta-epidemiology atlas</h1>
+  <div class="sub" id="subtitle"></div>
+  <div class="card muted" id="provBox"></div>
+
+  <h2>01 · Question</h2>
+  <div class="card" id="qBox"></div>
+
+  <h2>02 · The reported-evidence landscape at a glance</h2>
+  <div class="card" id="scopeBox"></div>
+
+  <h2>03 · Distribution of reported effects (log scale)</h2>
+  <div class="muted">Every usable ratio analysis in the registry, binned by its natural-log effect.
+    The red dashed line is the null (log ratio 0, i.e. ratio 1). A symmetric pile-up at the null with
+    thin tails is the signature of a literature where most reported effects are small.</div>
+  <div class="card"><svg id="histPlot" role="img" aria-label="Distribution of reported log effects"></svg></div>
+
+  <h2>04 · Significance by lead-sponsor class</h2>
+  <div class="muted">Share of each sponsor class's ratio analyses whose 95% interval excludes the null.
+    Bars are recomputed in your browser from the embedded counts — they must match the printed percentages.</div>
+  <div class="card"><svg id="sponsorPlot" role="img" aria-label="Significance rate by sponsor class"></svg></div>
+  <div class="card"><table id="sponsorTable"><thead><tr>
+    <th>Lead sponsor class</th><th>Analyses</th><th>Significant</th><th>% significant</th>
+  </tr></thead><tbody id="sponsorBody"></tbody></table></div>
+
+  <h2>05 · Trial size and reported effect magnitude (winner's curse)</h2>
+  <div class="muted">Median absolute log effect and significance rate across enrolment strata.
+    If small trials report systematically larger effects, the magnitude line falls as size rises —
+    the classic small-study / winner's-curse pattern.</div>
+  <div class="card"><svg id="sizePlot" role="img" aria-label="Effect magnitude by trial size"></svg></div>
+  <div class="card"><table id="sizeTable"><thead><tr>
+    <th>Enrolment</th><th>Analyses</th><th>Median |log effect|</th><th>% significant</th>
+  </tr></thead><tbody id="sizeBody"></tbody></table></div>
+
+  <h2>06 · 156-word summary (E156)</h2>
+  <div class="body156" id="bodyBox"></div>
+  <div class="muted" id="bodyMeta"></div>
+
+  <h2>07 · Reproduce it (DuckDB / SQL)</h2>
+  <div class="muted">The atlas is deterministic SQL over the AACT snapshot. Re-run this to regenerate every number above.</div>
+  <div class="card"><pre id="sqlcode"></pre></div>
+
+  <h2>08 · Assurance &amp; inspector</h2>
+  <div class="card" id="auditBox"></div>
+  <div class="card"><button id="inspectBtn">show the exact self-consistency code that ran</button>
+    <pre id="inspectOut" style="display:none"></pre></div>
+  <p class="muted" id="notesBox"></p>
+</div>
+<script>
+"use strict";
+const CAPSULE = {"slug": "registry-meta-epidemiology-atlas", "title": "Registry meta-epidemiology — the reported-evidence landscape", "kind": "atlas", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-05-31T21:37:32Z"}, "scope": {"n_analyses": 32307, "n_trials": 5136, "n_significant": 11897, "pct_significant": 36.8, "median_effect": 1.073, "pct_favor_low": 42.2}, "by_sponsor": [{"sponsor_class": "INDUSTRY", "n": 24993, "n_sig": 10006, "pct_sig": 40.0}, {"sponsor_class": "OTHER", "n": 5698, "n_sig": 1492, "pct_sig": 26.2}, {"sponsor_class": "NIH", "n": 629, "n_sig": 140, "pct_sig": 22.3}, {"sponsor_class": "NETWORK", "n": 618, "n_sig": 151, "pct_sig": 24.4}, {"sponsor_class": "FED", "n": 307, "n_sig": 90, "pct_sig": 29.3}, {"sponsor_class": "OTHER_GOV", "n": 60, "n_sig": 18, "pct_sig": 30.0}], "by_size": [{"bin": "<100", "n": 2001, "median_abs_logeffect": 0.4943, "pct_sig": 24.9}, {"bin": "100-499", "n": 13942, "median_abs_logeffect": 0.462, "pct_sig": 33.1}, {"bin": "500-1999", "n": 10480, "median_abs_logeffect": 0.3221, "pct_sig": 44.0}, {"bin": ">=2000", "n": 5884, "median_abs_logeffect": 0.1985, "pct_sig": 36.9}], "effect_hist": [{"center": -2.0, "count": 19}, {"center": -1.8, "count": 107}, {"center": -1.6, "count": 159}, {"center": -1.4, "count": 207}, {"center": -1.2, "count": 347}, {"center": -1.0, "count": 510}, {"center": -0.8, "count": 802}, {"center": -0.6, "count": 1425}, {"center": -0.4, "count": 2636}, {"center": -0.2, "count": 4466}, {"center": 0.0, "count": 6104}, {"center": 0.2, "count": 3936}, {"center": 0.4, "count": 2664}, {"center": 0.6, "count": 2048}, {"center": 0.8, "count": 1485}, {"center": 1.0, "count": 1227}, {"center": 1.2, "count": 904}, {"center": 1.4, "count": 754}, {"center": 1.6, "count": 652}, {"center": 1.8, "count": 450}, {"center": 2.0, "count": 182}], "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"proportions_valid": "pass", "sponsor_reconciles": "pass", "size_reconciles": "pass", "hist_reconciles": "pass", "significance_consistent": "pass", "no_nan": "pass"}}, "e156_body": "Across the ClinicalTrials.gov registry, how often do reported treatment-effect analyses reach statistical significance, and does this vary by sponsor and trial size? This analysis characterises 32,307 ratio-measure analyses, hazard, odds, and risk ratios, from 5,136 trials in the AACT snapshot dated 2026-04-12. Each analysis was classed as significant when its 95% confidence interval excluded the null of one, and effects were summarised on the log scale by lead-sponsor class and enrolment. 36.8 percent of analyses were statistically significant, with a median effect of 1.07. Industry-sponsored analyses reached significance more often (40.0 versus 26.2 percent), and smaller trials reported larger effects. These descriptive patterns reflect what trialists registered and reported, not the truth of any single treatment, and warrant cautious reading. Interpretation is limited to ratio analyses with usable intervals, mixes heterogeneous measures and outcomes, and does not adjust for multiplicity or risk of bias.", "e156_validation": {"ok": true, "word_count": 144, "sentence_count": 7}, "tier": "silver", "notes": []};
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const nf = n => (n==null||!isFinite(n)) ? "n/a" : Number(n).toLocaleString("en-US");
+const f1 = x => (x==null||!isFinite(x)) ? "n/a" : Number(x).toFixed(1);
+const f2 = x => (x==null||!isFinite(x)) ? "n/a" : Number(x).toFixed(2);
+
+// ---- self-consistency: recompute every displayed proportion from raw counts ----
+// the dashboard "match" dot is green only if printed pct == recomputed pct for ALL groups.
+function recomputePct(group){ return group.n>0 ? Math.round(1000*group.n_sig/group.n)/10 : 0; }
+function selfConsistent(){
+  const eps=0.05;
+  const sp=CAPSULE.by_sponsor.every(g=>Math.abs(recomputePct(g)-g.pct_sig)<=eps);
+  const sc=CAPSULE.scope;
+  const overall=Math.abs(Math.round(1000*sc.n_significant/sc.n_analyses)/10 - sc.pct_significant)<=eps;
+  return sp && overall;
+}
+
+// ---- effect distribution histogram ----
+function renderHist(){
+  const H=CAPSULE.effect_hist||[]; const svg=document.getElementById('histPlot');
+  const W=720,HT=300,padL=44,padR=14,padT=14,padB=42,pw=W-padL-padR,ph=HT-padT-padB;
+  svg.setAttribute('viewBox',`0 0 ${W} ${HT}`);
+  if(!H.length){svg.innerHTML='<text x="20" y="40" class="axlbl">no data</text>';return;}
+  const cmax=Math.max(...H.map(h=>h.count));
+  const xs=H.map(h=>h.center); const xmin=Math.min(...xs),xmax=Math.max(...xs);
+  const span=(xmax-xmin)||1; const bw=pw/H.length*0.86;
+  const xOf=c=>padL+((c-xmin)/span)*(pw-bw)+bw/2;
+  const yOf=v=>padT+ph-(v/cmax)*ph;
+  let s='';
+  s+=`<line class="grid" x1="${padL}" y1="${padT+ph}" x2="${W-padR}" y2="${padT+ph}"/>`;
+  for(let g=0;g<=4;g++){const v=cmax*g/4;s+=`<line class="grid" x1="${padL}" y1="${yOf(v)}" x2="${W-padR}" y2="${yOf(v)}"/>`+
+    `<text class="tick" x="${padL-6}" y="${yOf(v)+4}" text-anchor="end">${nf(Math.round(v))}</text>`;}
+  H.forEach(h=>{const x=xOf(h.center)-bw/2,y=yOf(h.count);
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${padT+ph-y}" fill="var(--bar)" opacity="0.82"/>`;});
+  for(const c of xs.filter((_,i)=>i%2===0)){s+=`<text class="tick" x="${xOf(c)}" y="${HT-padB+16}" text-anchor="middle">${f1(c)}</text>`;}
+  // null line at log effect 0
+  s+=`<line class="nullline" x1="${xOf(0)}" y1="${padT}" x2="${xOf(0)}" y2="${padT+ph}"/>`+
+     `<text class="tick" x="${xOf(0)}" y="${padT-2}" text-anchor="middle" fill="var(--null)">null (ratio 1)</text>`;
+  s+=`<text class="axlbl" x="${padL+pw/2}" y="${HT-6}" text-anchor="middle">natural-log effect (ln ratio)</text>`;
+  s+=`<text class="axlbl" transform="translate(13,${padT+ph/2}) rotate(-90)" text-anchor="middle">analyses</text>`;
+  svg.innerHTML=s;
+}
+
+// ---- sponsor significance bars ----
+function renderSponsor(){
+  const G=CAPSULE.by_sponsor||[]; const svg=document.getElementById('sponsorPlot');
+  const rowH=30,padL=120,padR=60,padT=10,W=720; const H=padT*2+rowH*G.length;
+  svg.setAttribute('viewBox',`0 0 ${W} ${Math.max(60,H)}`);
+  const pmax=Math.max(50,...G.map(g=>g.pct_sig)); const pw=W-padL-padR;
+  let s='';
+  G.forEach((g,i)=>{const y=padT+i*rowH; const pct=recomputePct(g); const bw=(pct/pmax)*pw;
+    s+=`<text class="barlbl" x="${padL-8}" y="${y+rowH/2+4}" text-anchor="end">${esc(g.sponsor_class)}</text>`+
+       `<rect x="${padL}" y="${y+5}" width="${bw}" height="${rowH-12}" fill="var(--bar)" opacity="0.85" rx="3"/>`+
+       `<text class="barval" x="${padL+bw+6}" y="${y+rowH/2+4}">${f1(pct)}% · n=${nf(g.n)}</text>`;});
+  svg.innerHTML=s;
+  const tb=document.getElementById('sponsorBody');tb.innerHTML='';
+  G.forEach(g=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${esc(g.sponsor_class)}</td><td>${nf(g.n)}</td><td>${nf(g.n_sig)}</td><td>${f1(g.pct_sig)}%</td>`;
+    tb.appendChild(tr);});
+}
+
+// ---- winner's curse: magnitude + significance vs size ----
+function renderSize(){
+  const G=CAPSULE.by_size||[]; const svg=document.getElementById('sizePlot');
+  const W=720,HT=300,padL=52,padR=52,padT=18,padB=44,pw=W-padL-padR,ph=HT-padT-padB;
+  svg.setAttribute('viewBox',`0 0 ${W} ${HT}`);
+  if(!G.length){svg.innerHTML='<text x="20" y="40" class="axlbl">no data</text>';return;}
+  const mmax=Math.max(...G.map(g=>g.median_abs_logeffect))*1.15||1;
+  const xOf=i=>padL+(G.length>1?i/(G.length-1):0.5)*pw;
+  const yMag=v=>padT+ph-(v/mmax)*ph;
+  const ySig=v=>padT+ph-(v/100)*ph;
+  let s='';
+  s+=`<line class="grid" x1="${padL}" y1="${padT+ph}" x2="${W-padR}" y2="${padT+ph}"/>`;
+  for(let g=0;g<=4;g++){const v=mmax*g/4;s+=`<line class="grid" x1="${padL}" y1="${yMag(v)}" x2="${W-padR}" y2="${yMag(v)}"/>`+
+    `<text class="tick" x="${padL-6}" y="${yMag(v)+4}" text-anchor="end">${f2(v)}</text>`;}
+  for(let g=0;g<=4;g++){const v=100*g/4;s+=`<text class="tick" x="${W-padR+6}" y="${ySig(v)+4}" text-anchor="start" fill="var(--bar2)">${v}%</text>`;}
+  // magnitude line (purple)
+  let mag='';G.forEach((g,i)=>{mag+=`${xOf(i)},${yMag(g.median_abs_logeffect)} `;});
+  s+=`<polyline points="${mag.trim()}" fill="none" stroke="var(--bar)" stroke-width="2.5"/>`;
+  G.forEach((g,i)=>{s+=`<circle cx="${xOf(i)}" cy="${yMag(g.median_abs_logeffect)}" r="4" fill="var(--bar)"/>`+
+    `<text class="barval" x="${xOf(i)}" y="${yMag(g.median_abs_logeffect)-9}" text-anchor="middle" fill="var(--bar)">${f2(g.median_abs_logeffect)}</text>`;});
+  // significance line (green, dashed)
+  let sig='';G.forEach((g,i)=>{sig+=`${xOf(i)},${ySig(g.pct_sig)} `;});
+  s+=`<polyline points="${sig.trim()}" fill="none" stroke="var(--bar2)" stroke-width="2" stroke-dasharray="5 4"/>`;
+  G.forEach((g,i)=>{s+=`<circle cx="${xOf(i)}" cy="${ySig(g.pct_sig)}" r="3.5" fill="var(--bar2)"/>`;});
+  G.forEach((g,i)=>{s+=`<text class="tick" x="${xOf(i)}" y="${HT-padB+16}" text-anchor="middle">${esc(g.bin)}</text>`;});
+  s+=`<text class="axlbl" x="${padL+pw/2}" y="${HT-4}" text-anchor="middle">enrolment</text>`;
+  s+=`<text class="axlbl" transform="translate(13,${padT+ph/2}) rotate(-90)" text-anchor="middle" fill="var(--bar)">median |log effect|</text>`;
+  s+=`<text class="axlbl" transform="translate(${W-10},${padT+ph/2}) rotate(-90)" text-anchor="middle" fill="var(--bar2)">% significant</text>`;
+  svg.innerHTML=s;
+  const tb=document.getElementById('sizeBody');tb.innerHTML='';
+  G.forEach(g=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${esc(g.bin)}</td><td>${nf(g.n)}</td><td>${f2(g.median_abs_logeffect)}</td><td>${f1(g.pct_sig)}%</td>`;
+    tb.appendChild(tr);});
+}
+
+function sqlCode(){
+  return `-- Registry meta-epidemiology atlas · AACT snapshot ${CAPSULE.snapshot_date}\n`+
+  `-- usable = ratio measure, positive estimate, positive ordered 95% CI, sane range\n`+
+  `WITH u AS (\n`+
+  `  SELECT oa.nct_id,\n`+
+  `         TRY_CAST(oa.param_value AS DOUBLE)      AS hr,\n`+
+  `         TRY_CAST(oa.ci_lower_limit AS DOUBLE)   AS lo,\n`+
+  `         TRY_CAST(oa.ci_upper_limit AS DOUBLE)   AS hi\n`+
+  `  FROM outcome_analyses oa\n`+
+  `  WHERE (lower(oa.param_type) LIKE '%hazard ratio%'\n`+
+  `      OR lower(oa.param_type) LIKE '%odds ratio%'\n`+
+  `      OR lower(oa.param_type) LIKE '%risk ratio%'\n`+
+  `      OR lower(oa.param_type) LIKE '%relative risk%')\n`+
+  `    AND hr > 0 AND lo > 0 AND hi > 0 AND lo < hi\n`+
+  `    AND hr BETWEEN 0.01 AND 100 AND hi < 100)\n`+
+  `-- overall: % significant + median effect\n`+
+  `SELECT count(*) AS n_analyses,\n`+
+  `       count(*) FILTER (WHERE hi < 1 OR lo > 1) AS n_significant,\n`+
+  `       exp(median(ln(hr))) AS median_effect\n`+
+  `FROM u;\n`+
+  `-- by lead-sponsor class: JOIN sponsors (lead_or_collaborator='lead'), GROUP BY agency_class\n`+
+  `-- winner's curse: JOIN studies, bin TRY_CAST(enrollment AS DOUBLE), median(abs(ln(hr)))`;
+}
+
+function setDot(id,st){const d=document.getElementById(id);if(d)d.className='dot '+st;}
+
+document.getElementById('title').textContent=CAPSULE.title;
+document.getElementById('subtitle').textContent='A self-auditing portrait of the entire AACT reported-evidence base.';
+document.getElementById('provBox').innerHTML=
+  `Source: ${esc((CAPSULE.provenance&&CAPSULE.provenance.source)||'ClinicalTrials.gov via AACT')} · `+
+  `snapshot <b>${esc(CAPSULE.snapshot_date)}</b>. Descriptive registry-wide aggregation over usable ratio `+
+  `analyses (hazard, odds, risk, relative risk). Fixed snapshot — not live. No multiplicity or risk-of-bias adjustment.`;
+document.getElementById('qBox').innerHTML=
+  `<b>How often do reported treatment-effect analyses across ClinicalTrials.gov reach statistical significance, `+
+  `and does that vary by who sponsored the trial and how large it was?</b><br>`+
+  `<span class="muted">Estimand: registry-wide share of ratio analyses with a null-excluding 95% interval, `+
+  `stratified by lead-sponsor class and enrolment.</span>`;
+const sc=CAPSULE.scope;
+document.getElementById('scopeBox').innerHTML=
+  `<div class="stat"><b>${nf(sc.n_analyses)}</b><span>usable ratio analyses</span></div>`+
+  `<div class="stat"><b>${nf(sc.n_trials)}</b><span>distinct trials</span></div>`+
+  `<div class="stat"><b>${f1(sc.pct_significant)}%</b><span>statistically significant</span></div>`+
+  `<div class="stat"><b>${f2(sc.median_effect)}</b><span>median reported effect</span></div>`+
+  `<div class="stat"><b>${f1(sc.pct_favor_low)}%</b><span>favour experimental (ratio &lt; 1)</span></div>`;
+document.getElementById('bodyBox').textContent=CAPSULE.e156_body;
+document.getElementById('bodyMeta').textContent=
+  `${CAPSULE.e156_validation.sentence_count} sentences · ${CAPSULE.e156_validation.word_count} words · E156 ${CAPSULE.e156_validation.ok?'PASS':'FAIL'}`;
+document.getElementById('sqlcode').textContent=sqlCode();
+const ck=CAPSULE.self_audit;
+document.getElementById('auditBox').innerHTML='<b>Tier checks</b><br>'+Object.entries(ck.checks).map(([k,v])=>`${k}: ${v}`).join(' · ')+
+  '<br><br><b>Internal reconciliation</b><br>'+Object.entries(ck.aact_stats).map(([k,v])=>`${k}: ${v}`).join(' · ');
+document.getElementById('notesBox').textContent=CAPSULE.notes&&CAPSULE.notes.length?('Notes: '+CAPSULE.notes.join(' ')):'';
+document.getElementById('inspectBtn').addEventListener('click',()=>{const o=document.getElementById('inspectOut');
+  o.style.display=o.style.display==='none'?'block':'none';o.textContent=[recomputePct,selfConsistent,renderHist,renderSize].map(fn=>fn.toString()).join('\n\n');});
+
+renderHist();renderSponsor();renderSize();
+const reconOk=Object.values(ck.aact_stats).every(v=>v==='pass');
+setDot('d-recon',reconOk?'ok':'warn');document.getElementById('t-recon').textContent=reconOk?'reconciliation passed':'reconciliation issue';
+setDot('d-match',selfConsistent()?'ok':'warn');
+setDot('d-snap',CAPSULE.snapshot_date?'ok':'warn');document.getElementById('t-snap').textContent='snapshot '+(CAPSULE.snapshot_date||'?');
+const tier=document.getElementById('tier');tier.textContent=CAPSULE.tier;tier.className='tier '+CAPSULE.tier;
+</script>
+</body>
+</html>

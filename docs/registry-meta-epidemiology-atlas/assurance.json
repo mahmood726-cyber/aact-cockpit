@@ -1,0 +1,22 @@
+{
+  "slug": "registry-meta-epidemiology-atlas",
+  "tier": "silver",
+  "checks": {
+    "citation_cascade": "pass",
+    "data_file_present": "pass",
+    "code_runs": "pass",
+    "dashboard_match": "pass",
+    "claim_language": "pass",
+    "analysis_rerun": "not-run",
+    "external_review": "not-run"
+  },
+  "aact_stats": {
+    "proportions_valid": "pass",
+    "sponsor_reconciles": "pass",
+    "size_reconciles": "pass",
+    "hist_reconciles": "pass",
+    "significance_consistent": "pass",
+    "no_nan": "pass"
+  },
+  "snapshot_date": "2026-04-12"
+}
