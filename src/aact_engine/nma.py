@@ -8,6 +8,7 @@ a caller-supplied keyword map. One contrast per (trial, edge), deterministic
 from __future__ import annotations
 
 import math
+import re
 
 from .effects import Z95
 from .guards import assert_columns_exist
@@ -15,10 +16,13 @@ from .query import open_warehouse, _provenance
 
 
 def classify_node(title: str, nodes: dict[str, list[str]]) -> str | None:
+    """Map an arm title to a treatment node by WORD-BOUNDARY keyword match (so a
+    drug name embedded in another token cannot mis-route the contrast)."""
     tl = (title or "").lower()
     for name, kws in nodes.items():
-        if any(k in tl for k in kws):
-            return name
+        for k in kws:
+            if re.search(r"\b" + re.escape(k.lower()) + r"\b", tl):
+                return name
     return None
 
 

@@ -11,6 +11,13 @@ def compute_tier(checks: dict) -> str:
     Bronze = citation_cascade != fail AND data_file_present == pass AND code_runs in {pass,not-run}
     Silver = Bronze + dashboard_match == pass AND claim_language == pass
     Gold   = Silver + analysis_rerun == pass AND external_review == pass
+
+    NOTE on `dashboard_match`: this is a shared E156-assurance contract key meaning
+    "the capsule's own statistical invariants hold and its embedded numbers are
+    self-consistent" — NOT a literal live-vs-embedded diff. The literal
+    JS-engine-==-Python check is enforced at runtime (the ribbon dot) and in CI
+    (the Node witnesses); a value of 'warn' here caps the tier at Bronze without
+    hiding the capsule as 'none'.
     """
     if "fail" in checks.values():
         return "none"

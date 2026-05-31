@@ -142,9 +142,23 @@ def nma(contrasts: list[dict], reference: str | None = None,
     }
 
 
+def _chol_psd(cov, m):
+    """Cholesky with an escalating ridge; fail with a clear message rather than a
+    bare LinAlgError if the covariance is not positive-definite (degenerate net)."""
+    ridge = 1e-12
+    for _ in range(8):
+        try:
+            return np.linalg.cholesky(cov + np.eye(m) * ridge)
+        except np.linalg.LinAlgError:
+            ridge *= 100
+    raise ValueError(
+        "NMA covariance is not positive-definite (degenerate/over-parameterised "
+        "network); cannot draw SUCRA samples")
+
+
 def _sucra(treatments, eff, cov, n_sim=4000, lower_is_better=True):
     m = len(treatments)
-    L = np.linalg.cholesky(cov + np.eye(m) * 1e-12)
+    L = _chol_psd(cov, m)
     mu = np.array([eff[t] for t in treatments])
     rank_count = np.zeros((m, m))  # rank_count[t, r] how often treat t got rank r
     normals = _seeded_normals(n_sim * m)
