@@ -23,4 +23,5 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+# tests/browser needs a live server + Chrome (Selenium) — run it manually, not in unit CI
+addopts = "-q --ignore=tests/browser"

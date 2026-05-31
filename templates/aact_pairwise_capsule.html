@@ -141,19 +141,19 @@ let model=load();
 function persist(){try{localStorage.setItem(LSKEY,JSON.stringify(model));}catch(e){}}
 
 // ---- forest ----
-const W=720,padL=176,padR=150,plotW=W-padL-padR,DMIN=Math.log(0.4),DMAX=Math.log(2.2),rowH=38,top=22;
+const W=720,padL=176,padR=150,plotW=W-padL-padR,DMIN=Math.log(0.4),DMAX=Math.log(2.2),rowH=38,topY=22;
 const xOf=hr=>padL+(Math.log(hr)-DMIN)/(DMAX-DMIN)*plotW;
 function renderForest(res){
-  const n=model.length,H=top+n*rowH+96,svg=document.getElementById('forest');
+  const n=model.length,H=topY+n*rowH+96,svg=document.getElementById('forest');
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const axisY=top+n*rowH+8,diaY=top+n*rowH+30;let s='';
+  const axisY=topY+n*rowH+8,diaY=topY+n*rowH+30;let s='';
   [0.5,0.7,1.0,1.5,2.0].forEach(t=>{const x=xOf(t);
-    s+=`<line class="${t===1?'nullline':'grid'}" x1="${x}" y1="${top-8}" x2="${x}" y2="${axisY}"/>`;
+    s+=`<line class="${t===1?'nullline':'grid'}" x1="${x}" y1="${topY-8}" x2="${x}" y2="${axisY}"/>`;
     s+=`<text class="tick" x="${x}" y="${axisY+15}" text-anchor="middle">${t.toFixed(1)}</text>`;});
   s+=`<text class="yr" x="${xOf(0.5)}" y="${axisY+30}" text-anchor="middle">${esc(CAPSULE.favours_low)}</text>`;
   s+=`<text class="yr" x="${xOf(1.7)}" y="${axisY+30}" text-anchor="middle">${esc(CAPSULE.favours_high)}</text>`;
   let maxW=0;if(res)res.wmap.forEach(v=>{if(v>maxW)maxW=v;});if(maxW<=0)maxW=1;
-  model.forEach((t,i)=>{const y=top+i*rowH+rowH/2,ok=valid(t);
+  model.forEach((t,i)=>{const y=topY+i*rowH+rowH/2,ok=valid(t);
     const x=ok?xOf(Math.min(2.2,Math.max(0.4,t.hr))):padL,xl=ok?xOf(Math.max(0.4,t.lci)):padL,xu=ok?xOf(Math.min(2.2,t.uci)):padL;
     const wv=(res&&res.wmap.get(t))||0,half=2+Math.sqrt(wv/maxW)*9;
     s+=`<text class="lbl" x="14" y="${y-1}">${esc(t.name).slice(0,30)}</text>`;

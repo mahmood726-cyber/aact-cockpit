@@ -21,6 +21,13 @@ _PAYLOAD_LEAKS = [
     (re.compile(r"__AACT_\w+"), "residual token"),
 ]
 _CAP_RE = re.compile(r"const\s+CAPSULE\s*=\s*(\{.*\});")
+# A top-level `const top=...` shadows the browser global window.top and throws
+# "Identifier 'top' has already been declared" — invisible to the Node witness
+# (no window) but fatal in a browser. Catch declarations of reserved globals.
+_SHADOW_RE = re.compile(
+    r"(?:(?:const|let|var)\s+|,\s*)"
+    r"(top|name|length|parent|closed|status|location|self)\s*=")
+_SCRIPT_BLOCK_RE = re.compile(r"<script\b[^>]*>(.*?)</script>", re.DOTALL | re.IGNORECASE)
 
 
 def verify(docs: Path) -> int:
@@ -42,6 +49,11 @@ def verify(docs: Path) -> int:
         for rx, why in _PAYLOAD_LEAKS:
             if rx.search(payload):
                 failures.append(f"{html.name}: payload leak {why}")
+        # browser-global shadowing (would crash in a browser, not in Node)
+        scripts = "\n".join(m.group(1) for m in _SCRIPT_BLOCK_RE.finditer(text))
+        for m in _SHADOW_RE.finditer(scripts):
+            failures.append(f"{html.name}: declares reserved browser global '{m.group(1)}' "
+                            f"(shadows window.{m.group(1)} — crashes in browser)")
         # numeric witness (per capsule kind)
         witness = {"tsa": "tests/node/tsa_check.mjs",
                    "nma": "tests/node/nma_check.mjs"}.get(kind, "tests/node/repool_check.mjs")

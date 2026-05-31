@@ -22,6 +22,15 @@ Every capsule's numbers must agree **three ways**, and CI enforces it on every p
    `metafor` Bucher for NMA) must match within tolerance. Verified by
    `scripts/r_validate*.R`.
 
+For UI / capsule-template changes, also run the headless-browser test (catches
+browser-only bugs the Node witness can't, e.g. a `const top=` shadowing
+`window.top`). It needs the server running + Chrome + `pip install selenium`:
+
+```bash
+python scripts/serve.py &                 # in another shell
+python tests/browser/test_cockpit_ui.py   # drives the cockpit + opens a capsule
+```
+
 If you change an engine, re-run locally before pushing:
 
 ```bash

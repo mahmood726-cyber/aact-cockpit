@@ -3,142 +3,269 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>⬡</text></svg>"/>
 <title>AACT Cockpit</title>
 <style>
-  :root{--bg:#f6f7f9;--ink:#1a1a1f;--mut:#5a5a66;--line:#e1e3ea;--card:#fff;--accent:#2456c6;--ok:#1f8a4c;--warn:#c47f17}
-  @media (prefers-color-scheme:dark){:root{--bg:#14151a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1c1e24}}
-  *{box-sizing:border-box} body{margin:0;font:15px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-  header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;gap:14px;align-items:baseline}
-  h1{font-size:18px;margin:0} .pill{font-size:12px;color:var(--mut)}
-  .wrap{max-width:980px;margin:0 auto;padding:18px 20px 80px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
-  label{display:block;font-size:12.5px;color:var(--mut);margin:8px 0 3px}
-  input,select{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  button{font:inherit;font-weight:600;padding:9px 16px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;margin-top:12px}
-  button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-  button:disabled{opacity:.5;cursor:not-allowed}
-  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
-  th,td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right}
+  :root{
+    --bg:#f4f6fb; --panel:#ffffff; --ink:#141821; --mut:#646b7a; --line:#e6e9f0;
+    --accent:#1f6feb; --accent2:#0e9f8f; --ok:#1f8a4c; --warn:#c47f17;
+    --gold:#b8860b; --silver:#8a8f99; --bronze:#a9712e; --none:#c0392b;
+    --shadow:0 1px 2px rgba(20,24,33,.04),0 8px 24px rgba(20,24,33,.06);
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0f1116; --panel:#171a21; --ink:#e9ecf3; --mut:#9aa2b1; --line:#262b35;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,#1f6feb,#0e9f8f);
+         color:#fff;padding:14px 22px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 14px rgba(31,111,235,.25)}
+  header .logo{font-weight:800;font-size:18px;letter-spacing:.2px}
+  header .tag{font-size:13px;opacity:.92}
+  .chip{margin-left:auto;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);
+        padding:4px 11px;border-radius:999px;font-size:12.5px;font-weight:600}
+  .wrap{max-width:860px;margin:26px auto;padding:0 20px 90px}
+  .lede{color:var(--mut);font-size:14px;margin:0 0 18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:var(--shadow)}
+  .step{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.06em;
+        text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .step .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
+        background:var(--accent);color:#fff;font-size:12px}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--mut);margin:12px 0 5px}
+  select,input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+       background:var(--bg);color:var(--ink);font:inherit;appearance:none;cursor:pointer}
+  select:focus,input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(31,111,235,.15)}
+  .selwrap{position:relative}
+  .selwrap::after{content:"▾";position:absolute;right:13px;top:12px;color:var(--mut);pointer-events:none}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .preset select{font-weight:600;border-color:var(--accent);background:rgba(31,111,235,.05)}
+  .summary{margin:16px 0 4px;padding:12px 14px;background:rgba(14,159,143,.08);border:1px solid rgba(14,159,143,.25);
+           border-radius:10px;font-size:13.5px;color:var(--ink)}
+  .summary b{color:var(--accent2)}
+  details summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:600;margin-top:12px;user-select:none}
+  details[open] summary{margin-bottom:6px}
+  .btn{margin-top:18px;width:100%;font:inherit;font-weight:700;font-size:15px;padding:13px;border:0;border-radius:11px;
+       background:var(--accent);color:#fff;cursor:pointer;transition:filter .15s, transform .05s;display:flex;align-items:center;justify-content:center;gap:9px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn.sec{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+  .spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;
+        animation:sp .7s linear infinite;display:none} @keyframes sp{to{transform:rotate(360deg)}}
+  .btn.busy .spin{display:inline-block}
+  .muted{color:var(--mut);font-size:13px} .status{font-size:13px;color:var(--mut);margin-top:10px;min-height:18px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:right}
   th:first-child,td:first-child{text-align:left}
-  .muted{color:var(--mut);font-size:12.5px} .big{font-size:22px;font-weight:700}
-  .tier{display:inline-block;font-weight:800;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
-  .gold{background:#b8860b}.silver{background:#8a8f99}.bronze{background:#a9712e}.none{background:#b33}
-  .step{font-size:12px;letter-spacing:.05em;color:var(--mut);text-transform:uppercase;margin-bottom:6px}
-  a.dl{display:inline-block;margin-top:10px;color:var(--accent);font-weight:600}
+  thead th{color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  .scroll{max-height:330px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:8px}
+  .tier{display:inline-block;font-weight:800;padding:5px 13px;border-radius:8px;color:#fff;text-transform:uppercase;font-size:13px;letter-spacing:.05em}
+  .gold{background:var(--gold)}.silver{background:var(--silver)}.bronze{background:var(--bronze)}.none{background:var(--none)}
+  .big{font-size:18px;font-weight:700}
+  .dl{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:11px 16px;background:var(--accent2);
+      color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+  .hide{display:none}
+  .row-fade{animation:fade .35s ease} @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+  .err{color:var(--none);font-weight:600}
 </style>
 </head>
 <body>
 <header>
-  <h1>AACT Cockpit</h1>
-  <span class="pill" id="health">connecting…</span>
-  <span class="pill" style="margin-left:auto">ClinicalTrials.gov / AACT → self-auditing e156 capsule</span>
+  <span class="logo">⬡ AACT Cockpit</span>
+  <span class="tag">ClinicalTrials.gov / AACT → self-auditing meta-analysis</span>
+  <span class="chip" id="health">connecting…</span>
 </header>
+
 <div class="wrap">
+  <p class="lede">Pick an analysis below — the cockpit queries the local AACT snapshot, extracts trial-level
+    effects, and builds an offline, self-auditing evidence capsule with a live forest plot and R cross-validation.</p>
 
-  <div class="card">
-    <div class="step">1 · Define the question (PICO)</div>
-    <div class="row">
-      <div><label>Population / condition</label><input id="population" value="heart failure"/></div>
-      <div><label>Outcome</label><input id="outcome" value="all-cause mortality"/></div>
+  <!-- STEP 1 -->
+  <div class="card" id="card1">
+    <div class="step"><span class="n">1</span> Choose an analysis</div>
+
+    <label>Quick start — a ready-made analysis</label>
+    <div class="selwrap preset">
+      <select id="preset">
+        <option value="">— pick a preset (fills everything) —</option>
+        <option value="heart failure|acm">Heart failure → all-cause mortality</option>
+        <option value="heart failure|cv_death">Heart failure → cardiovascular death</option>
+        <option value="heart failure|hf_hosp">Heart failure → HF hospitalisation</option>
+        <option value="type 2 diabetes|mace">Type 2 diabetes → MACE</option>
+        <option value="chronic kidney disease|renal">Chronic kidney disease → renal composite</option>
+        <option value="atrial fibrillation|acm">Atrial fibrillation → all-cause mortality</option>
+        <option value="myocardial infarction|acm">Myocardial infarction → all-cause mortality</option>
+        <option value="stroke|acm">Stroke → all-cause mortality</option>
+      </select>
     </div>
-    <div class="row">
-      <div><label>Intervention (optional, for wording)</label><input id="intervention" placeholder="e.g. SGLT2 inhibitor"/></div>
-      <div><label>Comparator (optional)</label><input id="comparator" placeholder="e.g. placebo"/></div>
+
+    <div class="grid2" style="margin-top:6px">
+      <div>
+        <label>Condition / population</label>
+        <div class="selwrap"><select id="population">
+          <option value="heart failure">Heart failure</option>
+          <option value="type 2 diabetes">Type 2 diabetes</option>
+          <option value="chronic kidney disease">Chronic kidney disease</option>
+          <option value="atrial fibrillation">Atrial fibrillation</option>
+          <option value="myocardial infarction">Myocardial infarction</option>
+          <option value="stroke">Stroke</option>
+          <option value="coronary artery disease">Coronary artery disease</option>
+          <option value="hypertension">Hypertension</option>
+          <option value="chronic obstructive pulmonary disease">COPD</option>
+          <option value="__other">Other… (type it)</option>
+        </select></div>
+        <input id="populationOther" class="hide" placeholder="e.g. pulmonary hypertension" style="margin-top:8px"/>
+      </div>
+      <div>
+        <label>Outcome / endpoint</label>
+        <div class="selwrap"><select id="endpoint">
+          <option value="acm">All-cause mortality</option>
+          <option value="cv_death">Cardiovascular death</option>
+          <option value="hf_hosp">Heart failure hospitalisation</option>
+          <option value="mace">MACE (major adverse CV events)</option>
+          <option value="renal">Renal composite</option>
+        </select></div>
+      </div>
     </div>
-    <div class="row">
-      <div><label>Endpoint class</label><select id="endpoint">
-        <option value="acm">all-cause mortality</option>
-        <option value="cv_death">cardiovascular death</option>
-        <option value="hf_hosp">HF hospitalization</option>
-        <option value="mace">MACE</option>
-        <option value="renal">renal composite</option>
-      </select></div>
-      <div><label>Named primary estimand</label><input id="estimand" value="hazard ratio for all-cause mortality"/></div>
-    </div>
-    <button id="searchBtn">Search cohort &amp; extract effects</button>
-    <span class="muted" id="searchStatus"></span>
+
+    <details>
+      <summary>Advanced (optional): intervention, comparator, estimand</summary>
+      <div class="grid2">
+        <div><label>Intervention (for wording)</label><input id="intervention" placeholder="e.g. SGLT2 inhibitor"/></div>
+        <div><label>Comparator</label><input id="comparator" placeholder="e.g. placebo"/></div>
+      </div>
+      <label>Named primary estimand</label>
+      <input id="estimand"/>
+    </details>
+
+    <div class="summary" id="summary"></div>
+    <button class="btn" id="searchBtn"><span class="spin"></span><span class="lbl">Search cohort &amp; extract effects</span></button>
+    <div class="status" id="searchStatus"></div>
   </div>
 
-  <div class="card" id="effectsCard" style="display:none">
-    <div class="step">2 · Extracted effects</div>
-    <div id="effectsSummary" class="muted"></div>
-    <div style="max-height:320px;overflow:auto"><table id="effectsTable"></table></div>
-    <div class="row">
-      <div><label>Between-study estimator</label><select id="method">
-        <option value="PM">Paule-Mandel (default; unbiased small k)</option>
-        <option value="REML">REML</option>
-        <option value="DL">DerSimonian-Laird (flagged for k&lt;10)</option>
-      </select></div>
-      <div><label>HKSJ small-sample CI</label><select id="hksj">
-        <option value="false">off (z-based)</option>
-        <option value="true">on (t-based, HKSJ)</option>
-      </select></div>
+  <!-- STEP 2 -->
+  <div class="card hide" id="card2">
+    <div class="step"><span class="n">2</span> Extracted effects</div>
+    <div class="muted" id="effectsSummary"></div>
+    <div class="scroll"><table id="effectsTable"></table></div>
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <label>Between-study estimator</label>
+        <div class="selwrap"><select id="method">
+          <option value="PM">Paule-Mandel (default; unbiased small k)</option>
+          <option value="REML">REML</option>
+          <option value="DL">DerSimonian-Laird (flagged for k&lt;10)</option>
+        </select></div>
+      </div>
+      <div>
+        <label>Small-sample CI (HKSJ)</label>
+        <div class="selwrap"><select id="hksj">
+          <option value="false">Off (z-based)</option>
+          <option value="true">On (t-based, HKSJ)</option>
+        </select></div>
+      </div>
     </div>
-    <button id="buildBtn">Build self-auditing capsule</button>
+    <button class="btn" id="buildBtn"><span class="spin"></span><span class="lbl">Build self-auditing capsule</span></button>
   </div>
 
-  <div class="card" id="resultCard" style="display:none">
-    <div class="step">3 · Capsule</div>
-    <div><span class="tier" id="tier"></span> <span class="big" id="pooledLine"></span></div>
-    <div class="muted" id="auditLine" style="margin-top:6px"></div>
-    <a class="dl" id="dl" target="_blank" rel="noopener">open the capsule ↗</a>
+  <!-- STEP 3 -->
+  <div class="card hide" id="card3">
+    <div class="step"><span class="n">3</span> Your capsule</div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <span class="tier" id="tier"></span><span class="big" id="pooledLine"></span>
+    </div>
+    <div class="muted" id="auditLine" style="margin-top:8px"></div>
+    <a class="dl" id="dl" target="_blank" rel="noopener">Open the capsule ↗</a>
   </div>
-
 </div>
+
 <script>
 const $ = id => document.getElementById(id);
+const ENDPOINT_META = {
+  acm:      {outcome:"all-cause mortality",            estimand:"hazard ratio for all-cause mortality"},
+  cv_death: {outcome:"cardiovascular death",           estimand:"hazard ratio for cardiovascular death"},
+  hf_hosp:  {outcome:"heart failure hospitalisation",  estimand:"hazard ratio for heart failure hospitalisation"},
+  mace:     {outcome:"major adverse cardiovascular events", estimand:"hazard ratio for MACE"},
+  renal:    {outcome:"renal composite",                estimand:"hazard ratio for the renal composite"},
+};
 let lastEffects = null;
 
+function currentPopulation(){
+  const v = $("population").value;
+  return v === "__other" ? ($("populationOther").value.trim() || "heart failure") : v;
+}
+function syncSummary(){
+  const pop = currentPopulation();
+  const ep = $("endpoint").value, meta = ENDPOINT_META[ep];
+  if(!$("estimand").dataset.touched) $("estimand").value = meta.estimand;
+  $("summary").innerHTML = `You'll analyse: <b>${meta.estimand}</b> in <b>${pop}</b> · randomized trials with posted results from the AACT snapshot.`;
+}
 async function jpost(url, body){
   const r = await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-  if(!r.ok){throw new Error((await r.json()).detail || r.statusText);}
+  if(!r.ok){ let d={}; try{d=await r.json();}catch(e){} throw new Error(d.detail || r.statusText); }
   return r.json();
 }
+function busy(btn,on){ btn.classList.toggle("busy",on); btn.disabled=on; }
 
 (async () => {
   try{const h = await (await fetch("/api/health")).json();
     $("health").textContent = `snapshot ${h.snapshot_date} · ${h.n_tables} tables`;}
-  catch(e){$("health").textContent = "warehouse not built — run scripts/build_warehouse.py";}
+  catch(e){ $("health").textContent = "warehouse not built"; }
 })();
 
+$("preset").addEventListener("change", e => {
+  if(!e.target.value) return;
+  const [pop, ep] = e.target.value.split("|");
+  $("population").value = pop; $("populationOther").classList.add("hide");
+  $("endpoint").value = ep; $("estimand").dataset.touched=""; syncSummary();
+});
+$("population").addEventListener("change", e => {
+  $("populationOther").classList.toggle("hide", e.target.value !== "__other"); syncSummary();
+});
+$("populationOther").addEventListener("input", syncSummary);
+$("endpoint").addEventListener("change", () => { $("estimand").dataset.touched=""; syncSummary(); });
+$("estimand").addEventListener("input", () => { $("estimand").dataset.touched="1"; });
+syncSummary();
+
 $("searchBtn").addEventListener("click", async () => {
-  $("searchStatus").textContent = " searching…"; $("searchBtn").disabled = true;
+  busy($("searchBtn"),true); $("searchStatus").textContent="Querying the AACT snapshot…";
   try{
-    const req = {population:$("population").value, outcome:$("outcome").value,
+    const ep = $("endpoint").value;
+    const req = {population:currentPopulation(), outcome:ENDPOINT_META[ep].outcome,
       intervention:$("intervention").value||null, comparator:$("comparator").value||null,
-      endpoint:$("endpoint").value, estimand:$("estimand").value};
+      endpoint:ep, estimand:$("estimand").value};
     const ds = await jpost("/api/effects", req);
     lastEffects = ds;
-    $("searchStatus").textContent = ` ${ds.cohort_n} trials searched`;
+    $("searchStatus").textContent = `Searched ${ds.cohort_n} randomized trials.`;
     $("effectsSummary").textContent =
-      `${ds.n_studies} trials with extractable ${ds.measure} for the endpoint · ${ds.notes.length} analyses skipped · snapshot ${ds.snapshot_date}`;
+      `${ds.n_studies} trials with an extractable ${ds.measure} for this endpoint · ${ds.notes.length} analyses skipped · snapshot ${ds.snapshot_date}.`;
     const rows = ds.studies.map(s =>
-      `<tr><td>${s.study_label}</td><td>${s.year||""}</td><td>${s.measure_type}</td>`+
+      `<tr><td>${(s.study_label||"").slice(0,52)}</td><td>${s.year||""}</td><td>${s.measure_type}</td>`+
       `<td>${s.point_estimate}</td><td>${s.ci_lower}</td><td>${s.ci_upper}</td></tr>`).join("");
     $("effectsTable").innerHTML =
-      "<tr><th>Trial</th><th>Year</th><th>Measure</th><th>Est.</th><th>LCI</th><th>UCI</th></tr>"+rows;
-    $("effectsCard").style.display = ds.n_studies ? "block" : "none";
-    if(!ds.n_studies) $("searchStatus").textContent += " — no extractable effects for this endpoint";
-  }catch(e){$("searchStatus").textContent = " error: "+e.message;}
-  $("searchBtn").disabled = false;
+      "<thead><tr><th>Trial</th><th>Year</th><th>Measure</th><th>Est.</th><th>LCI</th><th>UCI</th></tr></thead><tbody>"+rows+"</tbody>";
+    const ok = ds.n_studies >= 2;
+    $("card2").classList.toggle("hide", !ok);
+    if(ok){ $("card2").classList.add("row-fade"); $("card2").scrollIntoView({behavior:"smooth"}); }
+    else $("searchStatus").innerHTML = `<span class="err">Only ${ds.n_studies} extractable trial(s) — try another endpoint or condition.</span>`;
+  }catch(e){ $("searchStatus").innerHTML = `<span class="err">Error: ${e.message}</span>`; }
+  busy($("searchBtn"),false);
 });
 
 $("buildBtn").addEventListener("click", async () => {
   if(!lastEffects) return;
-  $("buildBtn").disabled = true;
+  busy($("buildBtn"),true);
   try{
-    const man = await jpost("/api/build", {effects:lastEffects,
-      method:$("method").value, hksj:$("hksj").value === "true"});
+    const man = await jpost("/api/build", {effects:lastEffects, method:$("method").value, hksj:$("hksj").value==="true"});
     const p = lastEffects;
     $("tier").textContent = man.tier; $("tier").className = "tier "+man.tier;
-    $("pooledLine").textContent = `${p.measure}, ${man.k} trials`;
-    $("auditLine").textContent = man.ok ? "E156 body validated · self-audit recorded in assurance.json" : "body validation failed";
+    $("pooledLine").textContent = `${p.measure} meta-analysis · ${man.k} trials`;
+    $("auditLine").textContent = man.ok ? "E156 body validated · self-audit recorded in assurance.json · JS engine cross-checks against R."
+                                        : "Body validation failed — check the capsule.";
     $("dl").href = man.download_url;
-    $("resultCard").style.display = "block";
-    $("resultCard").scrollIntoView({behavior:"smooth"});
-  }catch(e){alert("build failed: "+e.message);}
-  $("buildBtn").disabled = false;
+    $("card3").classList.remove("hide"); $("card3").classList.add("row-fade");
+    $("card3").scrollIntoView({behavior:"smooth"});
+  }catch(e){ alert("Build failed: "+e.message); }
+  busy($("buildBtn"),false);
 });
 </script>
 </body>
