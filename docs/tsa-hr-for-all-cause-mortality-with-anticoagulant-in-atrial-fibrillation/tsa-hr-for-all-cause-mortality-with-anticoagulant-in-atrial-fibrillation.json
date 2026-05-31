@@ -1,0 +1,227 @@
+{
+  "slug": "tsa-hr-for-all-cause-mortality-with-anticoagulant-in-atrial-fibrillation",
+  "title": "TSA — HR for all-cause mortality with anticoagulant in atrial fibrillation",
+  "measure": "HR",
+  "pico": {
+    "population": "atrial fibrillation",
+    "outcome": "all-cause mortality",
+    "intervention": "anticoagulant",
+    "comparator": null
+  },
+  "primary_estimand": "hazard ratio for all-cause mortality with anticoagulants",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-05-31T21:29:47Z"
+  },
+  "favours_low": "favours anticoagulant",
+  "favours_high": "favours comparator",
+  "kind": "tsa",
+  "method": "PM",
+  "studies": [
+    {
+      "nct": "NCT00403767",
+      "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation",
+      "year": 2006,
+      "agent": "Rivaroxaban",
+      "comparator": "Warfarin",
+      "hr": 0.85,
+      "lci": 0.7,
+      "uci": 1.02,
+      "inc": true
+    },
+    {
+      "nct": "NCT00412984",
+      "name": "A Phase 3, Active (Warfarin) Controlled, Randomized, Double-Blind, Parallel Arm Study to Evaluate Efficacy and Safety of Apixaban in Preventing Stroke and Systemic Embolism in Subjects With Nonvalvular Atrial Fibrillation",
+      "year": 2006,
+      "agent": "Apixaban",
+      "comparator": "Warfarin",
+      "hr": 0.89,
+      "lci": 0.8,
+      "uci": 1.0,
+      "inc": true
+    },
+    {
+      "nct": "NCT00494871",
+      "name": "Evaluation of the Efficacy and Safety of Rivaroxaban (BAY59-7939) for the Prevention of Stroke and Non-central Nervous System Systemic Embolism in Subjects With Non-valvular Atrial Fibrillation",
+      "year": 2007,
+      "agent": "Rivaroxaban (Xarelto, BAY59-7939)",
+      "comparator": "Warfarin",
+      "hr": 1.37,
+      "lci": 0.43,
+      "uci": 4.31,
+      "inc": true
+    },
+    {
+      "nct": "NCT00496769",
+      "name": "Apixaban Versus Acetylsalicylic Acid (ASA) to Prevent Stroke in Atrial Fibrillation Patients Who Have Failed or Are Unsuitable for Vitamin K Antagonist Treatment: A Randomized Double-blind Trial",
+      "year": 2007,
+      "agent": "Apixaban, 2.5 or 5 mg Twice Daily",
+      "comparator": "Acetylsalicylic Acid, 81-324 mg Once Daily",
+      "hr": 0.79,
+      "lci": 0.62,
+      "uci": 1.02,
+      "inc": true
+    },
+    {
+      "nct": "NCT00781391",
+      "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)",
+      "year": 2008,
+      "agent": "Warfarin/Placebo Edoxaban",
+      "comparator": "High Dose Edoxaban/Placebo Warfarin",
+      "hr": 0.9,
+      "lci": 0.823,
+      "uci": 0.981,
+      "inc": true
+    },
+    {
+      "nct": "NCT01674647",
+      "name": "A Prospective, Randomized, Open-label, Parallel-group, Active-controlled, Multicenter Study Exploring the Efficacy and Safety of Once-daily Oral Rivaroxaban (BAY59-7939) Compared With That of Dose-adjusted Oral Vitamin K Antagonists (VKA) for the Prevention of Cardiovascular Events in Subjects With Nonvalvular Atrial Fibrillation Scheduled for Cardioversion",
+      "year": 2012,
+      "agent": "Rivaroxaban (Xarelto, BAY59-7939)",
+      "comparator": "Vitamin K Antagonist (VKA)",
+      "hr": 0.5,
+      "lci": 0.16,
+      "uci": 1.55,
+      "inc": true
+    },
+    {
+      "nct": "NCT02942407",
+      "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial",
+      "year": 2016,
+      "agent": "Apixaban",
+      "comparator": "Warfarin",
+      "hr": 1.2,
+      "lci": 0.67,
+      "uci": 2.17,
+      "inc": true
+    }
+  ],
+  "tsa": {
+    "steps": [
+      {
+        "k": 1,
+        "year": 2006,
+        "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation",
+        "est": 0.85,
+        "ci_lower": 0.7041543391425868,
+        "ci_upper": 1.0260534656077696,
+        "z": -1.6921658710068967,
+        "info": 108.41214997204665,
+        "t": 0.20059449727992043,
+        "obf": 4.376113559932712
+      },
+      {
+        "k": 2,
+        "year": 2006,
+        "name": "A Phase 3, Active (Warfarin) Controlled, Randomized, Double-Blind, Parallel Arm Study to Evaluate Efficacy and Safety of Apixaban in Preventing Stroke and Systemic Embolism in Subjects With Nonvalvular Atrial Fibrillation",
+        "est": 0.8794233209558595,
+        "ci_lower": 0.7989411074549485,
+        "ci_upper": 0.9680129989864655,
+        "z": -2.6238370363859906,
+        "info": 417.00616022382883,
+        "t": 0.7715845603495297,
+        "obf": 2.2312915804586564
+      },
+      {
+        "k": 3,
+        "year": 2007,
+        "name": "Evaluation of the Efficacy and Safety of Rivaroxaban (BAY59-7939) for the Prevention of Stroke and Non-central Nervous System Systemic Embolism in Subjects With Non-valvular Atrial Fibrillation",
+        "est": 0.8821127696613316,
+        "ci_lower": 0.8016498338792437,
+        "ci_upper": 0.9706519050022006,
+        "z": -2.5703495646695886,
+        "info": 419.8984978841517,
+        "t": 0.7769362392811425,
+        "obf": 2.2235935288801874
+      },
+      {
+        "k": 4,
+        "year": 2007,
+        "name": "Apixaban Versus Acetylsalicylic Acid (ASA) to Prevent Stroke in Atrial Fibrillation Patients Who Have Failed or Are Unsuitable for Vitamin K Antagonist Treatment: A Randomized Double-blind Trial",
+        "est": 0.8696849144638731,
+        "ci_lower": 0.7954018835873758,
+        "ci_upper": 0.9509052795233268,
+        "z": -3.065053089746921,
+        "info": 481.8967348478393,
+        "t": 0.89165128901661,
+        "obf": 2.0756330158837577
+      },
+      {
+        "k": 5,
+        "year": 2008,
+        "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)",
+        "est": 0.8849651825564643,
+        "ci_lower": 0.8312607151996274,
+        "ci_upper": 0.9421392831599401,
+        "z": -3.8259238195927296,
+        "info": 980.1231287602732,
+        "t": 1.8135172703131854,
+        "obf": 1.4554163288982074
+      },
+      {
+        "k": 6,
+        "year": 2012,
+        "name": "A Prospective, Randomized, Open-label, Parallel-group, Active-controlled, Multicenter Study Exploring the Efficacy and Safety of Once-daily Oral Rivaroxaban (BAY59-7939) Compared With That of Dose-adjusted Oral Vitamin K Antagonists (VKA) for the Prevention of Cardiovascular Events in Subjects With Nonvalvular Atrial Fibrillation Scheduled for Cardioversion",
+        "est": 0.8834350586987769,
+        "ci_lower": 0.8299022425945644,
+        "ci_upper": 0.9404210072961469,
+        "z": -3.8859946940036916,
+        "info": 983.1029106841296,
+        "t": 1.819030746959243,
+        "obf": 1.4532089737802352
+      },
+      {
+        "k": 7,
+        "year": 2016,
+        "name": "RENal Hemodialysis Patients ALlocated Apixaban Versus Warfarin in Atrial Fibrillation (RENAL-AF) Randomized Clinical Trial",
+        "est": 0.886467907794318,
+        "ci_lower": 0.8330434404266587,
+        "ci_upper": 0.9433185754956075,
+        "z": -3.799859199221735,
+        "info": 994.22865586438,
+        "t": 1.8396166615626548,
+        "obf": 1.445055155792574
+      }
+    ],
+    "ris": 540.4542569318961,
+    "deff": 1.0,
+    "mu": 0.1205103551447851,
+    "z_alpha2": 1.959963984540054,
+    "z_beta": 0.8416212335729143,
+    "tau2": 0.0,
+    "final_z": -3.799859199221735,
+    "final_t": 1.8396166615626548,
+    "crossed": 2,
+    "conclusion": "firm",
+    "k": 7
+  },
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "obf_boundary_formula": "pass",
+      "heterogeneity_design_effect": "pass",
+      "non_binding_futility": "pass",
+      "ris_positive": "pass",
+      "no_nan": "pass"
+    }
+  },
+  "e156_body": "In atrial fibrillation, is the accumulated randomized evidence on anticoagulant versus control for all-cause mortality conclusive? This analysis accrues 7 randomized trials from the ClinicalTrials.gov AACT snapshot dated 2026-04-12, spanning 2006 to 2016. A cumulative random-effects meta-analysis was monitored by trial sequential analysis using O'Brien-Fleming boundaries against a diversity-adjusted required information size. The cumulative pooled HR for all-cause mortality was 0.89 (95% CI 0.83 to 0.94). The monitoring boundary was crossed by trial 2, and the accrued information reached 184 percent of the required size. This pattern is consistent with a firm signal that is unlikely to be a chance finding, though the certainty remains observational and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot, by registration-time effect reporting, and does not generalise beyond the included trials.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 132,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": []
+}
