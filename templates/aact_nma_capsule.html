@@ -72,7 +72,11 @@
   <div class="muted">HR &lt; 1 favours the row treatment. Diagonal = treatment name.</div>
   <div class="card" style="overflow:auto"><table id="league"></table></div>
 
-  <h2>06 · Contrast data (editable — re-fits live)</h2>
+  <h2>06 · Loop consistency (Bucher)</h2>
+  <div class="muted">For each closed loop, direct evidence is compared with indirect evidence; an inconsistency factor (IF) far from 1 with a small p-value signals disagreement.</div>
+  <div class="card" id="consBox"></div>
+
+  <h2>07 · Contrast data (editable — re-fits live)</h2>
   <div class="card"><table id="dataTable"><thead><tr>
     <th>Trial</th><th>Comparison</th><th>HR</th><th>LCI</th><th>UCI</th>
   </tr></thead><tbody id="dataBody"></tbody></table>
@@ -174,6 +178,27 @@ function connected(treatments,edges){if(!treatments.length)return false;const ad
   edges.forEach(e=>{adj[e.a].push(e.b);adj[e.b].push(e.a);});const seen=new Set([treatments[0]]),st=[treatments[0]];
   while(st.length){const x=st.pop();adj[x].forEach(nb=>{if(!seen.has(nb)){seen.add(nb);st.push(nb);}});}return seen.size===treatments.length;}
 function hasLoops(treatments,edges){const d=new Set(edges.map(e=>[e.a,e.b].sort().join("|")));return d.size>=treatments.length;}
+// ---- loop inconsistency (Bucher), mirrors aact_cockpit.capsule.nma ----
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function normcdf(x){return 0.5*(1+erf(x/Math.SQRT2));}
+function directEdge(contrasts,a,b){const ys=[],vs=[];
+  contrasts.forEach(c=>{if((c.t1===a&&c.t2===b)||(c.t1===b&&c.t2===a)){ys.push((c.t1===a&&c.t2===b)?c.yi:-c.yi);vs.push(c.sei*c.sei);}});
+  if(!ys.length)return null;const k=ys.length;const w=vs.map(v=>1/v);const sw=w.reduce((s,x)=>s+x,0);
+  const m=ys.reduce((s,_,i)=>s+w[i]*ys[i],0)/sw;let tau2=0;
+  if(k>1){const Q=ys.reduce((s,_,i)=>s+w[i]*(ys[i]-m)**2,0),df=k-1,C=sw-w.reduce((s,x)=>s+x*x,0)/sw;if(df>0&&C>0)tau2=Math.max(0,(Q-df)/C);}
+  const wr=vs.map(v=>1/(v+tau2)),swr=wr.reduce((s,x)=>s+x,0);
+  return {log:ys.reduce((s,_,i)=>s+wr[i]*ys[i],0)/swr,var:1/swr,k};}
+function bucherLoops(contrasts,treatments){
+  const es=new Set(contrasts.map(c=>[c.t1,c.t2].sort().join("|")));const loops=[];
+  for(let i=0;i<treatments.length;i++)for(let j=i+1;j<treatments.length;j++)for(let k=j+1;k<treatments.length;k++){
+    const a=treatments[i],b=treatments[j],c=treatments[k];
+    if(!(es.has([a,b].sort().join("|"))&&es.has([b,c].sort().join("|"))&&es.has([a,c].sort().join("|"))))continue;
+    const dab=directEdge(contrasts,a,b),dbc=directEdge(contrasts,b,c),dac=directEdge(contrasts,a,c);
+    if(!(dab&&dbc&&dac))continue;
+    const ifl=dac.log-(dab.log+dbc.log),v=dac.var+dab.var+dbc.var,se=Math.sqrt(v),z=se>0?ifl/se:0;
+    loops.push({nodes:[a,b,c],if_log:ifl,se,if_ratio:Math.exp(ifl),lo:Math.exp(ifl-Z*se),hi:Math.exp(ifl+Z*se),z,p:2*(1-normcdf(Math.abs(z)))});}
+  return loops;}
 
 // ---- state ----
 function defaults(){return CAPSULE.contrasts.map(c=>({...c}));}
@@ -265,7 +290,17 @@ function render(){
   document.getElementById('rcode').textContent=rCode();
   const conn=connected(res.treatments,res.edges),loops=hasLoops(res.treatments,res.edges);
   setDot('d-conn',conn?'ok':'warn');
-  setDot('d-cons',loops?'pending':'ok');document.getElementById('t-cons').textContent=loops?'consistency (loops present)':'consistency N/A (tree)';
+  // loop consistency
+  const blo=bucherLoops(model,res.treatments);
+  const cbox=document.getElementById('consBox');
+  if(!blo.length){cbox.innerHTML='<span class="muted">No closed loops — the network is a tree, so consistency cannot be assessed (disclosed honestly).</span>';
+    setDot('d-cons','ok');document.getElementById('t-cons').textContent='consistency N/A (tree)';}
+  else{const inc=blo.some(l=>l.p<0.05);
+    let s='<table><tr><th>Loop</th><th>IF (ratio)</th><th>95% CI</th><th>z</th><th>p</th></tr>';
+    blo.forEach(l=>{s+=`<tr><td style="text-align:left">${l.nodes.join(' – ')}</td><td>${f(l.if_ratio)}</td>`+
+      `<td>${f(l.lo)}–${f(l.hi)}</td><td>${l.z.toFixed(2)}</td><td>${l.p<0.001?'<0.001':l.p.toFixed(3)}</td></tr>`;});
+    s+='</table>';cbox.innerHTML=s;
+    setDot('d-cons',inc?'warn':'ok');document.getElementById('t-cons').textContent=inc?'inconsistency detected':'consistency tested (no inconsistency)';}
   // dashboard match: live JS vs embedded python rel_to_ref
   let match=false;
   if(CAPSULE.nma&&JSON.stringify(model)===JSON.stringify(CAPSULE.contrasts)){
@@ -292,7 +327,7 @@ document.getElementById('auditBox').innerHTML='<b>Tier checks</b><br>'+Object.en
 document.getElementById('notesBox').textContent=CAPSULE.notes&&CAPSULE.notes.length?('Notes: '+CAPSULE.notes.join('; ')):'';
 document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults();persist();render();});
 document.getElementById('inspectBtn').addEventListener('click',()=>{const o=document.getElementById('inspectOut');
-  o.style.display=o.style.display==='none'?'block':'none';o.textContent=[nmaFit,chol,matInv].map(fn=>fn.toString()).join('\n\n');});
+  o.style.display=o.style.display==='none'?'block':'none';o.textContent=[nmaFit,bucherLoops,directEdge,chol,matInv].map(fn=>fn.toString()).join('\n\n');});
 render();
 </script>
 </body>

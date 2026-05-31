@@ -117,7 +117,17 @@ def nma(contrasts: list[dict], reference: str | None = None,
 
     sucra = _sucra(treatments, eff, full_cov, n_sim=n_sim, lower_is_better=lower_is_better)
 
+    loops = bucher_loops(contrasts, treatments)
+    consistency = {
+        "loops": loops,
+        "assessable": len(loops) > 0,
+        # most extreme loop (smallest p); None if no loops
+        "min_p": min((lp["p"] for lp in loops), default=None),
+        "inconsistent": any(lp["p"] < 0.05 for lp in loops),
+    }
+
     return {
+        "consistency": consistency,
         "treatments": treatments, "reference": reference,
         "effects": eff,                      # log-scale vs reference
         "rel_to_ref": {t: {"est": math.exp(eff[t]),
@@ -150,6 +160,65 @@ def _sucra(treatments, eff, cov, n_sim=4000, lower_is_better=True):
             cum += rank_prob[i, :r + 1].sum()
         sucra[t] = cum / (m - 1) if m > 1 else 1.0
     return sucra
+
+
+def _normcdf(x):
+    return 0.5 * (1.0 + math.erf(x / math.sqrt(2.0)))
+
+
+def _direct_edge(contrasts, a, b, method="DL"):
+    """Random-effects (DL) pooled DIRECT estimate of a vs b on the log scale,
+    from trials directly comparing a and b. Returns {log, var, k} or None."""
+    ys, vs = [], []
+    for c in contrasts:
+        if {c["t1"], c["t2"]} == {a, b}:
+            y = c["yi"] if (c["t1"] == a and c["t2"] == b) else -c["yi"]
+            ys.append(y)
+            vs.append(c["sei"] ** 2)
+    if not ys:
+        return None
+    k = len(ys)
+    w = [1.0 / v for v in vs]
+    sw = sum(w)
+    m = sum(w[i] * ys[i] for i in range(k)) / sw
+    tau2 = 0.0
+    if k > 1 and method == "DL":
+        Q = sum(w[i] * (ys[i] - m) ** 2 for i in range(k))
+        df = k - 1
+        C = sw - sum(wi * wi for wi in w) / sw
+        tau2 = max(0.0, (Q - df) / C) if (df > 0 and C > 0) else 0.0
+    wr = [1.0 / (vs[i] + tau2) for i in range(k)]
+    swr = sum(wr)
+    est = sum(wr[i] * ys[i] for i in range(k)) / swr
+    return {"log": est, "var": 1.0 / swr, "k": k}
+
+
+def bucher_loops(contrasts, treatments):
+    """Bucher loop-inconsistency for every closed triangle whose three edges all
+    have direct evidence. IF = d(a,c)_direct - [d(a,b) + d(b,c)] (log scale)."""
+    import itertools
+    edge_set = {frozenset((c["t1"], c["t2"])) for c in contrasts}
+    loops = []
+    for a, b, c in itertools.combinations(sorted(treatments), 3):
+        if not (frozenset((a, b)) in edge_set and frozenset((b, c)) in edge_set
+                and frozenset((a, c)) in edge_set):
+            continue
+        dab, dbc, dac = (_direct_edge(contrasts, a, b), _direct_edge(contrasts, b, c),
+                         _direct_edge(contrasts, a, c))
+        if not (dab and dbc and dac):
+            continue
+        if_log = dac["log"] - (dab["log"] + dbc["log"])
+        var = dac["var"] + dab["var"] + dbc["var"]
+        se = math.sqrt(var)
+        z = if_log / se if se > 0 else 0.0
+        p = 2.0 * (1.0 - _normcdf(abs(z)))
+        loops.append({
+            "nodes": [a, b, c], "if_log": if_log, "se": se,
+            "if_ratio": math.exp(if_log),
+            "lo": math.exp(if_log - Z * se), "hi": math.exp(if_log + Z * se),
+            "z": z, "p": p,
+        })
+    return loops
 
 
 def _edges(contrasts):
@@ -185,4 +254,4 @@ def has_loops(treatments, edges) -> bool:
     return len(distinct) >= len(treatments)
 
 
-__all__ = ["nma", "connectivity", "has_loops"]
+__all__ = ["nma", "connectivity", "has_loops", "bucher_loops"]

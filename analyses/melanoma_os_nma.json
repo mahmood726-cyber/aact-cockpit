@@ -1,0 +1,22 @@
+{
+  "comment": "Network meta-analysis of systemic therapies for advanced melanoma, overall survival (hazard ratios). Contains the closed loop dacarbazine-ipilimumab-nivolumab, so loop inconsistency (Bucher) is assessable. Note: the network spans different eras/lines; an honest limitation stated in the capsule.",
+  "condition": "melanoma",
+  "outcome_like": ["overall survival"],
+  "measure_like": "hazard",
+  "reference": "dacarbazine",
+  "nodes": {
+    "nivolumab": ["nivolumab", "opdivo"],
+    "pembrolizumab": ["pembrolizumab", "keytruda"],
+    "ipilimumab": ["ipilimumab", "yervoy"],
+    "dacarbazine": ["dacarbazine", "dtic"],
+    "dabrafenib": ["dabrafenib"],
+    "vemurafenib": ["vemurafenib", "zelboraf"]
+  },
+  "pico": {
+    "population": "advanced melanoma",
+    "outcome": "overall survival",
+    "intervention": "immunotherapy and targeted therapy",
+    "comparator": "dacarbazine"
+  },
+  "primary_estimand": "hazard ratio for overall survival versus dacarbazine"
+}

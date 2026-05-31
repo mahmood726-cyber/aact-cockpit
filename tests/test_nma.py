@@ -62,6 +62,38 @@ def test_league_reciprocal():
     assert ab * ba == pytest.approx(1.0, abs=1e-9)  # reciprocal contrasts
 
 
+def test_bucher_consistent_loop():
+    # direct A-C agrees with indirect (A-B then B-C): IF ~ 1, large p
+    cs = [_contrast("N1", "A", "B", 0.80, 0.70, 0.91),
+          _contrast("N2", "B", "C", 0.90, 0.80, 1.01),
+          _contrast("N3", "A", "C", 0.72, 0.62, 0.84)]  # ~ 0.80*0.90
+    res = nma(cs, reference="C")
+    cons = res["consistency"]
+    assert cons["assessable"] is True
+    loop = cons["loops"][0]
+    assert loop["p"] > 0.05            # consistent
+    assert cons["inconsistent"] is False
+
+
+def test_bucher_inconsistent_loop():
+    # direct A-C (1.5) contradicts indirect (~0.72) with tight CIs -> p < 0.05
+    cs = [_contrast("N1", "A", "B", 0.80, 0.74, 0.86),
+          _contrast("N2", "B", "C", 0.90, 0.84, 0.97),
+          _contrast("N3", "A", "C", 1.50, 1.38, 1.63)]
+    res = nma(cs, reference="C")
+    cons = res["consistency"]
+    assert cons["loops"][0]["p"] < 0.05
+    assert cons["inconsistent"] is True
+
+
+def test_tree_has_no_loops():
+    cs = [_contrast("N1", "A", "ref", 0.8, 0.6, 1.0),
+          _contrast("N2", "B", "ref", 0.9, 0.7, 1.1)]
+    res = nma(cs, reference="ref")
+    assert res["consistency"]["assessable"] is False
+    assert res["consistency"]["loops"] == []
+
+
 def _dataset():
     cs = [_contrast("NCT01", "apixaban", "warfarin", 0.79, 0.66, 0.95),
           _contrast("NCT02", "rivaroxaban", "warfarin", 0.85, 0.70, 1.03),

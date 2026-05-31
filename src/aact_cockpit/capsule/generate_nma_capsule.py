@@ -20,13 +20,18 @@ def compute_self_audit(payload: dict, res: dict) -> dict:
     connected = connectivity(treatments, edges)
     loops = has_loops(treatments, edges)
 
+    cons = res.get("consistency", {})
     inv: dict[str, str] = {}
     inv["connectivity"] = "pass" if connected else "fail"   # disconnected => no NMA
     inv["direction_oriented"] = "pass"                       # contrasts oriented exp-vs-comparator
-    # consistency: testable only with closed loops. A tree network honestly
-    # reports "not assessable" (disclosed) — that is a pass, not a hidden gap.
-    inv["consistency"] = "pass" if not loops else (
-        "pass" if payload.get("consistency_tested") else "warn")
+    # consistency: with closed loops we run Bucher loop-inconsistency tests.
+    #   no loops          -> "pass" (not assessable, honestly disclosed)
+    #   loops, all p>=.05 -> "pass" (tested, consistent)
+    #   loops, any p<.05  -> "warn" (inconsistency detected — do NOT hide it)
+    if not loops:
+        inv["consistency"] = "pass"
+    else:
+        inv["consistency"] = "warn" if cons.get("inconsistent") else "pass"
     finite = all(math.isfinite(v) for v in res["sucra"].values()) and math.isfinite(res["tau2"])
     inv["no_nan"] = "pass" if finite else "fail"
 
@@ -65,8 +70,13 @@ def draft_e156_body(payload: dict, res: dict, connected: bool, loops: bool) -> s
     s3 = f"Trial contrasts were synthesised with a random-effects model on the log scale, taking {ref} as the network reference."
     s4 = f"The top-ranked treatment was {best}, with a pooled HR of {est} (95% CI {lo} to {hi}) versus {ref}."
     s5 = f"Its surface under the cumulative ranking curve was {sucra} percent, and the treatment network was {'connected' if connected else 'disconnected'}."
+    cons = res.get("consistency", {})
     if loops:
-        s6 = f"Because the network contains closed loops, consistency was examinable, yet the certainty remains observational and warrants cautious reading."
+        nloop = len(cons.get("loops", []))
+        minp = cons.get("min_p")
+        verdict = "showed no significant inconsistency" if not cons.get("inconsistent") else "flagged a potentially inconsistent loop"
+        pstr = gc._fmt(minp) if minp is not None else "not estimable"
+        s6 = f"Loop inconsistency testing across {nloop} closed loop or loops {verdict} at a smallest p-value of {pstr}, though certainty stays observational and warrants cautious reading."
     else:
         s6 = f"Because the network forms a tree without closed loops, consistency cannot be assessed, so the indirect comparisons warrant cautious reading."
     s7 = f"Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials."
@@ -108,7 +118,8 @@ def render(ds: dict) -> dict:
         "favours_low": "lower HR (fewer events)", "favours_high": "higher HR (more events)",
         "contrasts": contrasts,
         "nma": {kk: res[kk] for kk in ("reference", "treatments", "effects", "rel_to_ref",
-                                       "league", "tau2", "Q", "df", "k", "sucra", "edges", "method")},
+                                       "league", "tau2", "Q", "df", "k", "sucra", "edges",
+                                       "method", "consistency")},
         "connected": audit["connected"], "has_loops": audit["loops"],
         "self_audit": {"checks": audit["checks"], "aact_stats": audit["nma_stats"]},
         "e156_body": body,

@@ -42,6 +42,35 @@ for (sc in sidecars) {
     cat(sprintf("  [%s] %-12s netmeta HR=%.4f  python HR=%.4f  d=%.2e\n", status, t, est_r, est_py, d))
     if (d >= 0.01) fail <- fail + 1L
   }
+
+  # independently recompute each Bucher loop inconsistency with metafor
+  suppressMessages(library(metafor))
+  direct_edge <- function(a, b) {
+    yi <- c(); sei <- c()
+    for (cc in ct) {
+      if ((cc$t1 == a && cc$t2 == b) || (cc$t1 == b && cc$t2 == a)) {
+        yi  <- c(yi, if (cc$t1 == a && cc$t2 == b) as.numeric(cc$yi) else -as.numeric(cc$yi))
+        sei <- c(sei, as.numeric(cc$sei))
+      }
+    }
+    if (length(yi) == 0) return(NULL)
+    if (length(yi) == 1) return(list(log = yi[1], var = sei[1]^2))
+    r <- rma(yi = yi, sei = sei, method = "DL")
+    list(log = as.numeric(coef(r)), var = as.numeric(vcov(r)))
+  }
+  loops <- cap$nma$consistency$loops
+  if (!is.null(loops)) for (lp in loops) {
+    a <- lp$nodes[[1]]; b <- lp$nodes[[2]]; cc <- lp$nodes[[3]]
+    dab <- direct_edge(a, b); dbc <- direct_edge(b, cc); dac <- direct_edge(a, cc)
+    if (is.null(dab) || is.null(dbc) || is.null(dac)) next
+    if_r <- dac$log - (dab$log + dbc$log)
+    d <- abs(if_r - as.numeric(lp$if_log))
+    checked <- checked + 1L
+    status <- if (d < 1e-6) "PASS" else "FAIL"
+    cat(sprintf("  [%s] loop %-30s metafor IF.log=%.4f  python IF.log=%.4f  d=%.2e\n",
+                status, paste(unlist(lp$nodes), collapse = "-"), if_r, as.numeric(lp$if_log), d))
+    if (d >= 1e-6) fail <- fail + 1L
+  }
 }
 cat(sprintf("\n%d NMA capsule(s), %d treatment estimates cross-validated vs netmeta, %d failures\n",
             nfiles, checked, fail))

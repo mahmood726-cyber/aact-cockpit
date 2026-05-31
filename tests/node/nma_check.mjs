@@ -19,7 +19,10 @@ const si = html.indexOf(startTok), ei = html.indexOf(endTok);
 if (si < 0 || ei < 0 || ei < si) { console.error("engine block not located"); process.exit(2); }
 const engine = html.slice(si, ei);
 
-const runner = new Function("CAPSULE", engine + "\nreturn nmaFit(CAPSULE.contrasts, CAPSULE.reference);");
+const runner = new Function("CAPSULE", engine +
+  "\nconst _nma=nmaFit(CAPSULE.contrasts, CAPSULE.reference);" +
+  "\n_nma.loops=bucherLoops(CAPSULE.contrasts, _nma.treatments);" +
+  "\nreturn _nma;");
 const res = runner(CAPSULE);
 const py = CAPSULE.nma;
 
@@ -29,10 +32,21 @@ for (const t of py.treatments) {
   maxSU = Math.max(maxSU, Math.abs(res.sucra[t] - py.sucra[t]));
 }
 const dTau = Math.abs(res.tau2 - py.tau2);
-const ok = maxHR < 1e-4 && dTau < 1e-4 && maxSU < 0.03;
+
+// consistency loops (IF ratio + z must match; p uses an erf approx so looser)
+let maxIF = 0, maxZ = 0;
+const pyLoops = (py.consistency && py.consistency.loops) || [];
+for (let i = 0; i < pyLoops.length; i++) {
+  const jl = res.loops[i] || {};
+  maxIF = Math.max(maxIF, Math.abs((jl.if_ratio || 0) - pyLoops[i].if_ratio));
+  maxZ = Math.max(maxZ, Math.abs((jl.z || 0) - pyLoops[i].z));
+}
+const loopsOk = res.loops.length === pyLoops.length && maxIF < 1e-6 && maxZ < 1e-6;
+const ok = maxHR < 1e-4 && dTau < 1e-4 && maxSU < 0.03 && loopsOk;
 
 console.log(`JS tau2=${res.tau2.toFixed(5)}  PY tau2=${py.tau2.toFixed(5)}  Δtau2=${dTau.toExponential(2)}`);
 console.log(`max ΔHR(vs ref)=${maxHR.toExponential(2)}  max ΔSUCRA=${maxSU.toFixed(4)}`);
+console.log(`loops: JS=${res.loops.length} PY=${pyLoops.length}  max ΔIF=${maxIF.toExponential(2)}  max Δz=${maxZ.toExponential(2)}`);
 for (const t of py.treatments)
   console.log(`  ${t.padEnd(12)} JS HR=${res.rel_to_ref[t].est.toFixed(4)} SUCRA=${(res.sucra[t]*100).toFixed(0)}%  | PY HR=${py.rel_to_ref[t].est.toFixed(4)} SUCRA=${(py.sucra[t]*100).toFixed(0)}%`);
 console.log(ok ? "PASS" : "FAIL");
