@@ -94,6 +94,47 @@ def test_tree_has_no_loops():
     assert res["consistency"]["loops"] == []
 
 
+def test_sucra_respects_lower_is_better():
+    cs = [_contrast("N1", "A", "ref", 0.7, 0.55, 0.9),    # A best when lower better
+          _contrast("N2", "B", "ref", 0.95, 0.8, 1.13),
+          _contrast("N3", "C", "ref", 1.4, 1.1, 1.78)]    # C best when higher better
+    low = nma(cs, reference="ref", lower_is_better=True)
+    high = nma(cs, reference="ref", lower_is_better=False)
+    assert low["sucra"]["A"] > low["sucra"]["C"]   # A ranks best for a harm outcome
+    assert high["sucra"]["C"] > high["sucra"]["A"]  # inverted for a benefit outcome
+
+
+def test_multiarm_loop_flagged_and_excluded():
+    # one 3-arm trial (NCTm) supplies BOTH A-B and A-C -> shared trial -> multiarm
+    cs = [_contrast("NCTm", "A", "B", 0.8, 0.6, 1.05),
+          _contrast("NCTm", "A", "C", 0.75, 0.55, 1.02),
+          _contrast("N2", "B", "C", 1.40, 1.2, 1.63)]
+    res = nma(cs, reference="C")
+    loop = res["consistency"]["loops"][0]
+    assert loop["multiarm"] is True
+    assert res["consistency"]["assessable"] is False     # no independent loop
+    assert res["consistency"]["inconsistent"] is False   # multiarm loop not trusted
+    assert res["consistency"]["n_multiarm"] == 1
+
+
+def test_inconsistent_loop_caps_tier_at_bronze():
+    cs = [_contrast("NCT01", "A", "ref", 0.80, 0.74, 0.86),
+          _contrast("NCT02", "B", "ref", 0.90, 0.84, 0.97),
+          _contrast("NCT03", "A", "B", 1.50, 1.38, 1.63)]   # direct vs indirect clash
+    ds = {"pico": {"population": "demo", "outcome": "an event",
+                   "intervention": "drugs", "comparator": "ref"},
+          "primary_estimand": "hazard ratio for an event versus ref",
+          "measure": "HR", "reference": "ref", "snapshot_date": "2026-04-12",
+          "provenance": {"source": "AACT", "snapshot_date": "2026-04-12"},
+          "contrasts": cs, "analysis_rerun": "pass", "notes": []}
+    res = gn.render(ds)
+    cap = res["capsule"]
+    assert cap["nma"]["consistency"]["inconsistent"] is True
+    assert cap["self_audit"]["aact_stats"]["consistency"] == "warn"
+    assert cap["self_audit"]["checks"]["dashboard_match"] == "warn"
+    assert res["tier"] == "bronze"  # surfaced + capped, NOT hidden as 'none'
+
+
 def _dataset():
     cs = [_contrast("NCT01", "apixaban", "warfarin", 0.79, 0.66, 0.95),
           _contrast("NCT02", "rivaroxaban", "warfarin", 0.85, 0.70, 1.03),

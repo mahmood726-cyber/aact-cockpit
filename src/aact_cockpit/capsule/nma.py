@@ -118,12 +118,14 @@ def nma(contrasts: list[dict], reference: str | None = None,
     sucra = _sucra(treatments, eff, full_cov, n_sim=n_sim, lower_is_better=lower_is_better)
 
     loops = bucher_loops(contrasts, treatments)
+    valid = [lp for lp in loops if not lp.get("multiarm")]   # independence holds
     consistency = {
         "loops": loops,
-        "assessable": len(loops) > 0,
-        # most extreme loop (smallest p); None if no loops
-        "min_p": min((lp["p"] for lp in loops), default=None),
-        "inconsistent": any(lp["p"] < 0.05 for lp in loops),
+        "assessable": len(valid) > 0,
+        # most extreme valid loop (smallest p); None if no testable loops
+        "min_p": min((lp["p"] for lp in valid), default=None),
+        "inconsistent": any(lp["p"] < 0.05 for lp in valid),
+        "n_multiarm": sum(1 for lp in loops if lp.get("multiarm")),
     }
 
     return {
@@ -193,9 +195,18 @@ def _direct_edge(contrasts, a, b, method="DL"):
     return {"log": est, "var": 1.0 / swr, "k": k}
 
 
+def _edge_ncts(contrasts, a, b):
+    return {c.get("nct") for c in contrasts if {c["t1"], c["t2"]} == {a, b}}
+
+
 def bucher_loops(contrasts, treatments):
     """Bucher loop-inconsistency for every closed triangle whose three edges all
-    have direct evidence. IF = d(a,c)_direct - [d(a,b) + d(b,c)] (log scale)."""
+    have direct evidence. IF = d(a,c)_direct - [d(a,b) + d(b,c)] (log scale).
+
+    Bucher's variance sum assumes the three direct edges are INDEPENDENT. A trial
+    contributing to >=2 edges of the loop (a multi-arm trial) breaks that, so such
+    loops are flagged ``multiarm=True`` and excluded from the inconsistency verdict
+    (their p is reported but not trusted)."""
     import itertools
     edge_set = {frozenset((c["t1"], c["t2"])) for c in contrasts}
     loops = []
@@ -207,6 +218,10 @@ def bucher_loops(contrasts, treatments):
                          _direct_edge(contrasts, a, c))
         if not (dab and dbc and dac):
             continue
+        # independence check: any trial shared across two edges of the loop?
+        eab, ebc, eac = (_edge_ncts(contrasts, a, b), _edge_ncts(contrasts, b, c),
+                         _edge_ncts(contrasts, a, c))
+        multiarm = bool((eab & ebc) | (eab & eac) | (ebc & eac))
         if_log = dac["log"] - (dab["log"] + dbc["log"])
         var = dac["var"] + dab["var"] + dbc["var"]
         se = math.sqrt(var)
@@ -216,7 +231,7 @@ def bucher_loops(contrasts, treatments):
             "nodes": [a, b, c], "if_log": if_log, "se": se,
             "if_ratio": math.exp(if_log),
             "lo": math.exp(if_log - Z * se), "hi": math.exp(if_log + Z * se),
-            "z": z, "p": p,
+            "z": z, "p": p, "multiarm": multiarm,
         })
     return loops
 

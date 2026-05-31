@@ -35,12 +35,22 @@ def compute_self_audit(payload: dict, res: dict) -> dict:
     finite = all(math.isfinite(v) for v in res["sucra"].values()) and math.isfinite(res["tau2"])
     inv["no_nan"] = "pass" if finite else "fail"
 
-    stats_ok = all(v == "pass" for v in inv.values())
+    # HARD failures (connectivity, direction, NaN) collapse the tier to none.
+    # A consistency WARN is a soft flag (inconsistency detected) — it caps the
+    # tier at Bronze and is surfaced, but does NOT hide the capsule as 'none'.
+    hard_ok = (inv["connectivity"] == "pass" and inv["direction_oriented"] == "pass"
+               and inv["no_nan"] == "pass")
+    if not hard_ok:
+        dashboard_match = "fail"
+    elif inv["consistency"] == "warn":
+        dashboard_match = "warn"          # -> compute_tier returns 'bronze'
+    else:
+        dashboard_match = "pass"
     checks = {
         "citation_cascade": "pass" if all(c["nct"].startswith("NCT") for c in payload["contrasts"]) else "fail",
         "data_file_present": "pass",
         "code_runs": "pass",
-        "dashboard_match": "pass" if stats_ok else "fail",
+        "dashboard_match": dashboard_match,
         "claim_language": "pass",
         "analysis_rerun": payload.get("analysis_rerun", "not-run"),  # netmeta match
         "external_review": "not-run",
@@ -68,8 +78,8 @@ def draft_e156_body(payload: dict, res: dict, connected: bool, loops: bool) -> s
     s1 = f"Among anticoagulants for {pop}, which option ranks best for {out}?"
     s2 = f"This network meta-analysis connects {n_t} treatments across {k} randomized comparisons from the ClinicalTrials.gov AACT snapshot dated {payload['snapshot_date']}."
     s3 = f"Trial contrasts were synthesised with a random-effects model on the log scale, taking {ref} as the network reference."
-    s4 = f"The top-ranked treatment was {best}, with a pooled HR of {est} (95% CI {lo} to {hi}) versus {ref}."
-    s5 = f"Its surface under the cumulative ranking curve was {sucra} percent, and the treatment network was {'connected' if connected else 'disconnected'}."
+    s4 = f"By surface under the cumulative ranking curve, {best} ranked highest, with a pooled HR of {est} (95% CI {lo} to {hi}) versus {ref}."
+    s5 = f"Its ranking statistic was {sucra} percent, the network was {'connected' if connected else 'disconnected'}, and rankings should not be read as head-to-head superiority across differing trial populations."
     cons = res.get("consistency", {})
     if loops:
         nloop = len(cons.get("loops", []))
@@ -92,7 +102,10 @@ def render(ds: dict) -> dict:
     if len(contrasts) < 2:
         raise gc.CapsuleInputError(f"NMA needs >=2 contrasts, got {len(contrasts)}")
     reference = ds.get("reference")
-    res = nma(contrasts, reference=reference)
+    # lower_is_better drives SUCRA ranking. True for harm outcomes (mortality,
+    # stroke, OS hazard); set False for beneficial outcomes (e.g. response rate).
+    lower_is_better = ds.get("lower_is_better", True)
+    res = nma(contrasts, reference=reference, lower_is_better=lower_is_better)
     pico = ds["pico"]
     title = f"NMA — {pico.get('outcome','outcome')} in {pico.get('population','population')}"
     payload = {
@@ -115,7 +128,9 @@ def render(ds: dict) -> dict:
         "pico": pico, "primary_estimand": payload["primary_estimand"],
         "snapshot_date": payload["snapshot_date"], "provenance": payload["provenance"],
         "kind": "nma", "reference": res["reference"], "treatments": res["treatments"],
-        "favours_low": "lower HR (fewer events)", "favours_high": "higher HR (more events)",
+        "lower_is_better": lower_is_better,
+        "favours_low": ("lower HR is better" if lower_is_better else "lower HR is worse"),
+        "favours_high": ("higher HR is worse" if lower_is_better else "higher HR is better"),
         "contrasts": contrasts,
         "nma": {kk: res[kk] for kk in ("reference", "treatments", "effects", "rel_to_ref",
                                        "league", "tau2", "Q", "df", "k", "sucra", "edges",

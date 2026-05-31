@@ -164,9 +164,10 @@ function nmaFit(contrasts, reference, nSim){
   const M=treatments.length;const C=fullCov.map((r,i)=>r.map((x,j)=>x+(i===j?1e-12:0)));const L=chol(C);
   const mu=treatments.map(t=>eff[t]);const rc=Array.from({length:M},()=>Array(M).fill(0));
   const normals=seededNormals(nSim*M,2463534242);
+  const lowerBetter=(CAPSULE.lower_is_better!==false);  // default: lower = better
   for(let s=0;s<nSim;s++){const zv=normals.slice(s*M,(s+1)*M);
     const draw=mu.map((mi,i)=>{let val=mi;for(let k=0;k<=i;k++)val+=L[i][k]*zv[k];return val;});
-    const order=draw.map((d,i)=>[d,i]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+    const order=draw.map((d,i)=>[d,i]).sort((p,q)=>lowerBetter?p[0]-q[0]:q[0]-p[0]).map(p=>p[1]);
     order.forEach((ti,rank)=>rc[ti][rank]++);}
   const sucra={};treatments.forEach((t,i)=>{let cum=0;for(let r=0;r<M-1;r++){let p=0;for(let rr=0;rr<=r;rr++)p+=rc[i][rr]/nSim;cum+=p;}sucra[t]=M>1?cum/(M-1):1;});
   // edges
