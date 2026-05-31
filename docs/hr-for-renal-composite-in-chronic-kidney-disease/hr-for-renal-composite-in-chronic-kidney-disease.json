@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T17:06:43Z"
+    "extracted_at": "2026-05-31T20:20:20Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -228,7 +228,99 @@
         "lo": 0.7095227165553231,
         "hi": 1.2259853553699014
       }
-    ]
+    ],
+    "trimfill": {
+      "k0": 0,
+      "side": "left",
+      "est": 0.9340814256584014,
+      "lo": 0.7331154719591203,
+      "hi": 1.1901373564363735,
+      "est_observed": 0.9340814256584014
+    },
+    "influence": [
+      {
+        "nct": "NCT00503698",
+        "name": "Efficacy and Safety of Somatropin in Adult Patients on Chronic Haemodialysis",
+        "hat": 0.1079519129360806,
+        "cook": 0.031460932856353076,
+        "resid": 0.5082663413131714,
+        "influential": false
+      },
+      {
+        "nct": "NCT01896232",
+        "name": "A Multicenter, Multiple-dose, Two-arm, Active-controlled, Double-blind, Double-dummy Study to Compare the Therapeutic Efficacy and Safety of Oral Doses of Cinacalcet HCl With Intravenous Doses of AMG 416 in Hemodialysis Subjects With Secondary Hyperparathyroidism",
+        "hat": 0.10559538121352732,
+        "cook": 0.03633020261921558,
+        "resid": 0.5509465983276733,
+        "influential": false
+      },
+      {
+        "nct": "NCT02021318",
+        "name": "A Phase 3, Randomized, Open-Label, Active-Controlled Study to Evaluate the Efficacy and Safety of Roxadustat in the Treatment of Anemia in Chronic Kidney Disease Patients Not on Dialysis",
+        "hat": 0.1150176344916771,
+        "cook": 0.004792924055904366,
+        "resid": 0.20955132426108697,
+        "influential": false
+      },
+      {
+        "nct": "NCT02540993",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter, Event-driven Phase 3 Study to Investigate the Safety and Efficacy of Finerenone, in Addition to Standard of Care, on the Progression of Kidney Disease in Subjects With Type 2 Diabetes Mellitus and the Clinical Diagnosis of Diabetic Kidney Disease",
+        "hat": 0.12642512540917214,
+        "cook": 0.02393785511220386,
+        "resid": -0.36135705848740113,
+        "influential": false
+      },
+      {
+        "nct": "NCT03036150",
+        "name": "A Study to Evaluate the Effect of Dapagliflozin on Renal Outcomes and Cardiovascular Mortality in Patients With Chronic Kidney Disease",
+        "hat": 0.1191032928960631,
+        "cook": 0.29449905588410336,
+        "resid": -1.6990346593410783,
+        "influential": false
+      },
+      {
+        "nct": "NCT03299244",
+        "name": "A Multicenter, Multiple-dose, Active-controlled, Double-blind, Double-dummy Study to Compare the Therapeutic Efficacy and Safety of Oral Doses of Cinacalcet Hydrochloride With Intravenous Doses of Etelcalcetide (AMG 416) in Asian Hemodialysis Subjects With Secondary Hyperparathyroidism",
+        "hat": 0.10660972538715663,
+        "cook": 0.6720819691737467,
+        "resid": 3.0608436919553816,
+        "influential": true
+      },
+      {
+        "nct": "NCT03315143",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Demonstrate the Effects of Sotagliflozin on Cardiovascular and Renal Events in Patients With Type 2 Diabetes, Cardiovascular Risk Factors and Moderately Impaired Renal Function",
+        "hat": 0.09282481834905561,
+        "cook": 0.05602852227060708,
+        "resid": -0.6923399971901053,
+        "influential": false
+      },
+      {
+        "nct": "NCT03594110",
+        "name": "A Multicentre International Randomized Parallel Group Double-blind Placebo-controlled Clinical Trial of EMPAgliflozin Once Daily to Assess Cardio-renal Outcomes in Patients With Chronic KIDNEY Disease",
+        "hat": 0.12540073172854674,
+        "cook": 0.1029147477303431,
+        "resid": -0.822039481686279,
+        "influential": false
+      },
+      {
+        "nct": "NCT03832595",
+        "name": "Kidney Coordinated Health Management Partnership",
+        "hat": 0.10107137758872067,
+        "cook": 0.0001506807841292339,
+        "resid": 0.06623061684044856,
+        "influential": false
+      }
+    ],
+    "metareg": {
+      "b0": 43.93489408290129,
+      "b1": -0.021834480320901763,
+      "se": 0.03053596752138224,
+      "z": -0.7150413788465217,
+      "p": 0.47458347503472,
+      "tau2_res": 0.08552135549573317,
+      "r2": 0.2701936429311601,
+      "k": 9
+    }
   },
   "e156_body": "In chronic kidney disease, does the intervention compared with control change renal composite? This synthesis aggregates 9 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for renal composite was 0.93 (95% CI 0.73 to 1.19). Between-trial heterogeneity was I-squared 87 percent, the 95% prediction interval spanned 0.40 to 2.16, and Egger's test for small-study effects returned a p-value of 0.14. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {

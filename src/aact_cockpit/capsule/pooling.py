@@ -200,10 +200,158 @@ def leave_one_out(items, method="PM"):
     return out
 
 
-def diagnostics(items, method="PM"):
-    """Publication-bias (Egger) + leave-one-out sensitivity for a pairwise set."""
-    return {"egger": egger(items), "loo": leave_one_out(items, method=method)}
+def _yv(items):
+    use = [t for t in items if t.get("inc", True) and _valid(t)]
+    y = [math.log(t["hr"]) for t in use]
+    v = [((math.log(t["uci"]) - math.log(t["lci"])) / (2 * Z)) ** 2 for t in use]
+    return use, y, v
+
+
+def meta_regression(items, x_values):
+    """Mixed-effects meta-regression of log-effect on a moderator (e.g. year),
+    generalized-DL residual tau^2. Matches metafor rma(mods=~x, method='DL').
+    Returns {b0,b1,se,z,p,tau2_res,r2,k} or None (needs k>=3)."""
+    if len(x_values) != len(items):
+        return None
+    pairs = [(t, x_values[i]) for i, t in enumerate(items)
+             if t.get("inc", True) and _valid(t) and x_values[i] is not None]
+    if len(pairs) < 3 or len({xx for _, xx in pairs}) < 2:
+        return None
+    y = [math.log(t["hr"]) for t, _ in pairs]
+    v = [((math.log(t["uci"]) - math.log(t["lci"])) / (2 * Z)) ** 2 for t, _ in pairs]
+    x = [float(xx) for _, xx in pairs]
+    k = len(y)
+
+    def fit(w):
+        Sw = sum(w); Swx = sum(w[i] * x[i] for i in range(k))
+        Swxx = sum(w[i] * x[i] * x[i] for i in range(k))
+        Swy = sum(w[i] * y[i] for i in range(k))
+        Swxy = sum(w[i] * x[i] * y[i] for i in range(k))
+        det = Sw * Swxx - Swx * Swx
+        return {"b0": (Swxx * Swy - Swx * Swxy) / det, "b1": (Sw * Swxy - Swx * Swy) / det,
+                "v00": Swxx / det, "v01": -Swx / det, "v11": Sw / det}
+
+    w0 = [1.0 / vi for vi in v]
+    f0 = fit(w0)
+    Qres = sum(w0[i] * (y[i] - (f0["b0"] + f0["b1"] * x[i])) ** 2 for i in range(k))
+    Sw2 = sum(wi * wi for wi in w0)
+    Sw2x = sum(w0[i] ** 2 * x[i] for i in range(k))
+    Sw2xx = sum(w0[i] ** 2 * x[i] * x[i] for i in range(k))
+    tr = f0["v00"] * Sw2 + 2 * f0["v01"] * Sw2x + f0["v11"] * Sw2xx
+    C = sum(w0) - tr
+    tau2_res = max(0.0, (Qres - (k - 2)) / C) if (k > 2 and C > 0) else 0.0
+    w = [1.0 / (v[i] + tau2_res) for i in range(k)]
+    f = fit(w)
+    se = math.sqrt(f["v11"])
+    z = f["b1"] / se if se > 0 else 0.0
+    p = 2.0 * (1.0 - _normcdf(abs(z)))
+    tau2_tot = tau2_pm(y, v)
+    r2 = max(0.0, 1.0 - tau2_res / tau2_tot) if tau2_tot > 0 else 0.0
+    return {"b0": f["b0"], "b1": f["b1"], "se": se, "z": z, "p": p,
+            "tau2_res": tau2_res, "r2": r2, "k": k}
+
+
+def influence(items, method="PM"):
+    """Per-study influence: leverage (hat = w_i / sum w, matches
+    metafor::hatvalues), Cook's distance, and a delete-one standardized residual."""
+    use, y, v = _yv(items)
+    k = len(y)
+    if k < 3:
+        return []
+    tau2 = _tau2(y, v, method)
+    w = [1.0 / (v[i] + tau2) for i in range(k)]
+    sw = sum(w)
+    theta = sum(w[i] * y[i] for i in range(k)) / sw
+    out = []
+    for i in range(k):
+        hat = w[i] / sw
+        sub = [{"hr": use[j]["hr"], "lci": use[j]["lci"], "uci": use[j]["uci"], "inc": True}
+               for j in range(k) if j != i]
+        r = pool(sub, method=method)
+        theta_i = r["re_log"]
+        denom = math.sqrt(v[i] + r["tau2"] + r["se_re"] ** 2)
+        resid = (y[i] - theta_i) / denom if denom > 0 else 0.0
+        cook = (theta - theta_i) ** 2 * sw
+        out.append({"nct": use[i].get("nct"), "name": use[i].get("name", ""),
+                    "hat": hat, "cook": cook, "resid": resid,
+                    "influential": (cook > 4.0 / k) or (abs(resid) > 1.96)})
+    return out
+
+
+def _trim_side(y, theta):
+    c = [yi - theta for yi in y]
+    return "right" if sum(1 for ci in c if ci > 0) < sum(1 for ci in c if ci < 0) else "left"
+
+
+def trim_and_fill(items, method="PM", max_iter=100):
+    """Duval & Tweedie trim-and-fill (L0 estimator). Returns {k0, side, est, lo,
+    hi, est_observed} or None (needs k>=3)."""
+    use, y, v = _yv(items)
+    k = len(y)
+    if k < 3:
+        return None
+    order = sorted(range(k), key=lambda i: y[i])
+    ys = [y[i] for i in order]
+    vs = [v[i] for i in order]
+
+    def re_est(yy, vv):
+        t2 = _tau2(yy, vv, method)
+        ww = [1.0 / (vi + t2) for vi in vv]
+        return sum(ww[i] * yy[i] for i in range(len(yy))) / sum(ww)
+
+    k0 = 0
+    side = None
+    for _ in range(max_iter):
+        keep = ys[:len(ys) - k0] if side == "right" else ys[k0:]
+        keepv = vs[:len(ys) - k0] if side == "right" else vs[k0:]
+        theta = re_est(keep, keepv)
+        if side is None:
+            side = _trim_side(y, theta)
+            continue
+        c = [yi - theta for yi in ys]
+        absorder = sorted(range(len(c)), key=lambda i: abs(c[i]))
+        ranks = [0] * len(c)
+        for r, i in enumerate(absorder):
+            ranks[i] = r + 1
+        Tn = (sum(ranks[i] for i in range(len(c)) if c[i] > 0) if side == "right"
+              else sum(ranks[i] for i in range(len(c)) if c[i] < 0))
+        n_all = len(c)
+        L0 = (4 * Tn - n_all * (n_all + 1)) / (2 * n_all - 1)
+        new_k0 = max(0, int(math.floor(L0 + 0.5)))   # round-half-up (matches the JS engine)
+        if new_k0 == k0:
+            break
+        k0 = new_k0
+
+    keep = ys[:len(ys) - k0] if side == "right" else ys[k0:]
+    keepv = vs[:len(ys) - k0] if side == "right" else vs[k0:]
+    theta = re_est(keep, keepv)
+    filled_y, filled_v = list(ys), list(vs)
+    extreme = (sorted(range(len(ys)), key=lambda i: ys[i], reverse=(side != "right")))[:k0]
+    for i in extreme:
+        filled_y.append(2 * theta - ys[i])
+        filled_v.append(vs[i])
+    t2f = _tau2(filled_y, filled_v, method)
+    wf = [1.0 / (vi + t2f) for vi in filled_v]
+    swf = sum(wf)
+    re = sum(wf[i] * filled_y[i] for i in range(len(filled_y))) / swf
+    se = math.sqrt(1.0 / swf)
+    return {"k0": k0, "side": side,
+            "est": math.exp(re), "lo": math.exp(re - Z * se), "hi": math.exp(re + Z * se),
+            "est_observed": math.exp(re_est(ys, vs))}
+
+
+def diagnostics(items, method="PM", x_values=None):
+    """Full pairwise diagnostic suite: Egger, leave-one-out, trim-and-fill,
+    influence, and (when x_values given) meta-regression."""
+    return {
+        "egger": egger(items),
+        "loo": leave_one_out(items, method=method),
+        "trimfill": trim_and_fill(items, method=method),
+        "influence": influence(items, method=method),
+        "metareg": meta_regression(items, x_values) if x_values is not None else None,
+    }
 
 
 __all__ = ["pool", "tcrit", "tau2_dl", "tau2_pm", "tau2_reml", "Z", "T975",
-           "egger", "leave_one_out", "diagnostics"]
+           "egger", "leave_one_out", "diagnostics",
+           "meta_regression", "influence", "trim_and_fill"]

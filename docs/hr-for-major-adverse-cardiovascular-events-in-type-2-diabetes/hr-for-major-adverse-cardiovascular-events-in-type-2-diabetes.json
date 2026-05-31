@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T17:06:42Z"
+    "extracted_at": "2026-05-31T20:20:19Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -174,7 +174,75 @@
         "lo": 0.8981550599755516,
         "hi": 0.9947894543380523
       }
-    ]
+    ],
+    "trimfill": {
+      "k0": 0,
+      "side": "left",
+      "est": 0.9302042140996226,
+      "lo": 0.8723318527569326,
+      "hi": 0.9919159517035301,
+      "est_observed": 0.9302042140996226
+    },
+    "influence": [
+      {
+        "nct": "NCT00790205",
+        "name": "TECOS: A Randomized, Placebo Controlled Clinical Trial to Evaluate Cardiovascular Outcomes After Treatment With Sitagliptin in Patients With Type 2 Diabetes Mellitus and Inadequate Glycemic Control",
+        "hat": 0.2134006100462095,
+        "cook": 0.2299250885813513,
+        "resid": 0.7796746604381919,
+        "influential": false
+      },
+      {
+        "nct": "NCT01144338",
+        "name": "Exenatide Study of Cardiovascular Event Lowering Trial (EXSCEL). A Randomized, Placebo Controlled Clinical Trial to Evaluate Cardiovascular Outcomes After Treatment With Exenatide Once Weekly in Patients With Type 2 Diabetes Mellitus.",
+        "hat": 0.2468830697978648,
+        "cook": 0.0036449121436426877,
+        "resid": -0.25174045137508716,
+        "influential": false
+      },
+      {
+        "nct": "NCT01703208",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Multicenter Study to Assess Cardiovascular Outcomes Following Treatment With MK-3102 in Subjects With Type 2 Diabetes Mellitus",
+        "hat": 0.05541999856097477,
+        "cook": 0.06072059592029145,
+        "resid": 0.5323780431537992,
+        "influential": false
+      },
+      {
+        "nct": "NCT01986881",
+        "name": "Randomized, Double-Blind, Placebo-Controlled, Parallel-Group Study to Assess Cardiovascular Outcomes Following Treatment With Ertugliflozin (MK-8835/PF-04971729) in Subjects With Type 2 Diabetes Mellitus and Established Vascular Disease, The VERTIS CV Study",
+        "hat": 0.19324321331362598,
+        "cook": 0.0034009739856736294,
+        "resid": -0.08935809142293902,
+        "influential": false
+      },
+      {
+        "nct": "NCT02019264",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group Study to Evaluate the Effect of Long-term Treatment With BELVIQ (Lorcaserin HCl) on the Incidence of Major Adverse Cardiovascular Events and Conversion to Type 2 Diabetes Mellitus in Obese and Overweight Subjects With Cardiovascular Disease or Multiple Cardiovascular Risk Factors",
+        "hat": 0.22160972336086737,
+        "cook": 0.18618022360702796,
+        "resid": 0.605246127365855,
+        "influential": false
+      },
+      {
+        "nct": "NCT03496298",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Evaluate the Effect of Efpeglenatide on Cardiovascular Outcomes in Type 2 Diabetes Patients at High Cardiovascular Risk",
+        "hat": 0.06944338492045755,
+        "cook": 0.2393207377820627,
+        "resid": -2.153465357689697,
+        "influential": true
+      }
+    ],
+    "metareg": {
+      "b0": 26.599029693680063,
+      "b1": -0.013257752392852025,
+      "se": 0.010502849489555991,
+      "z": -1.262300521971252,
+      "p": 0.2068406689554454,
+      "tau2_res": 0.0008723673490322881,
+      "r2": 0.5749689417757469,
+      "k": 6
+    }
   },
   "e156_body": "In type 2 diabetes, does the intervention compared with control change major adverse cardiovascular events? This synthesis aggregates 6 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for major adverse cardiovascular events was 0.93 (95% CI 0.87 to 0.99). Between-trial heterogeneity was I-squared 21 percent, the 95% prediction interval spanned 0.81 to 1.07, and Egger's test for small-study effects returned a p-value of 0.39. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {

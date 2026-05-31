@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T17:06:41Z"
+    "extracted_at": "2026-05-31T20:20:19Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -372,7 +372,163 @@
         "lo": 0.7688343499029896,
         "hi": 0.9583222484525417
       }
-    ]
+    ],
+    "trimfill": {
+      "k0": 0,
+      "side": "left",
+      "est": 0.8652170997301574,
+      "lo": 0.7804282030607083,
+      "hi": 0.9592178072621919,
+      "est_observed": 0.8652170997301574
+    },
+    "influence": [
+      {
+        "nct": "NCT00354159",
+        "name": "Reducing Decompensation Events Utilizing Intracardiac Pressures in Patients With Chronic HF (REDUCEhf)",
+        "hat": 0.037113951539523814,
+        "cook": 1.0912342356821688e-06,
+        "resid": 0.01926577450249849,
+        "influential": false
+      },
+      {
+        "nct": "NCT00358215",
+        "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Darbepoetin Alfa Treatment on Mortality and Morbidity in Heart Failure (HF) Subjects With Symptomatic Left Ventricular Systolic Dysfunction and Anemia",
+        "hat": 0.08629556161243486,
+        "cook": 0.07619058917199709,
+        "resid": 0.8966021986366267,
+        "influential": false
+      },
+      {
+        "nct": "NCT01215253",
+        "name": "Late Sodium Current Blockade in High-Risk ICD Patients",
+        "hat": 0.06252161965125551,
+        "cook": 0.07259140233508435,
+        "resid": 1.0452128570339219,
+        "influential": false
+      },
+      {
+        "nct": "NCT01685840",
+        "name": "Guiding Evidence Based Therapy Using Biomarker Intensified Treatment in Heart Failure.",
+        "hat": 0.06752506657579432,
+        "cook": 0.028495620731045637,
+        "resid": 0.6248074647372238,
+        "influential": false
+      },
+      {
+        "nct": "NCT01920711",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Valsartan, on Morbidity and Mortality in Heart Failure Patients (NYHA Class II-IV) With Preserved Ejection Fraction (PARAGON-HF)",
+        "hat": 0.08104170056483659,
+        "cook": 1.1100702870835912e-05,
+        "resid": 0.0273076940178686,
+        "influential": false
+      },
+      {
+        "nct": "NCT02064868",
+        "name": "A Multicenter, Prospective, Randomized, Open-label Study to Assess the Effect of Serelaxin Versus Standard of Care in Acute Heart Failure (AHF) Patients",
+        "hat": 0.049027555156468824,
+        "cook": 0.038529996746907574,
+        "resid": -0.8484128217083129,
+        "influential": false
+      },
+      {
+        "nct": "NCT02235077",
+        "name": "Aldosterone Targeted Neurohormonal Combined With Natriuresis Therapy - HF (ATHENA-HF)",
+        "hat": 0.018100779692478235,
+        "cook": 0.007560261872145856,
+        "resid": 0.6395137856353508,
+        "influential": false
+      },
+      {
+        "nct": "NCT02271230",
+        "name": "Intervention With Vitamin D and Omega-3 Supplements and Incident Heart Failure",
+        "hat": 0.07520793809397222,
+        "cook": 0.01140721579189913,
+        "resid": 0.37901033686108804,
+        "influential": false
+      },
+      {
+        "nct": "NCT02441218",
+        "name": "Effects of Ivabradine on Cardiovascular Events in Patients With Moderate to Severe Chronic Heart Failure and Left Ventricular Systolic Dysfunction. A Three-year International Multicentre Study",
+        "hat": 0.08966918151319493,
+        "cook": 0.010812191215455258,
+        "resid": -0.30997503582987584,
+        "influential": false
+      },
+      {
+        "nct": "NCT02468232",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel Group, Active-controlled Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Enalapril on Morbidity and Mortality in Japanese Patients With Chronic Heart Failure and Reduced Ejection Fraction.",
+        "hat": 0.02248451495407477,
+        "cook": 7.124138397293439e-06,
+        "resid": 0.014651779516351925,
+        "influential": false
+      },
+      {
+        "nct": "NCT02861534",
+        "name": "A Randomized Parallel-Group, Placebo-Controlled, Double-Blind, Event-Driven, Multi-Center Pivotal Phase III Clinical Outcome Trial of Efficacy and Safety of the Oral sGC Stimulator Vericiguat in Subjects With Heart Failure With Reduced Ejection Fraction (HFrEF) - VerICiguaT GlObal Study in Subjects With Heart Failure With Reduced EjectIon FrAction (VICTORIA)",
+        "hat": 0.08760834457054678,
+        "cook": 0.0043269566157425774,
+        "resid": 0.22209983965278685,
+        "influential": false
+      },
+      {
+        "nct": "NCT02929329",
+        "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Omecamtiv Mecarbil on Mortality and Morbidity in Subjects With Chronic Heart Failure With Reduced Ejection Fraction (GALACTIC-HF)",
+        "hat": 0.09057406209518358,
+        "cook": 0.029271746301596218,
+        "resid": 0.5437080852904045,
+        "influential": false
+      },
+      {
+        "nct": "NCT02937454",
+        "name": "A Randomised, Double-Blind Placebo Controlled Trial Comparing the Effect of Intravenous Ferric Carboxymaltose on Hospitalisations and Mortality in Iron Deficient Patients Admitted for Acute Heart Failure (Affirm-AHF)",
+        "hat": 0.06262754637045058,
+        "cook": 0.014551323707108644,
+        "resid": -0.4378437827547346,
+        "influential": false
+      },
+      {
+        "nct": "NCT02946853",
+        "name": "Junctional AV Ablation in CRT-D Patients With Atrial Fibrillation (JAVA-CRT Trial)",
+        "hat": 0.0009281383080599055,
+        "cook": 5.110886705628611e-06,
+        "resid": 0.08367052435578334,
+        "influential": false
+      },
+      {
+        "nct": "NCT03387813",
+        "name": "Hemodynamic-GUIDEd Management of Heart Failure",
+        "hat": 0.0777621510498033,
+        "cook": 0.9995098196675649,
+        "resid": -7.765356362266919,
+        "influential": true
+      },
+      {
+        "nct": "NCT04180696",
+        "name": "Mid-Q Response Study",
+        "hat": 0.010860156134203916,
+        "cook": 0.00585549439209328,
+        "resid": 0.7308270871269943,
+        "influential": false
+      },
+      {
+        "nct": "NCT05093933",
+        "name": "A Pivotal Phase 3 Randomized, Placebo-controlled Clinical Study to Evaluate the Efficacy and Safety of the sGC Stimulator Vericiguat/MK-1242 in Adults With Chronic Heart Failure With Reduced Ejection Fraction",
+        "hat": 0.0806517321177179,
+        "cook": 0.02282787376553521,
+        "resid": 0.5112950590354185,
+        "influential": false
+      }
+    ],
+    "metareg": {
+      "b0": 21.1937975311679,
+      "b1": -0.01059707892519046,
+      "se": 0.012115092008752047,
+      "z": -0.8747006558047631,
+      "p": 0.381736803204316,
+      "tau2_res": 0.033987535520972695,
+      "r2": 0.0,
+      "k": 17
+    }
   },
   "e156_body": "In heart failure, does the intervention compared with control change heart failure hospitalization? This synthesis aggregates 17 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for heart failure hospitalization was 0.87 (95% CI 0.78 to 0.96). Between-trial heterogeneity was I-squared 80 percent, the 95% prediction interval spanned 0.60 to 1.25, and Egger's test for small-study effects returned a p-value of 0.86. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {

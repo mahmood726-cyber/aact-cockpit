@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T17:06:41Z"
+    "extracted_at": "2026-05-31T20:20:18Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -372,7 +372,163 @@
         "lo": 0.8108636063347301,
         "hi": 0.9310920570932587
       }
-    ]
+    ],
+    "trimfill": {
+      "k0": 0,
+      "side": "left",
+      "est": 0.866623463707423,
+      "lo": 0.8125783234795054,
+      "hi": 0.9242631831874033,
+      "est_observed": 0.866623463707423
+    },
+    "influence": [
+      {
+        "nct": "NCT00023595",
+        "name": "Surgical Treatment for Ischemic Heart Failure (STICH)",
+        "hat": 0.058981502909781026,
+        "cook": 0.029512268120843687,
+        "resid": -0.6909749831381741,
+        "influential": false
+      },
+      {
+        "nct": "NCT00094302",
+        "name": "Treatment of Preserved Cardiac Function Heart Failure With an Aldosterone Antagonist (TOPCAT)",
+        "hat": 0.06531298319834077,
+        "cook": 0.004529537480195474,
+        "resid": 0.20847734352149933,
+        "influential": false
+      },
+      {
+        "nct": "NCT01115855",
+        "name": "The Effect Of Eplerenone Versus Placebo On Cardiovascular Mortality And Heart Failure Hospitalization In Japanese Subjects With Chronic Heart Failure",
+        "hat": 0.004332254067798073,
+        "cook": 0.00402178451964151,
+        "resid": 2.054831265063944,
+        "influential": true
+      },
+      {
+        "nct": "NCT01685840",
+        "name": "Guiding Evidence Based Therapy Using Biomarker Intensified Treatment in Heart Failure.",
+        "hat": 0.023051483904307803,
+        "cook": 0.004955041300265954,
+        "resid": 0.37681725594427506,
+        "influential": false
+      },
+      {
+        "nct": "NCT01870778",
+        "name": "A Multicenter, Randomized, Double-blind, Placebo-controlled Phase III Study to Evaluate the Efficacy, Safety and Tolerability of Serelaxin When Added to Standard Therapy in Acute Heart Failure Patients",
+        "hat": 0.08218611136521285,
+        "cook": 0.09408802955276811,
+        "resid": 1.0292580025074074,
+        "influential": false
+      },
+      {
+        "nct": "NCT02441218",
+        "name": "Effects of Ivabradine on Cardiovascular Events in Patients With Moderate to Severe Chronic Heart Failure and Left Ventricular Systolic Dysfunction. A Three-year International Multicentre Study",
+        "hat": 0.07292074010679579,
+        "cook": 0.015806779111930402,
+        "resid": 0.4037464525983194,
+        "influential": false
+      },
+      {
+        "nct": "NCT02627196",
+        "name": "Barostim Neo® - Baroreflex Activation Therapy® for Heart Failure",
+        "hat": 0.013935608867984412,
+        "cook": 0.0021857663081169282,
+        "resid": 0.29293619986891684,
+        "influential": false
+      },
+      {
+        "nct": "NCT02787044",
+        "name": "INfluenza Vaccine to Effectively Stop Cardio Thoracic Events and Decompensated Heart Failure",
+        "hat": 0.07940862191164275,
+        "cook": 0.29180839389935215,
+        "resid": 2.3500085716275168,
+        "influential": true
+      },
+      {
+        "nct": "NCT02861534",
+        "name": "A Randomized Parallel-Group, Placebo-Controlled, Double-Blind, Event-Driven, Multi-Center Pivotal Phase III Clinical Outcome Trial of Efficacy and Safety of the Oral sGC Stimulator Vericiguat in Subjects With Heart Failure With Reduced Ejection Fraction (HFrEF) - VerICiguaT GlObal Study in Subjects With Heart Failure With Reduced EjectIon FrAction (VICTORIA)",
+        "hat": 0.07029460743392976,
+        "cook": 0.028822208327226234,
+        "resid": 0.5757513068144818,
+        "influential": false
+      },
+      {
+        "nct": "NCT02929329",
+        "name": "A Double-blind, Randomized, Placebo-controlled, Multicenter Study to Assess the Efficacy and Safety of Omecamtiv Mecarbil on Mortality and Morbidity in Subjects With Chronic Heart Failure With Reduced Ejection Fraction (GALACTIC-HF)",
+        "hat": 0.09043155116906225,
+        "cook": 0.034349441449148484,
+        "resid": 0.5538146434562818,
+        "influential": false
+      },
+      {
+        "nct": "NCT02937454",
+        "name": "A Randomised, Double-Blind Placebo Controlled Trial Comparing the Effect of Intravenous Ferric Carboxymaltose on Hospitalisations and Mortality in Iron Deficient Patients Admitted for Acute Heart Failure (Affirm-AHF)",
+        "hat": 0.04572036210768875,
+        "cook": 0.012347242917963925,
+        "resid": -0.5206017826367118,
+        "influential": false
+      },
+      {
+        "nct": "NCT03036124",
+        "name": "Study to Evaluate the Effect of Dapagliflozin on the Incidence of Worsening Heart Failure or Cardiovascular Death in Patients With Chronic Heart Failure With Reduced Ejection Fraction",
+        "hat": 0.07041099939173695,
+        "cook": 0.14160621838890075,
+        "resid": -1.3749712940428138,
+        "influential": false
+      },
+      {
+        "nct": "NCT03315143",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Demonstrate the Effects of Sotagliflozin on Cardiovascular and Renal Events in Patients With Type 2 Diabetes, Cardiovascular Risk Factors and Moderately Impaired Renal Function",
+        "hat": 0.06922137045884073,
+        "cook": 0.19638881647959247,
+        "resid": -1.6506129555097746,
+        "influential": false
+      },
+      {
+        "nct": "NCT03521934",
+        "name": "A Randomized, Double-blind, Placebo-controlled, Parallel-group, Multicenter Study to Evaluate the Effects of Sotagliflozin on Clinical Outcomes in Hemodynamically Stable Patients With Type 2 Diabetes POST Worsening Heart Failure",
+        "hat": 0.04044877805292147,
+        "cook": 0.057220068347802806,
+        "resid": -1.1689911369710249,
+        "influential": false
+      },
+      {
+        "nct": "NCT03619213",
+        "name": "An International, Double-blind, Randomised, Placebo-Controlled Phase III Study to Evaluate the Effect of Dapagliflozin on Reducing CV Death or Worsening Heart Failure in Patients With Heart Failure With Preserved Ejection Fraction (HFpEF)",
+        "hat": 0.07639558395438943,
+        "cook": 0.01670988106744729,
+        "resid": -0.4641321867564503,
+        "influential": false
+      },
+      {
+        "nct": "NCT04435626",
+        "name": "A Multicenter, Randomized, Double-blind, Parallel-group, Placebo-controlled Study to Evaluate the Efficacy and Safety of Finerenone on Morbidity and Mortality in Participants With Heart Failure (NYHA II-IV) and Left Ventricular Ejection Fraction ≥ 40% (LVEF ≥ 40%)",
+        "hat": 0.07338943108372808,
+        "cook": 0.004150265754446735,
+        "resid": -0.25347940825537285,
+        "influential": false
+      },
+      {
+        "nct": "NCT05093933",
+        "name": "A Pivotal Phase 3 Randomized, Placebo-controlled Clinical Study to Evaluate the Efficacy and Safety of the sGC Stimulator Vericiguat/MK-1242 in Adults With Chronic Heart Failure With Reduced Ejection Fraction",
+        "hat": 0.06355801001583905,
+        "cook": 0.006381104742306417,
+        "resid": -0.32825197575918424,
+        "influential": false
+      }
+    ],
+    "metareg": {
+      "b0": 7.5005862866585105,
+      "b1": -0.0037942170793684475,
+      "se": 0.006144384923689616,
+      "z": -0.6175096655712243,
+      "p": 0.5368986079383073,
+      "tau2_res": 0.010331547738561724,
+      "r2": 0.029548319575225857,
+      "k": 17
+    }
   },
   "e156_body": "In heart failure, does the intervention compared with control change cardiovascular death? This synthesis aggregates 17 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for cardiovascular death was 0.87 (95% CI 0.81 to 0.92). Between-trial heterogeneity was I-squared 66 percent, the 95% prediction interval spanned 0.69 to 1.09, and Egger's test for small-study effects returned a p-value of 0.55. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {

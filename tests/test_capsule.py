@@ -8,7 +8,56 @@ import re
 import pytest
 
 from aact_cockpit.capsule import generate_capsule as gc
-from aact_cockpit.capsule.pooling import pool, diagnostics, egger, leave_one_out
+from aact_cockpit.capsule.pooling import (pool, diagnostics, egger, leave_one_out,
+                                          meta_regression, influence, trim_and_fill)
+
+
+def _yi(triples, years=None):
+    out = []
+    for i, (h, l, u) in enumerate(triples):
+        d = {"hr": h, "lci": l, "uci": u, "nct": f"NCT0{i}", "name": f"Trial {i}", "inc": True}
+        if years:
+            d["year"] = years[i]
+        out.append(d)
+    return out
+
+
+def test_meta_regression_trend():
+    # effect drifts up with year -> positive slope
+    items = _yi([(0.60, 0.50, 0.72), (0.70, 0.58, 0.85), (0.85, 0.72, 1.00),
+                 (0.95, 0.80, 1.13), (1.05, 0.88, 1.25)],
+                years=[2010, 2013, 2016, 2019, 2022])
+    mr = meta_regression(items, [it["year"] for it in items])
+    assert mr["k"] == 5 and mr["b1"] > 0 and 0.0 <= mr["r2"] <= 1.0
+    # no years -> None
+    assert meta_regression(_yi([(0.8, 0.6, 1.0), (0.9, 0.7, 1.1), (0.85, 0.7, 1.0)]),
+                           [None, None, None]) is None
+
+
+def test_influence_flags_outlier():
+    items = _yi([(0.80, 0.74, 0.86), (0.82, 0.76, 0.89), (0.79, 0.73, 0.86),
+                 (1.60, 1.40, 1.83)])  # last one is a clear outlier
+    inf = influence(items)
+    assert len(inf) == 4
+    assert all(0 <= d["hat"] <= 1 for d in inf)
+    assert inf[-1]["influential"] is True   # the outlier is flagged
+
+
+def test_trim_and_fill_symmetric_zero():
+    # symmetric set -> k0 == 0, adjusted == observed
+    items = _yi([(0.70, 0.55, 0.89), (0.85, 0.70, 1.03), (1.00, 0.85, 1.18),
+                 (1.18, 0.97, 1.43), (1.43, 1.12, 1.82)])
+    tf = trim_and_fill(items)
+    assert tf["k0"] == 0
+    assert abs(tf["est"] - tf["est_observed"]) < 1e-9
+
+
+def test_diagnostics_suite_complete():
+    d = diagnostics(_yi([(0.8, 0.66, 0.97), (0.74, 0.6, 0.92), (0.83, 0.71, 0.97),
+                         (0.9, 0.8, 1.02)], years=[2018, 2019, 2020, 2021]),
+                    x_values=[2018, 2019, 2020, 2021])
+    assert set(d) == {"egger", "loo", "trimfill", "influence", "metareg"}
+    assert d["metareg"] is not None and d["trimfill"] is not None and len(d["influence"]) == 4
 
 
 def _items(triples):

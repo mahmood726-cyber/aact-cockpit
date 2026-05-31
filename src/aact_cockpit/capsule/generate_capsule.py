@@ -254,7 +254,10 @@ def render_capsule_html(ds: dict, *, method: str = "PM", hksj: bool = False,
     payload = normalize_dataset(ds)
     audit = compute_self_audit(payload, method=method, hksj=hksj,
                                analysis_rerun=analysis_rerun, external_review=external_review)
-    diag = diagnostics(payload["studies"], method=method)   # Egger + leave-one-out
+    # full diagnostic suite: Egger, leave-one-out, trim-and-fill, influence,
+    # and meta-regression by trial year (when years are present)
+    years = [s.get("year") for s in payload["studies"]]
+    diag = diagnostics(payload["studies"], method=method, x_values=years)
     body = draft_e156_body(payload, audit["pooled"], diag)
     vres = validate_e156(body, strict_words=True)
     if not vres["ok"]:

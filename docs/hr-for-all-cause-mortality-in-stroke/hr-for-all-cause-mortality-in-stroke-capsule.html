@@ -73,23 +73,29 @@
   <h2>04 · Pooled result (random-effects)</h2>
   <div class="card"><div class="pooled" id="pooledLine">—</div><div class="muted" id="hetLine"></div></div>
 
-  <h2>05 · Publication bias (funnel + Egger)</h2>
-  <div class="muted">Effect (x) versus precision (y); symmetric points suggest no small-study bias. Egger's test regresses the standard normal deviate on precision.</div>
-  <div class="card"><svg id="funnel" role="img" aria-label="Funnel plot"></svg><div class="muted" id="eggerLine"></div></div>
+  <h2>05 · Publication bias (funnel + Egger + trim-and-fill)</h2>
+  <div class="muted">Effect (x) versus precision (y); symmetric points suggest no small-study bias. Egger's test regresses the standard normal deviate on precision; trim-and-fill (L0) imputes any missing studies.</div>
+  <div class="card"><svg id="funnel" role="img" aria-label="Funnel plot"></svg>
+    <div class="muted" id="eggerLine"></div><div class="muted" id="trimfillLine"></div></div>
 
-  <h2>06 · Leave-one-out sensitivity</h2>
-  <div class="muted">The pooled estimate re-computed with each trial omitted; a stable column means no single trial drives the result.</div>
-  <div class="card"><svg id="loo" role="img" aria-label="Leave-one-out plot"></svg></div>
+  <h2>06 · Sensitivity &amp; influence</h2>
+  <div class="muted">Leave-one-out (each trial omitted) plus per-study influence — leverage (hat), Cook's distance, and standardized residual; a flagged row is potentially influential.</div>
+  <div class="card"><svg id="loo" role="img" aria-label="Leave-one-out plot"></svg>
+    <div style="max-height:280px;overflow:auto;margin-top:8px"><table id="influence"></table></div></div>
 
-  <h2>07 · 156-word summary (E156)</h2>
+  <h2>07 · Meta-regression by year</h2>
+  <div class="muted">Mixed-effects regression of the log-effect on publication year; a flat line (p &gt; 0.05) means no time trend.</div>
+  <div class="card"><svg id="metareg" role="img" aria-label="Meta-regression plot"></svg><div class="muted" id="metaregLine"></div></div>
+
+  <h2>08 · 156-word summary (E156)</h2>
   <div class="body156" id="bodyBox"></div>
   <div class="muted" id="bodyMeta"></div>
 
-  <h2>08 · R cross-validation (metafor)</h2>
-  <div class="muted">Copy-paste into R; uses the live-edited data and regenerates the pooled estimate, Egger test, and leave-one-out.</div>
+  <h2>09 · R cross-validation (metafor)</h2>
+  <div class="muted">Copy-paste into R; regenerates the pooled estimate, Egger, leave-one-out, trim-and-fill, influence, and meta-regression.</div>
   <div class="card"><pre id="rcode"></pre></div>
 
-  <h2>09 · Assurance &amp; inspector</h2>
+  <h2>10 · Assurance &amp; inspector</h2>
   <div class="card" id="auditBox"></div>
   <div class="card"><button id="inspectBtn">show the exact pooling code that ran</button>
     <pre id="inspectOut" style="display:none"></pre></div>
@@ -100,7 +106,7 @@
 </script>
 <script>
 "use strict";
-const CAPSULE = {"slug": "hr-for-all-cause-mortality-in-stroke", "title": "HR for all-cause mortality in stroke", "measure": "HR", "pico": {"population": "stroke", "outcome": "all-cause mortality", "intervention": null, "comparator": null}, "primary_estimand": "hazard ratio for all-cause mortality", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-05-31T17:06:45Z"}, "favours_low": "favours intervention", "favours_high": "favours comparator", "method": "PM", "hksj": false, "studies": [{"nct": "NCT00091949", "name": "Insulin Resistance Intervention After Stroke (IRIS) Trial", "year": 2005, "agent": "Pioglitazone", "comparator": "Placebo", "hr": 0.93, "lci": 0.73, "uci": 1.17, "inc": true}, {"nct": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "year": 2006, "agent": "Rivaroxaban", "comparator": "Warfarin", "hr": 0.85, "lci": 0.7, "uci": 1.02, "inc": true}, {"nct": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "year": 2008, "agent": "Warfarin/Placebo Edoxaban", "comparator": "High Dose Edoxaban/Placebo Warfarin", "hr": 0.9, "lci": 0.823, "uci": 0.981, "inc": true}, {"nct": "NCT01994720", "name": "A Randomised, Double-Blind, Multinational Study to Prevent Major Vascular Events With Ticagrelor Compared to Aspirin (ASA) in Patients With Acute Ischaemic Stroke or TIA.", "year": 2014, "agent": "Ticagrelor 90 mg", "comparator": "ASA 100 mg", "hr": 1.18, "lci": 0.83, "uci": 1.67, "inc": true}, {"nct": "NCT02111564", "name": "Medically Ill Patient Assessment of Rivaroxaban Versus Placebo in Reducing Post-Discharge Venous Thrombo-Embolism Risk", "year": 2014, "agent": "Rivaroxaban 10 mg or 7.5 mg", "comparator": "Placebo", "hr": 0.73, "lci": 0.54, "uci": 0.97, "inc": true}, {"nct": "NCT02239120", "name": "Randomized, Double-blind, Evaluation in Secondary Stroke Prevention Comparing the EfficaCy and Safety of the Oral Thrombin Inhibitor Dabigatran Etexilate (110 mg or 150 mg, Oral b.i.d.) Versus Acetylsalicylic Acid (100 mg Oral q.d.) in Patients With Embolic Stroke of Undetermined Source (RESPECT ESUS)", "year": 2014, "agent": "Dabigatran Etexilate 110 or 150 Milligram (mg)", "comparator": "Acetylsalicylic Acid, Aspirin (ASA) 100 mg", "hr": 0.96, "lci": 0.66, "uci": 1.38, "inc": true}, {"nct": "NCT02313909", "name": "Multicenter, Randomized, Double-blind, Double-dummy, Active-comparator, Event-driven, Superiority Phase III Study of Secondary Prevention of Stroke and Prevention of Systemic Embolism in Patients With a Recent Embolic Stroke of Undetermined Source (ESUS), Comparing Rivaroxaban 15 mg Once Daily With Aspirin 100 mg", "year": 2014, "agent": "Rivaroxaban 15 mg OD", "comparator": "Acetylsalicylic Acid 100 mg OD", "hr": 1.26, "lci": 0.87, "uci": 1.81, "inc": true}, {"nct": "NCT03192215", "name": "AtRial Cardiopathy and Antithrombotic Drugs In Prevention After Cryptogenic Stroke", "year": 2018, "agent": "Active Agent: Apixaban", "comparator": "Active Control: Aspirin", "hr": 1.08, "lci": 0.76, "uci": 1.52, "inc": true}], "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"estimator_for_k": "pass", "pi_t_dist": "pass", "log_scale_pooling": "pass", "heterogeneity_reported": "pass", "hksj_floor": "pass", "no_nan": "pass", "rows_parse": "pass"}}, "pooled": {"est": 0.9307070902560839, "ci_lower": 0.8398966201219099, "ci_upper": 1.03133608006092, "i2": 21.651177088668405, "tau2": 0.006484177419403303, "k": 8, "df": 7, "Q": 8.93440353012322, "pi_lower": 0.7415606080175615, "pi_upper": 1.1680983030754954, "ci_note": "z", "method": "PM"}, "diagnostics": {"egger": {"intercept": 0.8681502382393377, "se": 0.7366865222993505, "t": 1.178452723051946, "df": 6, "p": 0.23861616943534614, "k": 8}, "loo": [{"omitted": "NCT00091949", "name": "Insulin Resistance Intervention After Stroke (IRIS) Trial", "est": 0.9390197732360472, "lo": 0.8273915528240983, "hi": 1.0657084079703405}, {"omitted": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "est": 0.9522761704917319, "lo": 0.8451228542067593, "hi": 1.073015479787915}, {"omitted": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "est": 0.9506872622700744, "lo": 0.8308622115871793, "hi": 1.0877932081133481}, {"omitted": "NCT01994720", "name": "A Randomised, Double-Blind, Multinational Study to Prevent Major Vascular Events With Ticagrelor Compared to Aspirin (ASA) in Patients With Acute Ischaemic Stroke or TIA.", "est": 0.9099473871903273, "lo": 0.8289755504021579, "hi": 0.9988283092943051}, {"omitted": "NCT02111564", "name": "Medically Ill Patient Assessment of Rivaroxaban Versus Placebo in Reducing Post-Discharge Venous Thrombo-Embolism Risk", "est": 0.9350784180717848, "lo": 0.8607613496077403, "hi": 1.0158119301500859}, {"omitted": "NCT02239120", "name": "Randomized, Double-blind, Evaluation in Secondary Stroke Prevention Comparing the EfficaCy and Safety of the Oral Thrombin Inhibitor Dabigatran Etexilate (110 mg or 150 mg, Oral b.i.d.) Versus Acetylsalicylic Acid (100 mg Oral q.d.) in Patients With Embolic Stroke of Undetermined Source (RESPECT ESUS)", "est": 0.9358879205569914, "lo": 0.8282936395741407, "hi": 1.0574585605834401}, {"omitted": "NCT02313909", "name": "Multicenter, Randomized, Double-blind, Double-dummy, Active-comparator, Event-driven, Superiority Phase III Study of Secondary Prevention of Stroke and Prevention of Systemic Embolism in Patients With a Recent Embolic Stroke of Undetermined Source (ESUS), Comparing Rivaroxaban 15 mg Once Daily With Aspirin 100 mg", "est": 0.9031748491853477, "lo": 0.8431466876701696, "hi": 0.967476739373824}, {"omitted": "NCT03192215", "name": "AtRial Cardiopathy and Antithrombotic Drugs In Prevention After Cryptogenic Stroke", "est": 0.9224143180509669, "lo": 0.8235319417851746, "hi": 1.0331696088205664}]}, "e156_body": "In stroke, does the intervention compared with control change all-cause mortality? This synthesis aggregates 8 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.93 (95% CI 0.84 to 1.03). Between-trial heterogeneity was I-squared 22 percent, the 95% prediction interval spanned 0.74 to 1.17, and Egger's test for small-study effects returned a p-value of 0.24. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.", "e156_validation": {"ok": true, "word_count": 127, "sentence_count": 7}, "tier": "silver", "notes": []};
+const CAPSULE = {"slug": "hr-for-all-cause-mortality-in-stroke", "title": "HR for all-cause mortality in stroke", "measure": "HR", "pico": {"population": "stroke", "outcome": "all-cause mortality", "intervention": null, "comparator": null}, "primary_estimand": "hazard ratio for all-cause mortality", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-05-31T20:20:22Z"}, "favours_low": "favours intervention", "favours_high": "favours comparator", "method": "PM", "hksj": false, "studies": [{"nct": "NCT00091949", "name": "Insulin Resistance Intervention After Stroke (IRIS) Trial", "year": 2005, "agent": "Pioglitazone", "comparator": "Placebo", "hr": 0.93, "lci": 0.73, "uci": 1.17, "inc": true}, {"nct": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "year": 2006, "agent": "Rivaroxaban", "comparator": "Warfarin", "hr": 0.85, "lci": 0.7, "uci": 1.02, "inc": true}, {"nct": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "year": 2008, "agent": "Warfarin/Placebo Edoxaban", "comparator": "High Dose Edoxaban/Placebo Warfarin", "hr": 0.9, "lci": 0.823, "uci": 0.981, "inc": true}, {"nct": "NCT01994720", "name": "A Randomised, Double-Blind, Multinational Study to Prevent Major Vascular Events With Ticagrelor Compared to Aspirin (ASA) in Patients With Acute Ischaemic Stroke or TIA.", "year": 2014, "agent": "Ticagrelor 90 mg", "comparator": "ASA 100 mg", "hr": 1.18, "lci": 0.83, "uci": 1.67, "inc": true}, {"nct": "NCT02111564", "name": "Medically Ill Patient Assessment of Rivaroxaban Versus Placebo in Reducing Post-Discharge Venous Thrombo-Embolism Risk", "year": 2014, "agent": "Rivaroxaban 10 mg or 7.5 mg", "comparator": "Placebo", "hr": 0.73, "lci": 0.54, "uci": 0.97, "inc": true}, {"nct": "NCT02239120", "name": "Randomized, Double-blind, Evaluation in Secondary Stroke Prevention Comparing the EfficaCy and Safety of the Oral Thrombin Inhibitor Dabigatran Etexilate (110 mg or 150 mg, Oral b.i.d.) Versus Acetylsalicylic Acid (100 mg Oral q.d.) in Patients With Embolic Stroke of Undetermined Source (RESPECT ESUS)", "year": 2014, "agent": "Dabigatran Etexilate 110 or 150 Milligram (mg)", "comparator": "Acetylsalicylic Acid, Aspirin (ASA) 100 mg", "hr": 0.96, "lci": 0.66, "uci": 1.38, "inc": true}, {"nct": "NCT02313909", "name": "Multicenter, Randomized, Double-blind, Double-dummy, Active-comparator, Event-driven, Superiority Phase III Study of Secondary Prevention of Stroke and Prevention of Systemic Embolism in Patients With a Recent Embolic Stroke of Undetermined Source (ESUS), Comparing Rivaroxaban 15 mg Once Daily With Aspirin 100 mg", "year": 2014, "agent": "Rivaroxaban 15 mg OD", "comparator": "Acetylsalicylic Acid 100 mg OD", "hr": 1.26, "lci": 0.87, "uci": 1.81, "inc": true}, {"nct": "NCT03192215", "name": "AtRial Cardiopathy and Antithrombotic Drugs In Prevention After Cryptogenic Stroke", "year": 2018, "agent": "Active Agent: Apixaban", "comparator": "Active Control: Aspirin", "hr": 1.08, "lci": 0.76, "uci": 1.52, "inc": true}], "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"estimator_for_k": "pass", "pi_t_dist": "pass", "log_scale_pooling": "pass", "heterogeneity_reported": "pass", "hksj_floor": "pass", "no_nan": "pass", "rows_parse": "pass"}}, "pooled": {"est": 0.9307070902560839, "ci_lower": 0.8398966201219099, "ci_upper": 1.03133608006092, "i2": 21.651177088668405, "tau2": 0.006484177419403303, "k": 8, "df": 7, "Q": 8.93440353012322, "pi_lower": 0.7415606080175615, "pi_upper": 1.1680983030754954, "ci_note": "z", "method": "PM"}, "diagnostics": {"egger": {"intercept": 0.8681502382393377, "se": 0.7366865222993505, "t": 1.178452723051946, "df": 6, "p": 0.23861616943534614, "k": 8}, "loo": [{"omitted": "NCT00091949", "name": "Insulin Resistance Intervention After Stroke (IRIS) Trial", "est": 0.9390197732360472, "lo": 0.8273915528240983, "hi": 1.0657084079703405}, {"omitted": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "est": 0.9522761704917319, "lo": 0.8451228542067593, "hi": 1.073015479787915}, {"omitted": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "est": 0.9506872622700744, "lo": 0.8308622115871793, "hi": 1.0877932081133481}, {"omitted": "NCT01994720", "name": "A Randomised, Double-Blind, Multinational Study to Prevent Major Vascular Events With Ticagrelor Compared to Aspirin (ASA) in Patients With Acute Ischaemic Stroke or TIA.", "est": 0.9099473871903273, "lo": 0.8289755504021579, "hi": 0.9988283092943051}, {"omitted": "NCT02111564", "name": "Medically Ill Patient Assessment of Rivaroxaban Versus Placebo in Reducing Post-Discharge Venous Thrombo-Embolism Risk", "est": 0.9350784180717848, "lo": 0.8607613496077403, "hi": 1.0158119301500859}, {"omitted": "NCT02239120", "name": "Randomized, Double-blind, Evaluation in Secondary Stroke Prevention Comparing the EfficaCy and Safety of the Oral Thrombin Inhibitor Dabigatran Etexilate (110 mg or 150 mg, Oral b.i.d.) Versus Acetylsalicylic Acid (100 mg Oral q.d.) in Patients With Embolic Stroke of Undetermined Source (RESPECT ESUS)", "est": 0.9358879205569914, "lo": 0.8282936395741407, "hi": 1.0574585605834401}, {"omitted": "NCT02313909", "name": "Multicenter, Randomized, Double-blind, Double-dummy, Active-comparator, Event-driven, Superiority Phase III Study of Secondary Prevention of Stroke and Prevention of Systemic Embolism in Patients With a Recent Embolic Stroke of Undetermined Source (ESUS), Comparing Rivaroxaban 15 mg Once Daily With Aspirin 100 mg", "est": 0.9031748491853477, "lo": 0.8431466876701696, "hi": 0.967476739373824}, {"omitted": "NCT03192215", "name": "AtRial Cardiopathy and Antithrombotic Drugs In Prevention After Cryptogenic Stroke", "est": 0.9224143180509669, "lo": 0.8235319417851746, "hi": 1.0331696088205664}], "trimfill": {"k0": 0, "side": "left", "est": 0.9307070902560839, "lo": 0.8398966201219099, "hi": 1.03133608006092, "est_observed": 0.9307070902560839}, "influence": [{"nct": "NCT00091949", "name": "Insulin Resistance Intervention After Stroke (IRIS) Trial", "hat": 0.1308742697503022, "cook": 0.028816181860093867, "resid": -0.05546981947586877, "influential": false}, {"nct": "NCT00403767", "name": "A Prospective, Randomized, Double-Blind, Parallel-Group, Multicenter, Non-inferiority Study Comparing the Efficacy and Safety of Rivaroxaban (BAY 59-7939) With Warfarin for the Prevention of Stroke and Non-Central Nervous System Systemic Embolism in Subjects With Non-Valvular Atrial Fibrillation", "hat": 0.17467387981595087, "cook": 0.19129910484646193, "resid": -0.7794618997775586, "influential": false}, {"nct": "NCT00781391", "name": "A Phase 3, Randomized, Double-Blind, Double-Dummy, Parallel Group, Multi-Center, Multi-National Study for Evaluation of Efficacy and Safety of Edoxaban (DU-176b) Versus Warfarin In Subjects With Atrial Fibrillation - Effective Anticoagulation With Factor Xa Next Generation in Atrial Fibrillation (ENGAGE - AF TIMI - 48)", "hat": 0.3231330219065734, "cook": 0.16442810117601098, "resid": -0.41585222008164713, "influential": false}, {"nct": "NCT01994720", "name": "A Randomised, Double-Blind, Multinational Study to Prevent Major Vascular Events With Ticagrelor Compared to Aspirin (ASA) in Patients With Acute Ischaemic Stroke or TIA.", "hat": 0.07164765498626557, "cook": 0.1854552684166018, "resid": 1.3435048509930925, "influential": false}, {"nct": "NCT02111564", "name": "Medically Ill Patient Assessment of Rivaroxaban Versus Placebo in Reducing Post-Discharge Venous Thrombo-Embolism Risk", "hat": 0.09523386166198787, "cook": 0.008002202250957643, "resid": -1.5482971512497727, "influential": false}, {"nct": "NCT02239120", "name": "Randomized, Double-blind, Evaluation in Secondary Stroke Prevention Comparing the EfficaCy and Safety of the Oral Thrombin Inhibitor Dabigatran Etexilate (110 mg or 150 mg, Oral b.i.d.) Versus Acetylsalicylic Acid (100 mg Oral q.d.) in Patients With Embolic Stroke of Undetermined Source (RESPECT ESUS)", "hat": 0.0654993230926318, "cook": 0.011230662496881358, "resid": 0.1127969597470419, "influential": false}, {"nct": "NCT02313909", "name": "Multicenter, Randomized, Double-blind, Double-dummy, Active-comparator, Event-driven, Superiority Phase III Study of Secondary Prevention of Stroke and Prevention of Systemic Embolism in Patients With a Recent Embolic Stroke of Undetermined Source (ESUS), Comparing Rivaroxaban 15 mg Once Daily With Aspirin 100 mg", "hat": 0.06625750521844571, "cook": 0.3286323082165416, "resid": 1.7509529701160824, "influential": false}, {"nct": "NCT03192215", "name": "AtRial Cardiopathy and Antithrombotic Drugs In Prevention After Cryptogenic Stroke", "hat": 0.07268048356784264, "cook": 0.029194573561377363, "resid": 0.7599074014948403, "influential": false}], "metareg": {"b0": -28.098734776225633, "b1": 0.013944039156634393, "se": 0.011788414266569508, "z": 1.1828596146453703, "p": 0.2368647894181044, "tau2_res": 0.002887146197387237, "r2": 0.5547397903166995, "k": 8}}, "e156_body": "In stroke, does the intervention compared with control change all-cause mortality? This synthesis aggregates 8 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.93 (95% CI 0.84 to 1.03). Between-trial heterogeneity was I-squared 22 percent, the 95% prediction interval spanned 0.74 to 1.17, and Egger's test for small-study effects returned a p-value of 0.24. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.", "e156_validation": {"ok": true, "word_count": 127, "sentence_count": 7}, "tier": "silver", "notes": []};
 const SLUG = CAPSULE.slug, LSKEY = "e156:" + SLUG;
 const Z = 1.959963984540054;
 const T975 = {1:12.706,2:4.303,3:3.182,4:2.776,5:2.571,6:2.447,7:2.365,8:2.306,9:2.262,10:2.228,12:2.179,15:2.131,20:2.086,30:2.042};
@@ -160,6 +166,53 @@ function leaveOneOut(items){
   const use=items.filter(t=>t.inc&&valid(t));const k=use.length;if(k<3)return [];
   return use.map((t,i)=>{const sub=use.filter((_,j)=>j!==i);const r=pool(sub);
     return {omitted:t.nct,name:t.name,est:r.est,lo:r.ciL,hi:r.ciU};});
+}
+function metaRegression(items){
+  const use=items.filter(t=>t.inc&&valid(t)&&t.year!=null);const k=use.length;if(k<3)return null;
+  const y=use.map(t=>Math.log(t.hr)),v=use.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z))**2),x=use.map(t=>+t.year);
+  if(new Set(x).size<2)return null;
+  const fit=w=>{let Sw=0,Swx=0,Swxx=0,Swy=0,Swxy=0;for(let i=0;i<k;i++){Sw+=w[i];Swx+=w[i]*x[i];Swxx+=w[i]*x[i]*x[i];Swy+=w[i]*y[i];Swxy+=w[i]*x[i]*y[i];}
+    const det=Sw*Swxx-Swx*Swx;return {b0:(Swxx*Swy-Swx*Swxy)/det,b1:(Sw*Swxy-Swx*Swy)/det,v00:Swxx/det,v01:-Swx/det,v11:Sw/det};};
+  const w0=v.map(vi=>1/vi),f0=fit(w0);
+  const Qres=y.reduce((a,e,i)=>a+w0[i]*(e-(f0.b0+f0.b1*x[i]))**2,0);
+  let Sw2=0,Sw2x=0,Sw2xx=0;for(let i=0;i<k;i++){const w2=w0[i]*w0[i];Sw2+=w2;Sw2x+=w2*x[i];Sw2xx+=w2*x[i]*x[i];}
+  const tr=f0.v00*Sw2+2*f0.v01*Sw2x+f0.v11*Sw2xx,C=w0.reduce((a,b)=>a+b,0)-tr;
+  const tau2res=(k>2&&C>0)?Math.max(0,(Qres-(k-2))/C):0;
+  const w=v.map(vi=>1/(vi+tau2res)),f=fit(w),se=Math.sqrt(f.v11),z=se>0?f.b1/se:0;
+  const tau2tot=tau2PM(y,v),r2=tau2tot>0?Math.max(0,1-tau2res/tau2tot):0;
+  return {b0:f.b0,b1:f.b1,se,z,p:2*(1-normcdf(Math.abs(z))),tau2_res:tau2res,r2,k};
+}
+function influence(items){
+  const use=items.filter(t=>t.inc&&valid(t));const k=use.length;if(k<3)return [];
+  const y=use.map(t=>Math.log(t.hr)),v=use.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z))**2);
+  const tau2=tau2est(y,v),w=v.map(vi=>1/(vi+tau2)),sw=w.reduce((a,b)=>a+b,0),theta=y.reduce((a,e,i)=>a+w[i]*e,0)/sw;
+  return use.map((t,i)=>{const hat=w[i]/sw,sub=use.filter((_,j)=>j!==i),r=pool(sub);
+    const thi=r.re,denom=Math.sqrt(v[i]+r.tau2+r.seRE*r.seRE),resid=denom>0?(y[i]-thi)/denom:0,cook=(theta-thi)**2*sw;
+    return {nct:t.nct,name:t.name,hat,cook,resid,influential:(cook>4/k)||(Math.abs(resid)>1.96)};});
+}
+function trimSide(y,theta){const c=y.map(yi=>yi-theta);return c.filter(ci=>ci>0).length<c.filter(ci=>ci<0).length?"right":"left";}
+function trimFill(items){
+  const use=items.filter(t=>t.inc&&valid(t));const k=use.length;if(k<3)return null;
+  const y=use.map(t=>Math.log(t.hr)),v=use.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z))**2);
+  const ord=[...y.keys()].sort((a,b)=>y[a]-y[b]),ys=ord.map(i=>y[i]),vs=ord.map(i=>v[i]);
+  const reEst=(yy,vv)=>{const t2=tau2est(yy,vv),ww=vv.map(vi=>1/(vi+t2));return yy.reduce((a,e,i)=>a+ww[i]*e,0)/ww.reduce((p,q)=>p+q,0);};
+  let k0=0,side=null;
+  for(let it=0;it<100;it++){
+    const keep=side==="right"?ys.slice(0,ys.length-k0):ys.slice(k0),keepv=side==="right"?vs.slice(0,ys.length-k0):vs.slice(k0);
+    const theta=reEst(keep,keepv);
+    if(side===null){side=trimSide(y,theta);continue;}
+    const c=ys.map(yi=>yi-theta),absorder=[...c.keys()].sort((a,b)=>Math.abs(c[a])-Math.abs(c[b])),ranks=Array(c.length);
+    absorder.forEach((i,r)=>ranks[i]=r+1);
+    const Tn=side==="right"?c.reduce((a,ci,i)=>a+(ci>0?ranks[i]:0),0):c.reduce((a,ci,i)=>a+(ci<0?ranks[i]:0),0);
+    const n=c.length,L0=(4*Tn-n*(n+1))/(2*n-1),nk=Math.max(0,Math.floor(L0+0.5));if(nk===k0)break;k0=nk;
+  }
+  const keep=side==="right"?ys.slice(0,ys.length-k0):ys.slice(k0),keepv=side==="right"?vs.slice(0,ys.length-k0):vs.slice(k0);
+  const theta=reEst(keep,keepv),fy=[...ys],fv=[...vs];
+  const ext=[...ys.keys()].sort((a,b)=>side!=="right"?ys[b]-ys[a]:ys[a]-ys[b]).slice(0,k0);
+  ext.forEach(i=>{fy.push(2*theta-ys[i]);fv.push(vs[i]);});
+  const t2f=tau2est(fy,fv),wf=fv.map(vi=>1/(vi+t2f)),swf=wf.reduce((a,b)=>a+b,0);
+  const re=fy.reduce((a,e,i)=>a+wf[i]*e,0)/swf,se=Math.sqrt(1/swf);
+  return {k0,side,est:Math.exp(re),lo:Math.exp(re-Z*se),hi:Math.exp(re+Z*se),est_observed:Math.exp(reEst(ys,vs))};
 }
 
 // ---- state ----
@@ -223,16 +276,21 @@ function rCode(){
   const inc=model.filter(t=>t.inc&&valid(t));
   const yi=inc.map(t=>Math.log(t.hr).toFixed(6)).join(', ');
   const sei=inc.map(t=>((Math.log(t.uci)-Math.log(t.lci))/(2*Z)).toFixed(6)).join(', ');
+  const yrs=inc.map(t=>t.year==null?'NA':+t.year).join(', ');
   const meth=METHOD==='PM'?'PM':METHOD==='REML'?'REML':'DL';
   return `# ${CAPSULE.measure} pooled on the log scale (AACT snapshot ${CAPSULE.snapshot_date})\n`+
     `library(metafor)\n`+
     `yi  <- c(${yi})\n`+
     `sei <- c(${sei})\n`+
+    `year <- c(${yrs})\n`+
     `res <- rma(yi = yi, sei = sei, method = "${meth}")\n`+
     `pred <- predict(res, transf = exp)   # pooled ${CAPSULE.measure} + 95% CI\n`+
     `print(pred); print(confint(res))     # tau^2, I^2; t-based PI: rma(..., test="knha")\n`+
     `regtest(res, model = "lm", predictor = "sei")   # Egger small-study test\n`+
-    `leave1out(res)                                   # leave-one-out sensitivity`;
+    `leave1out(res)                                   # leave-one-out sensitivity\n`+
+    `trimfill(res)                                    # trim-and-fill (publication bias)\n`+
+    `influence(res)                                   # hat, Cook's distance, residuals\n`+
+    `rma(yi = yi, sei = sei, mods = ~ year, method = "DL")   # meta-regression by year`;
 }
 
 // ---- assurance ribbon + self-audit ----
@@ -260,6 +318,40 @@ function renderFunnel(){
   document.getElementById('eggerLine').textContent= eg ?
     `Egger's test: intercept ${eg.intercept.toFixed(2)} (SE ${eg.se.toFixed(2)}), t=${eg.t.toFixed(2)}, p=${eg.p<0.001?'<0.001':eg.p.toFixed(3)} — `+
     (eg.p<0.10?'possible small-study asymmetry (interpret with caution).':'no significant funnel asymmetry.') : '';
+  const tf=trimFill(model);
+  document.getElementById('trimfillLine').textContent= tf ?
+    (tf.k0===0?`Trim-and-fill (L0): 0 studies imputed — funnel appears symmetric.`:
+     `Trim-and-fill (L0): ${tf.k0} study/studies imputed on the ${tf.side}; adjusted ${CAPSULE.measure} ${f(tf.est)} (${f(tf.lo)}–${f(tf.hi)}) vs observed ${f(tf.est_observed)}.`) : '';
+}
+function renderInfluence(){
+  const inf=influence(model);const tb=document.getElementById('influence');
+  if(inf.length<3){tb.innerHTML='';return;}
+  let s='<thead><tr><th>Trial</th><th>hat</th><th>Cook</th><th>std. resid</th><th></th></tr></thead><tbody>';
+  inf.forEach(d=>{s+=`<tr><td>${esc(d.name).slice(0,34)}</td><td>${d.hat.toFixed(3)}</td>`+
+    `<td>${d.cook.toFixed(3)}</td><td>${d.resid.toFixed(2)}</td>`+
+    `<td>${d.influential?'<span style="color:var(--warn);font-weight:700">⚑ influential</span>':''}</td></tr>`;});
+  tb.innerHTML=s+'</tbody>';
+}
+function renderMetaReg(){
+  const svg=document.getElementById('metareg');const use=model.filter(t=>t.inc&&valid(t)&&t.year!=null);
+  const mr=metaRegression(model);
+  if(!mr||use.length<3){svg.innerHTML='<text x="20" y="30" fill="#888">need ≥3 trials with years</text>';
+    document.getElementById('metaregLine').textContent='';return;}
+  const W=560,H=260,padL=46,padR=18,padT=14,padB=36,plotW=W-padL-padR,plotH=H-padT-padB;
+  const yrs=use.map(t=>+t.year),hrs=use.map(t=>t.hr);
+  const xmin=Math.min(...yrs),xmax=Math.max(...yrs),ymin=Math.min(...hrs)*0.9,ymax=Math.max(...hrs)*1.1;
+  const xOf=v=>padL+(v-xmin)/((xmax-xmin)||1)*plotW,yOf=v=>padT+(1-(v-ymin)/((ymax-ymin)||1))*plotH;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);let s=`<line class="nullline" x1="${padL}" y1="${yOf(1)}" x2="${W-padR}" y2="${yOf(1)}"/>`;
+  // regression line (on log scale, back-transformed)
+  const x1=xmin,x2=xmax,ly1=Math.exp(mr.b0+mr.b1*x1),ly2=Math.exp(mr.b0+mr.b1*x2);
+  s+=`<line stroke="var(--accent)" stroke-width="2" x1="${xOf(x1)}" y1="${yOf(ly1)}" x2="${xOf(x2)}" y2="${yOf(ly2)}"/>`;
+  use.forEach((t,i)=>{s+=`<circle cx="${xOf(yrs[i])}" cy="${yOf(hrs[i])}" r="3.5" fill="var(--accent)" opacity="0.7"/>`;});
+  [xmin,Math.round((xmin+xmax)/2),xmax].forEach(v=>{s+=`<text class="tick" x="${xOf(v)}" y="${H-padB+16}" text-anchor="middle">${v}</text>`;});
+  [ymin,1,ymax].forEach(v=>{s+=`<text class="tick" x="${padL-6}" y="${yOf(v)+3}" text-anchor="end">${v.toFixed(2)}</text>`;});
+  svg.innerHTML=s;
+  document.getElementById('metaregLine').textContent=
+    `Slope per year ${mr.b1>=0?'+':''}${mr.b1.toFixed(4)} (log scale), p=${mr.p<0.001?'<0.001':mr.p.toFixed(3)}, R² ${(mr.r2*100).toFixed(0)}% — `+
+    (mr.p<0.05?'a significant time trend.':'no significant trend over time.');
 }
 function renderLoo(){
   const svg=document.getElementById('loo');const loo=leaveOneOut(model);
@@ -278,7 +370,7 @@ function renderLoo(){
 }
 function render(){
   const res=pool(model);
-  renderForest(res);renderTable();renderFunnel();renderLoo();
+  renderForest(res);renderTable();renderFunnel();renderLoo();renderInfluence();renderMetaReg();
   document.getElementById('rcode').textContent=rCode();
   if(res){document.getElementById('pooledLine').textContent=
       `${CAPSULE.measure} ${f(res.est)} (95% CI ${f(res.ciL)}–${f(res.ciU)}), ${res.k} trials`;
@@ -329,7 +421,7 @@ document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults
 document.getElementById('inspectBtn').addEventListener('click',()=>{
   const o=document.getElementById('inspectOut');
   o.style.display=o.style.display==='none'?'block':'none';
-  o.textContent=[tcrit,wmean,tau2DL,tau2PM,tau2est,pool,egger,leaveOneOut].map(fn=>fn.toString()).join('\n\n');});
+  o.textContent=[tcrit,wmean,tau2DL,tau2PM,tau2est,pool,egger,leaveOneOut,trimFill,influence,metaRegression].map(fn=>fn.toString()).join('\n\n');});
 
 render();
 </script>

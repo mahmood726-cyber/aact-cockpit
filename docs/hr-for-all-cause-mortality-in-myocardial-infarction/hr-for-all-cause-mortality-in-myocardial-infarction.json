@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T17:06:44Z"
+    "extracted_at": "2026-05-31T20:20:22Z"
   },
   "favours_low": "favours intervention",
   "favours_high": "favours comparator",
@@ -210,7 +210,91 @@
         "lo": 0.916916162993591,
         "hi": 1.0074271697416655
       }
-    ]
+    ],
+    "trimfill": {
+      "k0": 0,
+      "side": "right",
+      "est": 0.9566427828154476,
+      "lo": 0.9179200392472472,
+      "hi": 0.9969990574161312,
+      "est_observed": 0.9566427828154476
+    },
+    "influence": [
+      {
+        "nct": "NCT00046228",
+        "name": "A Muticenter, Randomized, Double-blind, Placebo Controlled Trial Comparing the Efficacy and Safety of Reteplease and Abciximab Combination Therapy With Abciximab Alone Administered Early or Just Prior to Primary Primary Percutaneous Coronary Intervention for Acute Myocardial Infarction.",
+        "hat": 0.018435402498144113,
+        "cook": 0.001449582677261013,
+        "resid": -0.3197451342143977,
+        "influential": false
+      },
+      {
+        "nct": "NCT00091949",
+        "name": "Insulin Resistance Intervention After Stroke (IRIS) Trial",
+        "hat": 0.030499782207599385,
+        "cook": 0.0009499618079714401,
+        "resid": -0.23025848926301312,
+        "influential": false
+      },
+      {
+        "nct": "NCT00202878",
+        "name": "A Multicenter, Double-Blind, Randomized Study to Establish the Clinical Benefit and Safety of Vytorin (Ezetimibe/Simvastatin Tablet) vs Simvastatin Monotherapy in High-Risk Subjects Presenting With Acute Coronary Syndrome (IMProved Reduction of Outcomes: Vytorin Efficacy International Trial - IMPROVE IT)",
+        "hat": 0.6204417271718506,
+        "cook": 0.18744735718223005,
+        "resid": -0.3655041238163406,
+        "influential": false
+      },
+      {
+        "nct": "NCT00623623",
+        "name": "STREAM (Strategic Reperfusion Early After Myocardial Infarction). Comparison of the Efficacy and Safety of a Strategy of Early Fibrinolytic Treatment With Tenecteplase and Additional Antiplatelet and Antithrombin Therapy Followed by Catheterisation Within 6-24 Hours or Rescue Coronary Intervention Versus a Strategy of Standard Primary PCI in Patients With Acute Myocardial Infarction Within 3 Hours of Onset of Symptoms",
+        "hat": 0.031702399389781574,
+        "cook": 0.03211103820094072,
+        "resid": -0.9130030773397639,
+        "influential": false
+      },
+      {
+        "nct": "NCT01399736",
+        "name": "Fractional Flow Reserve Guided Primary Multivessel Percutaneous Coronary Intervention to Improve Guideline Indexed Actual Standard of Care for Treatment of ST-elevation Myocardial Infarction in Patients With Multivessel Coronary Disease",
+        "hat": 0.0012616286552040307,
+        "cook": 8.087304509288057e-05,
+        "resid": -0.30048310893547975,
+        "influential": false
+      },
+      {
+        "nct": "NCT02787044",
+        "name": "INfluenza Vaccine to Effectively Stop Cardio Thoracic Events and Decompensated Heart Failure",
+        "hat": 0.18689571512732878,
+        "cook": 1.1114656004566796,
+        "resid": 2.368168516987136,
+        "influential": true
+      },
+      {
+        "nct": "NCT02924727",
+        "name": "A Multi-center, Randomized, Double-blind, Active-controlled, Parallel-group Phase 3 Study to Evaluate the Efficacy and Safety of LCZ696 Compared to Ramipril on Morbidity and Mortality in High Risk Patients Following an Acute Myocardial Infarction (AMI)",
+        "hat": 0.04983724105878093,
+        "cook": 0.05231545859860315,
+        "resid": -0.9671963330441687,
+        "influential": false
+      },
+      {
+        "nct": "NCT04509674",
+        "name": "EMPACT-MI: A Streamlined, Multicentre, Randomised, Parallel Group, Double-blind Placebo-controlled Superiority Trial to Evaluate the Effect of EMPAgliflozin on Hospitalisation for Heart Failure and Mortality in Patients With aCuTe Myocardial Infarction",
+        "hat": 0.060926103891310604,
+        "cook": 0.048764888361145876,
+        "resid": -0.7299223071646327,
+        "influential": false
+      }
+    ],
+    "metareg": {
+      "b0": -5.870854109575479,
+      "b1": 0.00289935897897123,
+      "se": 0.004303218769627171,
+      "z": 0.6737651823410384,
+      "p": 0.500460613883972,
+      "tau2_res": 0.0005786785372890226,
+      "r2": 0.0,
+      "k": 8
+    }
   },
   "e156_body": "In myocardial infarction, does the intervention compared with control change all-cause mortality? This synthesis aggregates 8 randomized trials drawn from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial-reported effect estimates were pooled on the log scale using a Paule-Mandel random-effects model with a prediction interval based on the t-distribution. The pooled HR for all-cause mortality was 0.96 (95% CI 0.92 to 1.00). Between-trial heterogeneity was I-squared 3 percent, the 95% prediction interval spanned 0.91 to 1.01, and Egger's test for small-study effects returned a p-value of 0.38. These registry-derived data are consistent with a modest association, though the certainty remains uncertain and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by the small number of contributing trials, and does not generalise beyond them.",
   "e156_validation": {
