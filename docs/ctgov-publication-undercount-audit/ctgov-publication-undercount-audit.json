@@ -1,0 +1,134 @@
+{
+  "slug": "ctgov-publication-undercount-audit",
+  "title": "Publication undercount audit",
+  "kind": "audit",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-06-01T08:39:32Z"
+  },
+  "source_url": "https://github.com/mahmood726-cyber/ctgov-publication-undercount-audit",
+  "source_repo": "ctgov-publication-undercount-audit",
+  "question": "How often do ClinicalTrials.gov records with no linked publication still carry an external PubMed trail indexed to the NCT identifier?",
+  "estimand": "External PubMed-trail rate among no-link studies, by lead-sponsor class",
+  "scope": {
+    "n_eligible": 258487,
+    "definition": "closed interventional studies first posted in 2024 or earlier that carry no sponsor-submitted ClinicalTrials.gov result publication link"
+  },
+  "groups": [
+    {
+      "label": "OTHER",
+      "n": 162984,
+      "metrics": {
+        "pubmed_trail_pct": 28.9,
+        "external_only_pct": 23.1
+      }
+    },
+    {
+      "label": "INDUSTRY",
+      "n": 80574,
+      "metrics": {
+        "pubmed_trail_pct": 25.4,
+        "external_only_pct": 11.2
+      }
+    },
+    {
+      "label": "NIH",
+      "n": 5821,
+      "metrics": {
+        "pubmed_trail_pct": 23.8,
+        "external_only_pct": 12.1
+      }
+    },
+    {
+      "label": "OTHER_GOV",
+      "n": 4526,
+      "metrics": {
+        "pubmed_trail_pct": 32.3,
+        "external_only_pct": 30.7
+      }
+    },
+    {
+      "label": "FED",
+      "n": 2549,
+      "metrics": {
+        "pubmed_trail_pct": 26.9,
+        "external_only_pct": 12.9
+      }
+    },
+    {
+      "label": "NETWORK",
+      "n": 1687,
+      "metrics": {
+        "pubmed_trail_pct": 30.9,
+        "external_only_pct": 17.0
+      }
+    },
+    {
+      "label": "INDIV",
+      "n": 299,
+      "metrics": {
+        "pubmed_trail_pct": 21.7,
+        "external_only_pct": 15.4
+      }
+    },
+    {
+      "label": "UNKNOWN",
+      "n": 45,
+      "metrics": {
+        "pubmed_trail_pct": 17.8,
+        "external_only_pct": 8.9
+      }
+    },
+    {
+      "label": "AMBIG",
+      "n": 2,
+      "metrics": {
+        "pubmed_trail_pct": 50.0,
+        "external_only_pct": 50.0
+      }
+    }
+  ],
+  "primary_metric": "pubmed_trail_pct",
+  "metric_order": [
+    "pubmed_trail_pct",
+    "external_only_pct"
+  ],
+  "metric_labels": {
+    "pubmed_trail_pct": "external PubMed trail (derived link)",
+    "external_only_pct": "external publication only (no posted results)"
+  },
+  "findings": [
+    "27.8% of no-link studies still carry an external PubMed trail (an auto-indexed paper citing the NCT).",
+    "OTHER_GOV no-link studies are best covered (32.3% with a PubMed trail)."
+  ],
+  "caveats": "This warehouse-native reproduction uses AACT pre-indexed derived PubMed links, which are more complete than the original paper's live identifier-based PubMed search, so the trail rate is much higher than the published 1.2 percent; it cannot capture papers omitting the NCT identifier.",
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "proportions_valid": "pass",
+      "denominators_positive": "pass",
+      "partition_reconciles": "pass",
+      "primary_present": "pass",
+      "no_nan": "pass"
+    }
+  },
+  "e156_body": "How often do ClinicalTrials.gov records with no linked publication still carry an external PubMed trail indexed to the NCT identifier? We analysed 258,487 closed interventional studies first posted in 2024 or earlier that carry no sponsor-submitted ClinicalTrials.gov result publication link from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. A study counts as no-link when it has no sponsor-submitted result reference, and an external trail means an auto-indexed PubMed reference of derived type cites its registry identifier. 27.8 percent of no-link studies still carry an external PubMed trail (an auto-indexed paper citing the NCT). OTHER_GOV no-link studies are best covered (32.3 percent with a PubMed trail). These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 150,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": []
+}

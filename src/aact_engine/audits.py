@@ -301,11 +301,144 @@ def fdaaa_debt(con) -> dict:
     }
 
 
+# --------------------------------------------------------------------------- #
+# study_references link signals (AACT reference_type)
+#   result     = sponsor-submitted CT.gov publication link  -> "linked"
+#   derived    = PubMed paper auto-indexed to the NCT        -> external trail
+#   background = background citation
+# --------------------------------------------------------------------------- #
+def _has_ref(kind: str) -> str:
+    return (f"EXISTS (SELECT 1 FROM study_references r WHERE r.nct_id = s.nct_id "
+            f"AND lower(r.reference_type) = '{kind}')")
+
+
+def _nolink_elig(cut: int) -> str:
+    return (f"lower(s.study_type) = 'interventional' AND s.overall_status IN {_CLOSED} "
+            f"AND ({_OLDER.format(cut=cut)}) AND NOT {_has_ref('result')}")
+
+
+# --------------------------------------------------------------------------- #
+# Audit 5 — publication undercount: external PubMed trail among no-link studies
+# --------------------------------------------------------------------------- #
+def publication_undercount(con) -> dict:
+    cut = _snapshot_year(con) - 2
+    elig = _nolink_elig(cut)
+    rows = con.execute(f"""
+        WITH e AS (
+            SELECT s.nct_id,
+                   coalesce((SELECT max(sp.agency_class) FROM sponsors sp
+                             WHERE sp.nct_id = s.nct_id AND sp.lead_or_collaborator = 'lead'),
+                            '(unspecified)') AS cls,
+                   s.results_first_posted_date AS rfp,
+                   {_has_ref('derived')} AS has_derived
+            FROM studies s WHERE {elig})
+        SELECT cls, count(*) AS n,
+               round(100.0*avg(CASE WHEN has_derived THEN 1 ELSE 0 END), 1) AS trail,
+               round(100.0*avg(CASE WHEN has_derived AND rfp IS NULL THEN 1 ELSE 0 END), 1) AS ext_only
+        FROM e GROUP BY 1 ORDER BY n DESC
+    """).fetchall()
+    groups = [{"label": str(c), "n": int(n),
+               "metrics": {"pubmed_trail_pct": _fl(t), "external_only_pct": _fl(eo)}}
+              for c, n, t, eo in rows if c is not None]
+    n_elig = sum(g["n"] for g in groups)
+    overall = con.execute(f"""
+        SELECT round(100.0*avg(CASE WHEN {_has_ref('derived')} THEN 1 ELSE 0 END), 1)
+        FROM studies s WHERE {elig}
+    """).fetchone()[0]
+    by = {g["label"]: g for g in groups if g["n"] >= 200}
+    top = max(by.values(), key=lambda x: x["metrics"]["pubmed_trail_pct"]) if by else None
+    findings = [f"{float(overall):.1f}% of no-link studies still carry an external PubMed trail "
+                f"(an auto-indexed paper citing the NCT)."]
+    if top:
+        findings.append(f"{top['label']} no-link studies are best covered "
+                        f"({top['metrics']['pubmed_trail_pct']}% with a PubMed trail).")
+    return {
+        "kind": "audit", "audit_id": "ctgov-publication-undercount-audit",
+        "title": "Publication undercount audit",
+        "source_repo": "ctgov-publication-undercount-audit",
+        "source_url": _SRC + "ctgov-publication-undercount-audit",
+        "snapshot_date": con.execute("SELECT snapshot_date FROM _meta LIMIT 1").fetchone()[0],
+        "provenance": _provenance(con).to_dict(),
+        "question": ("How often do ClinicalTrials.gov records with no linked publication still carry an "
+                     "external PubMed trail indexed to the NCT identifier?"),
+        "estimand": "External PubMed-trail rate among no-link studies, by lead-sponsor class",
+        "method_sentence": ("A study counts as no-link when it has no sponsor-submitted result reference, and "
+                            "an external trail means an auto-indexed PubMed reference of derived type cites its "
+                            "registry identifier."),
+        "scope": {"n_eligible": n_elig,
+                  "definition": (f"closed interventional studies first posted in {cut} or earlier that carry "
+                                 "no sponsor-submitted ClinicalTrials.gov result publication link")},
+        "groups": groups, "primary_metric": "pubmed_trail_pct",
+        "metric_order": ["pubmed_trail_pct", "external_only_pct"],
+        "metric_labels": {"pubmed_trail_pct": "external PubMed trail (derived link)",
+                          "external_only_pct": "external publication only (no posted results)"},
+        "findings": findings,
+        "caveats": ("This warehouse-native reproduction uses AACT pre-indexed derived PubMed links, which are "
+                    "more complete than the original paper's live identifier-based PubMed search, so the trail "
+                    "rate is much higher than the published 1.2 percent; it cannot capture papers omitting the "
+                    "NCT identifier."),
+    }
+
+
+# --------------------------------------------------------------------------- #
+# Audit 6 — publication index gap: real silence vs indexing/linkage rescue
+# --------------------------------------------------------------------------- #
+def publication_index_gap(con) -> dict:
+    cut = _snapshot_year(con) - 2
+    elig = _nolink_elig(cut)
+    rows = con.execute(f"""
+        WITH e AS (
+            SELECT s.nct_id, {_has_ref('derived')} AS d, {_has_ref('background')} AS b
+            FROM studies s WHERE {elig})
+        SELECT CASE WHEN d THEN '1 PubMed-indexed (derived link)'
+                    WHEN b THEN '2 Background-only reference'
+                    ELSE '3 Fully silent (no reference)' END AS tier,
+               count(*) AS n
+        FROM e GROUP BY 1 ORDER BY 1
+    """).fetchall()
+    total = sum(int(n) for _, n in rows) or 1
+    groups = [{"label": str(t)[2:], "n": int(n),
+               "metrics": {"share_of_nolink_pct": round(100.0 * int(n) / total, 1)}}
+              for t, n in rows]
+    by = {g["label"]: g for g in groups}
+    rescue = by.get("PubMed-indexed (derived link)", {}).get("metrics", {}).get("share_of_nolink_pct", 0)
+    silent = by.get("Fully silent (no reference)", {}).get("metrics", {}).get("share_of_nolink_pct", 0)
+    findings = [f"PubMed indexing rescues {rescue}% of no-link studies, "
+                f"while {silent}% are fully silent with no reference of any type."]
+    return {
+        "kind": "audit", "audit_id": "ctgov-publication-index-gap",
+        "title": "Publication index gap",
+        "source_repo": "ctgov-publication-index-gap",
+        "source_url": _SRC + "ctgov-publication-index-gap",
+        "snapshot_date": con.execute("SELECT snapshot_date FROM _meta LIMIT 1").fetchone()[0],
+        "provenance": _provenance(con).to_dict(),
+        "question": ("How much of ClinicalTrials.gov publication-link missingness is real silence versus an "
+                     "indexing and linkage gap rescuable through external references?"),
+        "estimand": "Share of no-link studies by best available external-reference tier",
+        "method_sentence": ("Each no-link study was placed in one mutually exclusive tier by its best available "
+                            "external reference, namely an indexed PubMed derived link, a background-only citation, "
+                            "or no reference at all."),
+        "scope": {"n_eligible": total,
+                  "definition": (f"closed interventional studies first posted in {cut} or earlier with no "
+                                 "sponsor-submitted result publication link, partitioned by external-reference tier")},
+        "groups": groups, "primary_metric": "share_of_nolink_pct",
+        "metric_order": ["share_of_nolink_pct"],
+        "metric_labels": {"share_of_nolink_pct": "share of no-link studies"},
+        "findings": findings,
+        "caveats": ("This warehouse-native reproduction substitutes AACT indexed references (derived, background) "
+                    "for the original paper's live PubMed and Europe PMC identifier searches, so the indexing-gap "
+                    "split differs from the published Europe PMC rescue figures and cannot confirm that each "
+                    "linked paper fully reports the registered study."),
+    }
+
+
 AUDITS = {
     "ctgov-stopped-trial-disclosure-gap": stopped_trial_disclosure_gap,
     "ctgov-condition-hiddenness-map": condition_hiddenness_map,
     "ctgov-rule-era-reporting-gap": rule_era_reporting_gap,
     "ctgov-probable-act-fdaaa-debt": fdaaa_debt,
+    "ctgov-publication-undercount-audit": publication_undercount,
+    "ctgov-publication-index-gap": publication_index_gap,
 }
 
 

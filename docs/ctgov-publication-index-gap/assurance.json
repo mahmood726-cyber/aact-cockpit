@@ -1,0 +1,21 @@
+{
+  "slug": "ctgov-publication-index-gap",
+  "tier": "silver",
+  "checks": {
+    "citation_cascade": "pass",
+    "data_file_present": "pass",
+    "code_runs": "pass",
+    "dashboard_match": "pass",
+    "claim_language": "pass",
+    "analysis_rerun": "not-run",
+    "external_review": "not-run"
+  },
+  "aact_stats": {
+    "proportions_valid": "pass",
+    "denominators_positive": "pass",
+    "partition_reconciles": "pass",
+    "primary_present": "pass",
+    "no_nan": "pass"
+  },
+  "snapshot_date": "2026-04-12"
+}

@@ -1,0 +1,80 @@
+{
+  "slug": "ctgov-publication-index-gap",
+  "title": "Publication index gap",
+  "kind": "audit",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-06-01T08:39:33Z"
+  },
+  "source_url": "https://github.com/mahmood726-cyber/ctgov-publication-index-gap",
+  "source_repo": "ctgov-publication-index-gap",
+  "question": "How much of ClinicalTrials.gov publication-link missingness is real silence versus an indexing and linkage gap rescuable through external references?",
+  "estimand": "Share of no-link studies by best available external-reference tier",
+  "scope": {
+    "n_eligible": 258487,
+    "definition": "closed interventional studies first posted in 2024 or earlier with no sponsor-submitted result publication link, partitioned by external-reference tier"
+  },
+  "groups": [
+    {
+      "label": "PubMed-indexed (derived link)",
+      "n": 71786,
+      "metrics": {
+        "share_of_nolink_pct": 27.8
+      }
+    },
+    {
+      "label": "Background-only reference",
+      "n": 26191,
+      "metrics": {
+        "share_of_nolink_pct": 10.1
+      }
+    },
+    {
+      "label": "Fully silent (no reference)",
+      "n": 160510,
+      "metrics": {
+        "share_of_nolink_pct": 62.1
+      }
+    }
+  ],
+  "primary_metric": "share_of_nolink_pct",
+  "metric_order": [
+    "share_of_nolink_pct"
+  ],
+  "metric_labels": {
+    "share_of_nolink_pct": "share of no-link studies"
+  },
+  "findings": [
+    "PubMed indexing rescues 27.8% of no-link studies, while 62.1% are fully silent with no reference of any type."
+  ],
+  "caveats": "This warehouse-native reproduction substitutes AACT indexed references (derived, background) for the original paper's live PubMed and Europe PMC identifier searches, so the indexing-gap split differs from the published Europe PMC rescue figures and cannot confirm that each linked paper fully reports the registered study.",
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "proportions_valid": "pass",
+      "denominators_positive": "pass",
+      "partition_reconciles": "pass",
+      "primary_present": "pass",
+      "no_nan": "pass"
+    }
+  },
+  "e156_body": "How much of ClinicalTrials.gov publication-link missingness is real silence versus an indexing and linkage gap rescuable through external references? We analysed 258,487 closed interventional studies first posted in 2024 or earlier with no sponsor-submitted result publication link, partitioned by external-reference tier from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Each no-link study was placed in one mutually exclusive tier by its best available external reference, namely an indexed PubMed derived link, a background-only citation, or no reference at all. PubMed indexing rescues 27.8 percent of no-link studies, while 62.1 percent are fully silent with no reference of any type. The pattern held across the larger subgroups examined. These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 152,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": []
+}

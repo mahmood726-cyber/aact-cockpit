@@ -223,6 +223,8 @@ def api_audits():
         "ctgov-condition-hiddenness-map": "Condition hiddenness map",
         "ctgov-rule-era-reporting-gap": "Rule-era reporting gap",
         "ctgov-probable-act-fdaaa-debt": "Probable ACT / FDAAA reporting debt",
+        "ctgov-publication-undercount-audit": "Publication undercount audit",
+        "ctgov-publication-index-gap": "Publication index gap",
     }
     return {"audits": [{"id": a, "label": titles.get(a, a)} for a in AUDITS]}
 

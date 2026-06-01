@@ -36,6 +36,7 @@ MVP_TABLES: tuple[str, ...] = (
     "outcome_analysis_groups",
     "result_groups",
     "calculated_values",
+    "study_references",
 )
 
 # Large tables ingested only on demand.
@@ -67,6 +68,7 @@ REQUIRED_COLUMNS: dict[str, tuple[str, ...]] = {
     "outcome_analysis_groups": ("id", "nct_id", "outcome_analysis_id", "result_group_id"),
     "result_groups": ("id", "nct_id", "ctgov_group_code", "result_type", "title", "outcome_id"),
     "calculated_values": ("nct_id",),
+    "study_references": ("id", "nct_id", "pmid", "reference_type", "citation"),
 }
 
 __all__ = ["READ_CSV_OPTS", "MVP_TABLES", "BIG_TABLES", "REQUIRED_COLUMNS"]

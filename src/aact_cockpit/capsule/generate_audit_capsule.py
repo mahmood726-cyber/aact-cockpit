@@ -52,9 +52,10 @@ def draft_e156_body(audit: dict) -> str:
     find = [f.replace("%", " percent") for f in audit["findings"]]
     s1 = audit["question"]
     s2 = f"We analysed {n:,} {s['definition']} from the ClinicalTrials.gov AACT snapshot dated {date}."
-    s3 = ("Records were grouped to estimate " + audit["estimand"].lower() +
-          ", with disclosure measured as the no-results rate and the ghost-protocol rate, meaning "
-          "no posted results and no disposition record.")
+    s3 = audit.get("method_sentence") or (
+        "Records were grouped to estimate " + audit["estimand"].lower() +
+        ", with disclosure measured as the no-results rate and the ghost-protocol rate, meaning "
+        "no posted results and no disposition record.")
     s4 = find[0] if find else "Disclosure debt was substantial across the larger subgroups."
     s5 = find[1] if len(find) > 1 else "The pattern held across the larger subgroups examined."
     s6 = ("These descriptive registry patterns reflect what sponsors posted, not the conduct or merit "
