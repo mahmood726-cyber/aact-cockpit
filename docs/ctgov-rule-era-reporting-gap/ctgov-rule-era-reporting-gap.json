@@ -7,7 +7,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T09:07:39Z"
+    "extracted_at": "2026-06-01T09:18:56Z"
   },
   "source_url": "https://github.com/mahmood726-cyber/ctgov-rule-era-reporting-gap",
   "source_repo": "ctgov-rule-era-reporting-gap",
@@ -65,6 +65,14 @@
     "No-results rate runs 92.0% (Pre-Fdaaa (<2008)) to 75.9% (Final-Rule Era (2017+))."
   ],
   "caveats": "Policy-era bins are completion-date proxies; they do not establish that any given study was legally an applicable clinical trial under FDAAA 801. Era differences also partly reflect time since completion, since older cohorts have had longer to post results, so this is not a clean policy effect.",
+  "validity": {
+    "flag_checks": [],
+    "scope_status": "pass",
+    "scope_expected": [
+      100000,
+      350000
+    ]
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -83,10 +91,10 @@
       "no_nan": "pass"
     }
   },
-  "e156_body": "Does ClinicalTrials.gov results reporting differ across completed cohorts from the pre-FDAAA, FDAAA, and Final-Rule policy eras? We analysed 226,599 completed interventional studies with a completion year of 2024 or earlier, binned by policy era (FDAAA 2007; Final Rule 2017) from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results and ghost-protocol rates by completion-date policy era, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. No-results rate runs 92.0 percent (Pre-Fdaaa (<2008)) to 75.9 percent (Final-Rule Era (2017+)). The pattern held across the larger subgroups examined. These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
+  "e156_body": "Does ClinicalTrials.gov results reporting differ across completed cohorts from the pre-FDAAA, FDAAA, and Final-Rule policy eras? We analysed 226,599 completed interventional studies with a completion year of 2024 or earlier, binned by policy era (FDAAA 2007; Final Rule 2017) from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results and ghost-protocol rates by completion-date policy era, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. No-results rate runs 92.0 percent (Pre-Fdaaa (<2008)) to 75.9 percent (Final-Rule Era (2017+)). The pattern held across the larger subgroups examined. Reporting improved markedly after the pre-FDAAA era, yet the most recent cohort shows the disclosure gap remains far from closed. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
   "e156_validation": {
     "ok": true,
-    "word_count": 145,
+    "word_count": 144,
     "sentence_count": 7
   },
   "tier": "silver",

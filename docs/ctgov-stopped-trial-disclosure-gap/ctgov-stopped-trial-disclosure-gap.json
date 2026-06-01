@@ -7,7 +7,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T09:07:32Z"
+    "extracted_at": "2026-06-01T09:18:52Z"
   },
   "source_url": "https://github.com/mahmood726-cyber/ctgov-stopped-trial-disclosure-gap",
   "source_repo": "ctgov-stopped-trial-disclosure-gap",
@@ -76,6 +76,14 @@
     "Completed studies sit at 74.9% no-results versus 60.9% for terminated."
   ],
   "caveats": "Final-status labels and missing reason fields are registry entries and do not adjudicate operational history or legal reporting obligations.",
+  "validity": {
+    "flag_checks": [],
+    "scope_status": "pass",
+    "scope_expected": [
+      150000,
+      400000
+    ]
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -94,10 +102,10 @@
       "no_nan": "pass"
     }
   },
-  "e156_body": "How much worse do stopped trials look on ClinicalTrials.gov than completed trials once older closed interventional studies are grouped by final status? We analysed 282,562 interventional studies with a closed final status (completed/terminated/withdrawn/suspended) first posted in 2024 or earlier from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results and ghost-protocol rates across final-status groups, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. Withdrawn studies reach 100.0 percent no-results and 100.0 percent ghost-protocol. Completed studies sit at 74.9 percent no-results versus 60.9 percent for terminated. These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
+  "e156_body": "How much worse do stopped trials look on ClinicalTrials.gov than completed trials once older closed interventional studies are grouped by final status? We analysed 282,562 interventional studies with a closed final status (completed/terminated/withdrawn/suspended) first posted in 2024 or earlier from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results and ghost-protocol rates across final-status groups, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. Withdrawn studies reach 100.0 percent no-results and 100.0 percent ghost-protocol. Completed studies sit at 74.9 percent no-results versus 60.9 percent for terminated. Stopping a trial does not merely change its status; it sharply deepens the risk that the public record stays silent. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
   "e156_validation": {
     "ok": true,
-    "word_count": 145,
+    "word_count": 144,
     "sentence_count": 7
   },
   "tier": "silver",

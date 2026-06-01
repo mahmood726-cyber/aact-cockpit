@@ -99,6 +99,26 @@ def test_no_live_sample_key_when_absent():
     assert "live_sample" not in r["capsule"]
 
 
+def test_interpretation_drives_s6_and_passes_through():
+    a = _audit()
+    a["interpretation"] = "Stopping a trial deepens the risk that the public record stays silent."
+    body = draft_e156_body(a)
+    assert "Stopping a trial deepens the risk" in body
+    r = render(a)
+    assert r["validation"]["ok"]
+
+
+def test_validity_passthrough():
+    a = _audit()
+    a["validity"] = {"flag_checks": [{"flag": "fda_drug", "meaning": "drug", "prevalence_pct": 11.2,
+                                      "expected": [4, 22], "status": "pass"}],
+                     "scope_status": "pass", "scope_expected": [150000, 400000]}
+    r = render(a)
+    assert r["capsule"]["validity"]["flag_checks"][0]["flag"] == "fda_drug"
+    assert "Field semantics" in r["html"]
+    assert "fda_drug" in r["html"]
+
+
 def test_no_leak():
     r = render(_audit())
     script = r["html"].split("<script>")[1]
@@ -131,6 +151,11 @@ def test_engine_runs_and_reconciles():
             assert a["scope"]["n_eligible"] == sum(g["n"] for g in a["groups"])
             assert all(0 <= p <= 100 for g in a["groups"] for p in g["metrics"].values())
             render(a)  # must produce a valid capsule
+            # validity layer: field semantics + scope must be in their honest bands
+            v = a["validity"]
+            assert v["scope_status"] == "pass", (aid, a["scope"]["n_eligible"], v["scope_expected"])
+            for c in v["flag_checks"]:
+                assert c["status"] == "pass", (aid, c)  # FLAG_META bands must match reality
             if "publication" in aid:
                 assert len(a["live_sample"]) == 60
                 assert all(set(x) == {"nct_id", "sponsor_class", "aact_derived"}

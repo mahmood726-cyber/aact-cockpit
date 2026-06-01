@@ -7,7 +7,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T09:07:38Z"
+    "extracted_at": "2026-06-01T09:18:56Z"
   },
   "source_url": "https://github.com/mahmood726-cyber/ctgov-condition-hiddenness-map",
   "source_repo": "ctgov-condition-hiddenness-map",
@@ -146,6 +146,14 @@
     "Healthy Volunteer is the most obscured named family (81.7% ghost-protocol)."
   ],
   "caveats": "Classification is keyword-based and single-label; multi-topic trials are compressed into one family and some records remain in a broad other bucket. Families also differ in study phase, so early-phase-heavy areas such as healthy-volunteer studies look quieter partly because such trials rarely post efficacy results. Results visibility here means a posted results record, not confirmed publication linkage.",
+  "validity": {
+    "flag_checks": [],
+    "scope_status": "pass",
+    "scope_expected": [
+      150000,
+      400000
+    ]
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -164,7 +172,7 @@
       "no_nan": "pass"
     }
   },
-  "e156_body": "Which therapeutic areas look quietest on ClinicalTrials.gov once older closed interventional studies are grouped into keyword-based condition families? We analysed 282,562 closed interventional studies first posted in 2024 or earlier, each assigned one dominant keyword-based condition family from title + conditions from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate ghost-protocol and no-results rates by dominant condition family, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. Other / Unmapped is the largest named family (105,316 studies). Healthy Volunteer is the most obscured named family (81.7 percent ghost-protocol). These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
+  "e156_body": "Which therapeutic areas look quietest on ClinicalTrials.gov once older closed interventional studies are grouped into keyword-based condition families? We analysed 282,562 closed interventional studies first posted in 2024 or earlier, each assigned one dominant keyword-based condition family from title + conditions from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate ghost-protocol and no-results rates by dominant condition family, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. Other / Unmapped is the largest named family (105,316 studies). Healthy Volunteer is the most obscured named family (81.7 percent ghost-protocol). Hidden evidence concentrates both where trials are most numerous and where early-phase work dominates, so apparent visibility varies sharply by area. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
   "e156_validation": {
     "ok": true,
     "word_count": 147,

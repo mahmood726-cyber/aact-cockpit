@@ -464,6 +464,75 @@ def publication_index_gap(con) -> dict:
     }
 
 
+# --------------------------------------------------------------------------- #
+# Validity layer — field-semantics guard + scope plausibility.
+#
+# Reconciliation only proves the arithmetic is self-consistent; it does NOT prove
+# the eligibility SQL means what the estimand claims (the is_us_export error
+# reconciled perfectly). This layer documents each registry flag's TRUE meaning
+# and its expected prevalence band, then checks the live prevalence against it, so
+# a misused or drifted field is surfaced rather than silently trusted.
+# --------------------------------------------------------------------------- #
+FLAG_META = {
+    "us_export": {"expr": "s.is_us_export = 't'", "lo": 0.0, "hi": 10.0,
+                  "meaning": "product exported from the US for study abroad — NOT a US-located trial"},
+    "fda_drug": {"expr": "s.is_fda_regulated_drug = 't'", "lo": 4.0, "hi": 22.0,
+                 "meaning": "interventional study of an FDA-regulated drug or biologic"},
+    "fda_device": {"expr": "s.is_fda_regulated_device = 't'", "lo": 1.0, "hi": 10.0,
+                   "meaning": "interventional study of an FDA-regulated device"},
+    "ref_result": {"expr": _has_ref("result"), "lo": 3.0, "hi": 16.0,
+                   "meaning": "sponsor-submitted ClinicalTrials.gov result-publication link"},
+    "ref_derived": {"expr": _has_ref("derived"), "lo": 10.0, "hi": 35.0,
+                    "meaning": "PubMed paper auto-indexed to the NCT (the external trail)"},
+    "ref_background": {"expr": _has_ref("background"), "lo": 8.0, "hi": 30.0,
+                       "meaning": "background citation (not a result or auto-indexed link)"},
+}
+
+AUDIT_META = {
+    "ctgov-stopped-trial-disclosure-gap": {
+        "flags_used": [], "expected_scope": [150_000, 400_000],
+        "interpretation": ("Stopping a trial does not merely change its status; it sharply deepens the "
+                           "risk that the public record stays silent.")},
+    "ctgov-condition-hiddenness-map": {
+        "flags_used": [], "expected_scope": [150_000, 400_000],
+        "interpretation": ("Hidden evidence concentrates both where trials are most numerous and where "
+                           "early-phase work dominates, so apparent visibility varies sharply by area.")},
+    "ctgov-rule-era-reporting-gap": {
+        "flags_used": [], "expected_scope": [100_000, 350_000],
+        "interpretation": ("Reporting improved markedly after the pre-FDAAA era, yet the most recent "
+                           "cohort shows the disclosure gap remains far from closed.")},
+    "ctgov-probable-act-fdaaa-debt": {
+        "flags_used": ["fda_drug", "fda_device"], "expected_scope": [10_000, 120_000],
+        "interpretation": ("A large stock of FDA-regulated studies covering millions of participants "
+                           "remains unreported despite the regulatory expectation to post results.")},
+    "ctgov-publication-undercount-audit": {
+        "flags_used": ["ref_result", "ref_derived"], "expected_scope": [120_000, 400_000],
+        "interpretation": ("Most studies without a sponsor result link also lack an external PubMed "
+                           "trail, so missing links largely reflect genuine sparsity, not under-linking.")},
+    "ctgov-publication-index-gap": {
+        "flags_used": ["ref_result", "ref_derived", "ref_background"], "expected_scope": [120_000, 400_000],
+        "interpretation": ("Much of the apparent silence is genuine, but a substantial slice is an "
+                           "indexing gap that broader external search can recover.")},
+}
+
+
+def _validity(con, audit: dict) -> dict:
+    tot = con.execute("SELECT count(*) FROM studies WHERE lower(study_type) = 'interventional'").fetchone()[0]
+    checks = []
+    for key in audit.get("flags_used", []):
+        m = FLAG_META[key]
+        n = con.execute(f"SELECT count(*) FROM studies s WHERE lower(s.study_type) = 'interventional' "
+                        f"AND ({m['expr']})").fetchone()[0]
+        prev = round(100.0 * n / tot, 2) if tot else 0.0
+        checks.append({"flag": key, "meaning": m["meaning"], "prevalence_pct": prev,
+                       "expected": [m["lo"], m["hi"]],
+                       "status": "pass" if m["lo"] <= prev <= m["hi"] else "warn"})
+    lo, hi = audit.get("expected_scope", [0, 10 ** 12])
+    n_e = audit["scope"]["n_eligible"]
+    return {"flag_checks": checks, "scope_status": "pass" if lo <= n_e <= hi else "warn",
+            "scope_expected": [lo, hi]}
+
+
 AUDITS = {
     "ctgov-stopped-trial-disclosure-gap": stopped_trial_disclosure_gap,
     "ctgov-condition-hiddenness-map": condition_hiddenness_map,
@@ -481,7 +550,14 @@ def run_audit(audit_id: str, con=None, db_path=None) -> dict:
     if owns:
         con = open_warehouse(db_path)
     try:
-        return AUDITS[audit_id](con)
+        a = AUDITS[audit_id](con)
+        meta = AUDIT_META.get(audit_id, {})
+        a.setdefault("flags_used", meta.get("flags_used", []))
+        if meta.get("interpretation"):
+            a.setdefault("interpretation", meta["interpretation"])
+        a["expected_scope"] = meta.get("expected_scope", [0, 10 ** 12])
+        a["validity"] = _validity(con, a)
+        return a
     finally:
         if owns:
             con.close()

@@ -7,7 +7,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T09:07:39Z"
+    "extracted_at": "2026-06-01T09:18:56Z"
   },
   "source_url": "https://github.com/mahmood726-cyber/ctgov-probable-act-fdaaa-debt",
   "source_repo": "ctgov-probable-act-fdaaa-debt",
@@ -58,6 +58,35 @@
     "No-results rate is 30.8% in Pre-Final-Rule (<2017) versus 46.1% in Final-Rule Era (2017+)."
   ],
   "caveats": "FDA-regulated status is a conservative proxy for FDAAA 801 applicability, not a legal determination; U.S. nexus is not established here because AACT's export flag denotes products studied abroad, not U.S.-located trials, and facility locations are not in this warehouse. Ghost-protocol closely tracks no-results because disposition records are rarely populated.",
+  "validity": {
+    "flag_checks": [
+      {
+        "flag": "fda_drug",
+        "meaning": "interventional study of an FDA-regulated drug or biologic",
+        "prevalence_pct": 11.24,
+        "expected": [
+          4.0,
+          22.0
+        ],
+        "status": "pass"
+      },
+      {
+        "flag": "fda_device",
+        "meaning": "interventional study of an FDA-regulated device",
+        "prevalence_pct": 3.56,
+        "expected": [
+          1.0,
+          10.0
+        ],
+        "status": "pass"
+      }
+    ],
+    "scope_status": "pass",
+    "scope_expected": [
+      10000,
+      120000
+    ]
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -76,10 +105,10 @@
       "no_nan": "pass"
     }
   },
-  "e156_body": "How large is the FDA-regulated reporting backlog among older closed ClinicalTrials.gov studies? We analysed 38,528 closed interventional studies first posted in 2024 or earlier that are FDA-regulated (drug or device) — a conservative proxy for FDAAA 801 applicability from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results rate among fda-regulated interventional studies, by policy era, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. 17,349 FDA-regulated studies still carry no posted results, covering 2,363,122 enrolled participants. No-results rate is 30.8 percent in Pre-Final-Rule (<2017) versus 46.1 percent in Final-Rule Era (2017+). These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
+  "e156_body": "How large is the FDA-regulated reporting backlog among older closed ClinicalTrials.gov studies? We analysed 38,528 closed interventional studies first posted in 2024 or earlier that are FDA-regulated (drug or device) — a conservative proxy for FDAAA 801 applicability from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results rate among fda-regulated interventional studies, by policy era, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. 17,349 FDA-regulated studies still carry no posted results, covering 2,363,122 enrolled participants. No-results rate is 30.8 percent in Pre-Final-Rule (<2017) versus 46.1 percent in Final-Rule Era (2017+). A large stock of FDA-regulated studies covering millions of participants remains unreported despite the regulatory expectation to post results. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
   "e156_validation": {
     "ok": true,
-    "word_count": 151,
+    "word_count": 149,
     "sentence_count": 7
   },
   "tier": "silver",

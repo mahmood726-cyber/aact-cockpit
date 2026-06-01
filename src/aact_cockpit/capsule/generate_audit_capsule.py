@@ -58,8 +58,9 @@ def draft_e156_body(audit: dict) -> str:
         "no posted results and no disposition record.")
     s4 = find[0] if find else "Disclosure debt was substantial across the larger subgroups."
     s5 = find[1] if len(find) > 1 else "The pattern held across the larger subgroups examined."
-    s6 = ("These descriptive registry patterns reflect what sponsors posted, not the conduct or merit "
-          "of any individual trial, and warrant cautious reading.")
+    s6 = audit.get("interpretation") or (
+        "These descriptive registry patterns reflect what sponsors posted, not the conduct or merit "
+        "of any individual trial, and warrant cautious reading.")
     # S7 must carry a limitation/boundary keyword for the E156 validator; the
     # full audit-specific caveat is rendered separately in the capsule.
     s7 = ("This reproduction is limited to registry metadata and conservative status proxies, cannot "
@@ -100,6 +101,7 @@ def render(audit: dict) -> dict:
         **({"live_sample": audit["live_sample"],
             "live_sample_size": audit.get("live_sample_size", len(audit["live_sample"])),
             "live_note": audit.get("live_note", "")} if audit.get("live_sample") else {}),
+        **({"validity": audit["validity"]} if audit.get("validity") else {}),
         "self_audit": {"checks": audit_meta["checks"], "aact_stats": audit_meta["audit_stats"]},
         "e156_body": body,
         "e156_validation": {"ok": vres["ok"], "word_count": vres["word_count"],
