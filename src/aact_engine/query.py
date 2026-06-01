@@ -14,7 +14,8 @@ import duckdb
 
 from .contracts import PICO, ArmEffect, EffectRecord, EffectsDataset
 from .effects import extract_effect
-from .guards import assert_columns_exist
+from .guards import (assert_columns_exist, assert_value_present, cohort_field_notes,
+                     EFFECT_SELECTION_NOTES)
 from .ingest import default_db_path, read_provenance
 from .paths import discover_snapshot_root, detect_snapshot_date
 from .provenance import Provenance
@@ -65,6 +66,10 @@ def cohort_search(pico: PICO, con=None, db_path=None, limit: int = 1000) -> dict
         assert_columns_exist(con, "studies", ("nct_id", "study_type", "results_first_posted_date"))
         assert_columns_exist(con, "designs", ("nct_id", "allocation"))
         assert_columns_exist(con, "conditions", ("nct_id", "downcase_name"))
+        # value-drift guards: fail closed if the snapshot recased/renamed the
+        # eligibility values (the filters below would otherwise select nothing).
+        assert_value_present(con, "studies", "study_type", "interventional")
+        assert_value_present(con, "designs", "allocation", "randomized")
 
         cond = f"%{pico.population.lower()}%"
         params: list = [cond]
@@ -106,6 +111,7 @@ def cohort_search(pico: PICO, con=None, db_path=None, limit: int = 1000) -> dict
         prov = _provenance(con, db_path)
         return {"trials": trials, "n": len(trials),
                 "intervention_filtered": terms is not None,
+                "field_semantics": cohort_field_notes(),
                 "pico": pico.to_dict(), "provenance": prov.to_dict()}
     finally:
         if owns:
@@ -195,7 +201,7 @@ def effect_extraction(nct_ids, pico: PICO, primary_estimand: str,
         prov = _provenance(con, db_path)
         rows = get_outcome_analyses(nct_ids, con=con)
         records: list[EffectRecord] = []
-        notes: list[str] = []
+        notes: list[str] = [EFFECT_SELECTION_NOTES]   # document the selection semantics
         seen = set()
         for d in rows:
             if classify_endpoint(d.get("outcome_title")) != endpoint:

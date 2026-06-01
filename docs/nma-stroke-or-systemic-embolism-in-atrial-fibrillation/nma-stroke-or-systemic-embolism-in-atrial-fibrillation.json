@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T21:25:59Z"
+    "extracted_at": "2026-06-01T09:50:17Z"
   },
   "kind": "nma",
   "reference": "warfarin",
@@ -41,6 +41,10 @@
       "uci": 1.1,
       "yi": -0.10536051565782628,
       "sei": 0.10112820330248914,
+      "year": 2005,
+      "enrollment": 18113.0,
+      "agent1": "dabigatran",
+      "agent2": "warfarin",
       "source_outcome_analysis_id": "105519369"
     },
     {
@@ -55,6 +59,10 @@
       "uci": 0.96,
       "yi": -0.23572233352106983,
       "sei": 0.09558682006326259,
+      "year": 2006,
+      "enrollment": 14269.0,
+      "agent1": "rivaroxaban",
+      "agent2": "warfarin",
       "source_outcome_analysis_id": "105441023"
     },
     {
@@ -69,6 +77,10 @@
       "uci": 0.95,
       "yi": -0.23572233352106983,
       "sei": 0.09291552101136885,
+      "year": 2006,
+      "enrollment": 20976.0,
+      "agent1": "apixaban",
+      "agent2": "warfarin",
       "source_outcome_analysis_id": "105642593"
     },
     {
@@ -83,6 +95,10 @@
       "uci": 1.0,
       "yi": -0.7133498878774648,
       "sei": 0.36406698462243636,
+      "year": 2007,
+      "enrollment": 1280.0,
+      "agent1": "rivaroxaban",
+      "agent2": "warfarin",
       "source_outcome_analysis_id": "105473858"
     },
     {
@@ -97,6 +113,10 @@
       "uci": 0.62,
       "yi": -0.7985076962177716,
       "sei": 0.16872720301556351,
+      "year": 2007,
+      "enrollment": 6421.0,
+      "agent1": "apixaban",
+      "agent2": "acetylsalicylic",
       "source_outcome_analysis_id": "105580407"
     },
     {
@@ -111,6 +131,10 @@
       "uci": 1.68,
       "yi": 0.0769610411361284,
       "sei": 0.2270086291955061,
+      "year": 2013,
+      "enrollment": 2124.0,
+      "agent1": "rivaroxaban",
+      "agent2": "vitamin k antagonist",
       "source_outcome_analysis_id": "105480217"
     },
     {
@@ -125,6 +149,10 @@
       "uci": 2.67,
       "yi": 0.26236426446749106,
       "sei": 0.36840318072161105,
+      "year": 2014,
+      "enrollment": 2725.0,
+      "agent1": "dabigatran",
+      "agent2": "warfarin",
       "source_outcome_analysis_id": "105599289"
     },
     {
@@ -139,6 +167,10 @@
       "uci": 2.17,
       "yi": 0.1823215567939546,
       "sei": 0.29980263500231596,
+      "year": 2016,
+      "enrollment": 154.0,
+      "agent1": "apixaban",
+      "agent2": "warfarin",
       "source_outcome_analysis_id": "105588995"
     }
   ],
@@ -371,6 +403,50 @@
   },
   "connected": true,
   "has_loops": false,
+  "transitivity": {
+    "by_node": [
+      {
+        "node": "apixaban",
+        "n_contrasts": 3,
+        "agents": [
+          "apixaban"
+        ]
+      },
+      {
+        "node": "aspirin",
+        "n_contrasts": 1,
+        "agents": [
+          "acetylsalicylic"
+        ]
+      },
+      {
+        "node": "dabigatran",
+        "n_contrasts": 2,
+        "agents": [
+          "dabigatran"
+        ]
+      },
+      {
+        "node": "rivaroxaban",
+        "n_contrasts": 3,
+        "agents": [
+          "rivaroxaban"
+        ]
+      },
+      {
+        "node": "warfarin",
+        "n_contrasts": 7,
+        "agents": [
+          "vitamin k antagonist",
+          "warfarin"
+        ]
+      }
+    ],
+    "year_span": 4.0,
+    "enroll_ratio": 5.0,
+    "flags": [],
+    "assessment": "pass"
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -378,14 +454,15 @@
       "code_runs": "pass",
       "dashboard_match": "pass",
       "claim_language": "pass",
-      "analysis_rerun": "pass",
+      "analysis_rerun": "not-run",
       "external_review": "not-run"
     },
     "aact_stats": {
       "connectivity": "pass",
       "direction_oriented": "pass",
       "consistency": "pass",
-      "no_nan": "pass"
+      "no_nan": "pass",
+      "transitivity": "pass"
     }
   },
   "e156_body": "Among anticoagulants for atrial fibrillation, which option ranks best for stroke or systemic embolism? This network meta-analysis connects 5 treatments across 8 randomized comparisons from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial contrasts were synthesised with a random-effects model on the log scale, taking warfarin as the network reference. By surface under the cumulative ranking curve, rivaroxaban ranked highest, with a pooled HR of 0.81 (95% CI 0.60 to 1.08) versus warfarin. Its ranking statistic was 84 percent, the network was connected, and rankings should not be read as head-to-head superiority across differing trial populations. Because the network forms a tree without closed loops, consistency cannot be assessed, so the indirect comparisons warrant cautious reading. Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials.",

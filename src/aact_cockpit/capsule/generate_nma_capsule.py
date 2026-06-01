@@ -34,6 +34,10 @@ def compute_self_audit(payload: dict, res: dict) -> dict:
         inv["consistency"] = "warn" if cons.get("inconsistent") else "pass"
     finite = all(math.isfinite(v) for v in res["sucra"].values()) and math.isfinite(res["tau2"])
     inv["no_nan"] = "pass" if finite else "fail"
+    # transitivity (clinical comparability) is a SOFT, informational screen — surfaced
+    # in nma_stats and its own section but deliberately NOT part of hard_ok or the
+    # tier logic, since class-node NMA is a legitimate, disclosed design choice.
+    inv["transitivity"] = (payload.get("transitivity") or {}).get("assessment", "pass")
 
     # HARD failures (connectivity, direction, NaN) collapse the tier to none.
     # A consistency WARN is a soft flag (inconsistency detected) — it caps the
@@ -113,7 +117,7 @@ def render(ds: dict) -> dict:
         "pico": pico, "primary_estimand": ds["primary_estimand"],
         "snapshot_date": ds["snapshot_date"], "provenance": ds.get("provenance", {}),
         "contrasts": contrasts, "analysis_rerun": ds.get("analysis_rerun", "not-run"),
-        "notes": ds.get("notes", []),
+        "notes": ds.get("notes", []), "transitivity": ds.get("transitivity", {}),
     }
     audit = compute_self_audit(payload, res)
     body = draft_e156_body(payload, res, audit["connected"], audit["loops"])
@@ -136,6 +140,7 @@ def render(ds: dict) -> dict:
                                        "league", "tau2", "Q", "df", "k", "sucra", "edges",
                                        "method", "consistency")},
         "connected": audit["connected"], "has_loops": audit["loops"],
+        "transitivity": ds.get("transitivity", {}),
         "self_audit": {"checks": audit["checks"], "aact_stats": audit["nma_stats"]},
         "e156_body": body,
         "e156_validation": {"ok": vres["ok"], "word_count": vres["word_count"],

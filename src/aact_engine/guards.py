@@ -59,6 +59,56 @@ def assert_columns_exist(con, table: str, columns) -> None:
         )
 
 
+# --------------------------------------------------------------------------- #
+# Field-semantics registry for the cohort/effect eligibility filters.
+#
+# Companion to aact_engine.audits.FLAG_META (which documents the audit boolean
+# flags). Documents what each cohort filter VALUE actually selects, so the
+# eligibility is legible, and pairs with assert_value_present() to fail closed if
+# a snapshot renames/recases a value (the filter would otherwise silently match
+# nothing or the wrong set).
+# --------------------------------------------------------------------------- #
+COHORT_FIELDS = {
+    "study_type = 'interventional'":
+        "keeps interventional trials only; EXCLUDES observational and expanded-access records",
+    "allocation = 'randomized'":
+        ("keeps randomized designs; trials with a NULL/absent allocation are EXCLUDED "
+         "(missing is not the same as non-randomized), as are 'N/A' and 'Non-Randomized'"),
+    "results_first_posted_date IS NOT NULL":
+        ("keeps trials that have POSTED results on ClinicalTrials.gov; a registered trial "
+         "without posted results is excluded (this is a results-bearing cohort, not all trials)"),
+}
+
+# selection semantics of effect_extraction (documented, not a value filter)
+EFFECT_SELECTION_NOTES = (
+    "[field-semantics] one record per trial (the first usable analysis for the chosen endpoint); "
+    "p-value-only analyses with no estimate+CI are dropped; arms are mapped to "
+    "experimental-vs-comparator and the endpoint is keyword-classified from the outcome title."
+)
+
+
+def cohort_field_notes() -> list[str]:
+    """The documented eligibility semantics, for surfacing on a cohort result."""
+    return [f"{expr} — {meaning}" for expr, meaning in COHORT_FIELDS.items()]
+
+
+def assert_value_present(con, table: str, column: str, value: str) -> int:
+    """Value-drift guard: fail closed if `lower(table.column) = value` matches no
+    rows. AACT recases/renames categorical values between snapshots; a filter that
+    silently matches nothing is worse than an error. Returns the row count."""
+    n = con.execute(
+        f"SELECT count(*) FROM {table} WHERE lower(CAST({column} AS VARCHAR)) = ?",
+        [value.lower()],
+    ).fetchone()[0]
+    if n == 0:
+        raise ValueError(
+            f"AACT value-drift guard: no rows where {table}.{column} = {value!r} "
+            f"(case-insensitive). The snapshot may have renamed/recased this value; "
+            f"the eligibility filter would silently select nothing."
+        )
+    return n
+
+
 def assert_nonempty(rows, context: str):
     """>0 rows before analysis. Returns rows unchanged; raises if empty."""
     if not rows:
@@ -83,4 +133,8 @@ __all__ = [
     "assert_columns_exist",
     "assert_nonempty",
     "enforce_derived_hr_null_ci",
+    "COHORT_FIELDS",
+    "EFFECT_SELECTION_NOTES",
+    "cohort_field_notes",
+    "assert_value_present",
 ]

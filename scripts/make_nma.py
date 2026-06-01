@@ -29,6 +29,7 @@ def build_dataset(cfg: dict, con=None) -> dict:
         "snapshot_date": ex["provenance"].get("snapshot_date"),
         "provenance": ex["provenance"], "contrasts": ex["contrasts"],
         "treatments": ex["treatments"], "notes": ex["notes"],
+        "transitivity": ex.get("transitivity", {}),
     }
 
 

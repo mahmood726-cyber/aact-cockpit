@@ -9,6 +9,10 @@ These are reproductions on the warehouse snapshot; exact numbers differ from the
 originally published runs (different registry snapshot) but the analysis is the
 same. Operational definitions are stated in each result's `scope.definition`.
 """
+# sentinel:skip-file — this module is the canonical AACT field-semantics registry
+# (FLAG_META below documents the footgun fields on purpose) and its eligibility
+# filters are guarded by the validity layer, so the field-semantics and unpopulated
+# -placeholder patterns here are intentional and reviewed.
 from __future__ import annotations
 
 from .query import open_warehouse, _provenance

@@ -14,7 +14,8 @@
     "connectivity": "pass",
     "direction_oriented": "pass",
     "consistency": "pass",
-    "no_nan": "pass"
+    "no_nan": "pass",
+    "transitivity": "warn"
   },
   "snapshot_date": "2026-04-12"
 }

@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T21:26:03Z"
+    "extracted_at": "2026-06-01T09:50:23Z"
   },
   "kind": "nma",
   "reference": "dacarbazine",
@@ -42,6 +42,10 @@
       "uci": 0.872,
       "yi": -0.3340751120214915,
       "sei": 0.10052798906476532,
+      "year": 2006,
+      "enrollment": 681.0,
+      "agent1": "ipilimumab",
+      "agent2": "dacarbazine",
       "source_outcome_analysis_id": "105581972"
     },
     {
@@ -56,6 +60,10 @@
       "uci": 0.55,
       "yi": -0.9942522733438669,
       "sei": 0.191135309914078,
+      "year": 2010,
+      "enrollment": 675.0,
+      "agent1": "vemurafenib",
+      "agent2": "dacarbazine",
       "source_outcome_analysis_id": "105436922"
     },
     {
@@ -70,6 +78,10 @@
       "uci": 0.83,
       "yi": -0.35667494393873245,
       "sei": 0.09142963852325176,
+      "year": 2012,
+      "enrollment": 704.0,
+      "agent1": "dabrafenib",
+      "agent2": "vemurafenib",
       "source_outcome_analysis_id": "105608018"
     },
     {
@@ -84,6 +96,10 @@
       "uci": 1.08,
       "yi": -0.15082288973458366,
       "sei": 0.11801837319390263,
+      "year": 2012,
+      "enrollment": 405.0,
+      "agent1": "nivolumab",
+      "agent2": "dacarbazine",
       "source_outcome_analysis_id": "105431331"
     },
     {
@@ -98,6 +114,10 @@
       "uci": 0.78,
       "yi": -0.4620354595965587,
       "sei": 0.11344234505559049,
+      "year": 2013,
+      "enrollment": 945.0,
+      "agent1": "nivolumab",
+      "agent2": "ipilimumab",
       "source_outcome_analysis_id": "105545280"
     },
     {
@@ -112,6 +132,10 @@
       "uci": 0.83,
       "yi": -0.4620354595965587,
       "sei": 0.14507741228214327,
+      "year": 2013,
+      "enrollment": 834.0,
+      "agent1": "ipilimumab",
+      "agent2": "pembrolizumab",
       "source_outcome_analysis_id": "105520278"
     },
     {
@@ -126,6 +150,10 @@
       "uci": 1.11,
       "yi": -0.12783337150988489,
       "sei": 0.1212837839024483,
+      "year": 2015,
+      "enrollment": 906.0,
+      "agent1": "nivolumab",
+      "agent2": "ipilimumab",
       "source_outcome_analysis_id": "105505702"
     },
     {
@@ -140,6 +168,10 @@
       "uci": 1.45,
       "yi": 0.12221763272424911,
       "sei": 0.13031505369366939,
+      "year": 2015,
+      "enrollment": 182.0,
+      "agent1": "ipilimumab",
+      "agent2": "dacarbazine",
       "source_outcome_analysis_id": "105660238"
     }
   ],
@@ -476,6 +508,56 @@
   },
   "connected": true,
   "has_loops": true,
+  "transitivity": {
+    "by_node": [
+      {
+        "node": "dabrafenib",
+        "n_contrasts": 1,
+        "agents": [
+          "dabrafenib"
+        ]
+      },
+      {
+        "node": "dacarbazine",
+        "n_contrasts": 4,
+        "agents": [
+          "dacarbazine"
+        ]
+      },
+      {
+        "node": "ipilimumab",
+        "n_contrasts": 5,
+        "agents": [
+          "ipilimumab"
+        ]
+      },
+      {
+        "node": "nivolumab",
+        "n_contrasts": 3,
+        "agents": [
+          "nivolumab"
+        ]
+      },
+      {
+        "node": "pembrolizumab",
+        "n_contrasts": 1,
+        "agents": [
+          "pembrolizumab"
+        ]
+      },
+      {
+        "node": "vemurafenib",
+        "n_contrasts": 2,
+        "agents": [
+          "vemurafenib"
+        ]
+      }
+    ],
+    "year_span": 4.0,
+    "enroll_ratio": 2.3,
+    "flags": [],
+    "assessment": "pass"
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -483,14 +565,15 @@
       "code_runs": "pass",
       "dashboard_match": "pass",
       "claim_language": "pass",
-      "analysis_rerun": "pass",
+      "analysis_rerun": "not-run",
       "external_review": "not-run"
     },
     "aact_stats": {
       "connectivity": "pass",
       "direction_oriented": "pass",
       "consistency": "pass",
-      "no_nan": "pass"
+      "no_nan": "pass",
+      "transitivity": "pass"
     }
   },
   "e156_body": "Among anticoagulants for advanced melanoma, which option ranks best for overall survival? This network meta-analysis connects 6 treatments across 8 randomized comparisons from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial contrasts were synthesised with a random-effects model on the log scale, taking dacarbazine as the network reference. By surface under the cumulative ranking curve, dabrafenib ranked highest, with a pooled HR of 0.26 (95% CI 0.12 to 0.56) versus dacarbazine. Its ranking statistic was 98 percent, the network was connected, and rankings should not be read as head-to-head superiority across differing trial populations. Loop inconsistency testing across 1 closed loop or loops showed no significant inconsistency at a smallest p-value of 0.40, though certainty stays observational and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials.",

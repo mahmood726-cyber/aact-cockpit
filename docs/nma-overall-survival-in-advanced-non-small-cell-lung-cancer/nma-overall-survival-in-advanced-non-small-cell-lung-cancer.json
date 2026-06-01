@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-05-31T21:26:05Z"
+    "extracted_at": "2026-06-01T09:50:25Z"
   },
   "kind": "nma",
   "reference": "chemotherapy",
@@ -41,6 +41,10 @@
       "uci": 1.68,
       "yi": 0.131028262406404,
       "sei": 0.19573195190464668,
+      "year": 2006,
+      "enrollment": 211.0,
+      "agent1": "pemetrexed",
+      "agent2": "docetaxel",
       "source_outcome_analysis_id": "105679446"
     },
     {
@@ -55,6 +59,10 @@
       "uci": 1.42,
       "yi": 0.009950330853168092,
       "sei": 0.17325852514187512,
+      "year": 2007,
+      "enrollment": 260.0,
+      "agent1": "pemetrexed",
+      "agent2": "docetaxel",
       "source_outcome_analysis_id": "105479525"
     },
     {
@@ -69,6 +77,10 @@
       "uci": 0.81,
       "yi": -0.527632742082372,
       "sei": 0.16154609063581374,
+      "year": 2012,
+      "enrollment": 272.0,
+      "agent1": "nivolumab",
+      "agent2": "docetaxel",
       "source_outcome_analysis_id": "105496938"
     },
     {
@@ -83,6 +95,10 @@
       "uci": 0.89,
       "yi": -0.31471074483970024,
       "sei": 0.10487410204195495,
+      "year": 2012,
+      "enrollment": 582.0,
+      "agent1": "nivolumab",
+      "agent2": "docetaxel",
       "source_outcome_analysis_id": "105669463"
     },
     {
@@ -97,6 +113,10 @@
       "uci": 0.92,
       "yi": -0.37106368139083207,
       "sei": 0.1455498322846741,
+      "year": 2013,
+      "enrollment": 287.0,
+      "agent1": "docetaxel",
+      "agent2": "atezolizumab",
       "source_outcome_analysis_id": "105576742"
     },
     {
@@ -111,6 +131,10 @@
       "uci": 0.87,
       "yi": -0.31471074483970024,
       "sei": 0.0864234588700854,
+      "year": 2014,
+      "enrollment": 1225.0,
+      "agent1": "docetaxel",
+      "agent2": "atezolizumab",
       "source_outcome_analysis_id": "105619917"
     },
     {
@@ -125,6 +149,10 @@
       "uci": 1.2,
       "yi": -0.030459207484708574,
       "sei": 0.10664580921192973,
+      "year": 2014,
+      "enrollment": 541.0,
+      "agent1": "nivolumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105499742"
     },
     {
@@ -139,6 +167,10 @@
       "uci": 0.86,
       "yi": -0.4620354595965587,
       "sei": 0.1541354074129166,
+      "year": 2014,
+      "enrollment": 305.0,
+      "agent1": "pembrolizumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105454362"
     },
     {
@@ -153,6 +185,10 @@
       "uci": 0.86,
       "yi": -0.35667494393873245,
       "sei": 0.10048763365402508,
+      "year": 2014,
+      "enrollment": 1274.0,
+      "agent1": "pembrolizumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105383808"
     },
     {
@@ -167,6 +203,10 @@
       "uci": 0.977,
       "yi": -0.2382571891242579,
       "sei": 0.10951427987678096,
+      "year": 2015,
+      "enrollment": 723.0,
+      "agent1": "atezolizumab",
+      "agent2": "carboplatin",
       "source_outcome_analysis_id": "105513213"
     },
     {
@@ -181,6 +221,10 @@
       "uci": 1.05,
       "yi": -0.12783337150988489,
       "sei": 0.09273152769040174,
+      "year": 2015,
+      "enrollment": 1021.0,
+      "agent1": "carboplatin",
+      "agent2": "atezolizumab",
       "source_outcome_analysis_id": "105424163"
     },
     {
@@ -195,6 +239,10 @@
       "uci": 0.89,
       "yi": -0.5191938734365074,
       "sei": 0.20530210345436617,
+      "year": 2015,
+      "enrollment": 572.0,
+      "agent1": "chemotherapy",
+      "agent2": "atezolizumab",
       "source_outcome_analysis_id": "105620409"
     },
     {
@@ -209,6 +257,10 @@
       "uci": 1.05,
       "yi": -0.09431067947124129,
       "sei": 0.07583086368234665,
+      "year": 2015,
+      "enrollment": 2747.0,
+      "agent1": "nivolumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105559878"
     },
     {
@@ -223,6 +275,10 @@
       "uci": 0.9,
       "yi": -0.3856624808119846,
       "sei": 0.1399428652964687,
+      "year": 2015,
+      "enrollment": 504.0,
+      "agent1": "nivolumab",
+      "agent2": "docetaxel",
       "source_outcome_analysis_id": "105597724"
     },
     {
@@ -237,6 +293,10 @@
       "uci": 1.056,
       "yi": -0.1438703704197019,
       "sei": 0.10163144345419421,
+      "year": 2016,
+      "enrollment": 578.0,
+      "agent1": "pemetrexed",
+      "agent2": "atezolizumab",
       "source_outcome_analysis_id": "105487633"
     },
     {
@@ -251,6 +311,10 @@
       "uci": 0.85,
       "yi": -0.4462871026284195,
       "sei": 0.14052068372801088,
+      "year": 2016,
+      "enrollment": 559.0,
+      "agent1": "pembrolizumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105396570"
     },
     {
@@ -265,6 +329,10 @@
       "uci": 0.97,
       "yi": -0.2484613592984996,
       "sei": 0.1100980057582865,
+      "year": 2017,
+      "enrollment": 453.0,
+      "agent1": "atezolizumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105470765"
     },
     {
@@ -279,6 +347,10 @@
       "uci": 1.0,
       "yi": -0.4780358009429998,
       "sei": 0.24683719545202998,
+      "year": 2016,
+      "enrollment": 262.0,
+      "agent1": "pembrolizumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105391326"
     },
     {
@@ -293,6 +365,10 @@
       "uci": 0.7,
       "yi": -0.8209805520698302,
       "sei": 0.2337519309287669,
+      "year": 2017,
+      "enrollment": 125.0,
+      "agent1": "pembrolizumab",
+      "agent2": "chemotherapy",
       "source_outcome_analysis_id": "105561196"
     },
     {
@@ -307,6 +383,10 @@
       "uci": 1.05,
       "yi": -0.15082288973458366,
       "sei": 0.10343687723509758,
+      "year": 2019,
+      "enrollment": 577.0,
+      "agent1": "nivolumab",
+      "agent2": "docetaxel",
       "source_outcome_analysis_id": "105627890"
     },
     {
@@ -321,6 +401,10 @@
       "uci": 1.23,
       "yi": -0.020202707317519466,
       "sei": 0.11619487201692444,
+      "year": 2019,
+      "enrollment": 422.0,
+      "agent1": "pembrolizumab",
+      "agent2": "docetaxel",
       "source_outcome_analysis_id": "105588676"
     },
     {
@@ -335,6 +419,10 @@
       "uci": 1.5,
       "yi": 0.131028262406404,
       "sei": 0.138963567631449,
+      "year": 2022,
+      "enrollment": 739.0,
+      "agent1": "chemotherapy",
+      "agent2": "pembrolizumab",
       "source_outcome_analysis_id": "105489657"
     }
   ],
@@ -628,6 +716,51 @@
   },
   "connected": true,
   "has_loops": true,
+  "transitivity": {
+    "by_node": [
+      {
+        "node": "atezolizumab",
+        "n_contrasts": 7,
+        "agents": [
+          "atezolizumab"
+        ]
+      },
+      {
+        "node": "chemotherapy",
+        "n_contrasts": 15,
+        "agents": [
+          "carboplatin",
+          "chemotherapy",
+          "pemetrexed"
+        ]
+      },
+      {
+        "node": "docetaxel",
+        "n_contrasts": 9,
+        "agents": [
+          "docetaxel"
+        ]
+      },
+      {
+        "node": "nivolumab",
+        "n_contrasts": 6,
+        "agents": [
+          "nivolumab"
+        ]
+      },
+      {
+        "node": "pembrolizumab",
+        "n_contrasts": 7,
+        "agents": [
+          "pembrolizumab"
+        ]
+      }
+    ],
+    "year_span": 12.5,
+    "enroll_ratio": 7.0,
+    "flags": [],
+    "assessment": "pass"
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -635,14 +768,15 @@
       "code_runs": "pass",
       "dashboard_match": "pass",
       "claim_language": "pass",
-      "analysis_rerun": "pass",
+      "analysis_rerun": "not-run",
       "external_review": "not-run"
     },
     "aact_stats": {
       "connectivity": "pass",
       "direction_oriented": "pass",
       "consistency": "pass",
-      "no_nan": "pass"
+      "no_nan": "pass",
+      "transitivity": "pass"
     }
   },
   "e156_body": "Among anticoagulants for advanced non-small-cell lung cancer, which option ranks best for overall survival? This network meta-analysis connects 5 treatments across 22 randomized comparisons from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial contrasts were synthesised with a random-effects model on the log scale, taking chemotherapy as the network reference. By surface under the cumulative ranking curve, pembrolizumab ranked highest, with a pooled HR of 0.70 (95% CI 0.58 to 0.83) versus chemotherapy. Its ranking statistic was 92 percent, the network was connected, and rankings should not be read as head-to-head superiority across differing trial populations. Loop inconsistency testing across 3 closed loop or loops showed no significant inconsistency at a smallest p-value of 0.06, though certainty stays observational and warrants cautious reading. Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials.",

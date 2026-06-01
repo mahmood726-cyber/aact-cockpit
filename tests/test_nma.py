@@ -9,6 +9,37 @@ import pytest
 from aact_cockpit.capsule.nma import nma, connectivity, has_loops
 from aact_cockpit.capsule.pooling import pool
 from aact_cockpit.capsule import generate_nma_capsule as gn
+from aact_engine.nma import assess_transitivity
+
+
+def _tc(t1, t2, a1, a2, year, enr):
+    return {"t1": t1, "t2": t2, "agent1": a1, "agent2": a2, "year": year, "enrollment": enr}
+
+
+def test_transitivity_flags_class_lumping():
+    cs = [_tc("GLP1", "placebo", ag, "placebo", 2018, 5000)
+          for ag in ("liraglutide", "semaglutide", "dulaglutide", "exenatide")]
+    tr = assess_transitivity(cs, ["GLP1", "placebo"])
+    assert tr["assessment"] == "warn"
+    assert any("class lumping" in f and "GLP1" in f for f in tr["flags"])
+    node = next(n for n in tr["by_node"] if n["node"] == "GLP1")
+    assert len(node["agents"]) == 4
+
+
+def test_transitivity_flags_era_and_size():
+    cs = [_tc("A", "placebo", "a", "placebo", 2000, 100),
+          _tc("B", "placebo", "b", "placebo", 2022, 8000)]
+    tr = assess_transitivity(cs, ["A", "B", "placebo"])
+    assert tr["assessment"] == "warn"
+    assert any("era heterogeneity" in f for f in tr["flags"])
+    assert any("size disparity" in f for f in tr["flags"])
+
+
+def test_transitivity_clean_network_passes():
+    cs = [_tc("A", "placebo", "a", "placebo", 2018, 4000),
+          _tc("B", "placebo", "b", "placebo", 2019, 5000)]
+    tr = assess_transitivity(cs, ["A", "B", "placebo"])
+    assert tr["assessment"] == "pass" and tr["flags"] == []
 
 
 def _contrast(nct, t1, t2, hr, lo, hi):

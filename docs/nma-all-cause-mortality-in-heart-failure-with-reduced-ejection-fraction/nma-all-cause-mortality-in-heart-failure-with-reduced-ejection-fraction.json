@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T07:51:56Z"
+    "extracted_at": "2026-06-01T09:50:21Z"
   },
   "kind": "nma",
   "reference": "placebo",
@@ -39,6 +39,10 @@
       "uci": 1.08,
       "yi": -0.09431067947124129,
       "sei": 0.08630918933694871,
+      "year": 2006,
+      "enrollment": 3445.0,
+      "agent1": "placebo",
+      "agent2": "spironolactone",
       "source_outcome_analysis_id": "105516859"
     },
     {
@@ -53,6 +57,10 @@
       "uci": 3.87,
       "yi": 0.5709795465857378,
       "sei": 0.3989806829854483,
+      "year": 2010,
+      "enrollment": 221.0,
+      "agent1": "eplerenone",
+      "agent2": "placebo",
       "source_outcome_analysis_id": "105534168"
     },
     {
@@ -67,6 +75,10 @@
       "uci": 1.15,
       "yi": 0.0,
       "sei": 0.0711809022792184,
+      "year": 2017,
+      "enrollment": 5988.0,
+      "agent1": "placebo",
+      "agent2": "empagliflozin",
       "source_outcome_analysis_id": "105481504"
     },
     {
@@ -81,6 +93,10 @@
       "uci": 1.1,
       "yi": -0.08338160893905101,
       "sei": 0.09099017807269391,
+      "year": 2017,
+      "enrollment": 3730.0,
+      "agent1": "placebo",
+      "agent2": "empagliflozin",
       "source_outcome_analysis_id": "105446471"
     },
     {
@@ -95,6 +111,10 @@
       "uci": 1.06,
       "yi": -0.07257069283483537,
       "sei": 0.06239871963077663,
+      "year": 2020,
+      "enrollment": 6016.0,
+      "agent1": "finerenone",
+      "agent2": "placebo",
       "source_outcome_analysis_id": "105586812"
     }
   ],
@@ -203,6 +223,37 @@
   },
   "connected": true,
   "has_loops": false,
+  "transitivity": {
+    "by_node": [
+      {
+        "node": "MRA",
+        "n_contrasts": 3,
+        "agents": [
+          "eplerenone",
+          "finerenone",
+          "spironolactone"
+        ]
+      },
+      {
+        "node": "SGLT2 inhibitor",
+        "n_contrasts": 2,
+        "agents": [
+          "empagliflozin"
+        ]
+      },
+      {
+        "node": "placebo",
+        "n_contrasts": 5,
+        "agents": [
+          "placebo"
+        ]
+      }
+    ],
+    "year_span": 7.0,
+    "enroll_ratio": 1.4,
+    "flags": [],
+    "assessment": "pass"
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -217,7 +268,8 @@
       "connectivity": "pass",
       "direction_oriented": "pass",
       "consistency": "pass",
-      "no_nan": "pass"
+      "no_nan": "pass",
+      "transitivity": "pass"
     }
   },
   "e156_body": "Among anticoagulants for heart failure with reduced ejection fraction, which option ranks best for all-cause mortality? This network meta-analysis connects 3 treatments across 5 randomized comparisons from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial contrasts were synthesised with a random-effects model on the log scale, taking placebo as the network reference. By surface under the cumulative ranking curve, placebo ranked highest, with a pooled HR of 1.00 (95% CI 1.00 to 1.00) versus placebo. Its ranking statistic was 63 percent, the network was connected, and rankings should not be read as head-to-head superiority across differing trial populations. Because the network forms a tree without closed loops, consistency cannot be assessed, so the indirect comparisons warrant cautious reading. Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials.",

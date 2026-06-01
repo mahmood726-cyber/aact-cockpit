@@ -14,7 +14,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T07:51:54Z"
+    "extracted_at": "2026-06-01T09:50:19Z"
   },
   "kind": "nma",
   "reference": "placebo",
@@ -40,6 +40,10 @@
       "uci": 1.09,
       "yi": -0.020202707317519466,
       "sei": 0.054595663348671025,
+      "year": 2008,
+      "enrollment": 14671.0,
+      "agent1": "sitagliptin",
+      "agent2": "placebo",
       "source_outcome_analysis_id": "105436931"
     },
     {
@@ -54,6 +58,10 @@
       "uci": 1.12,
       "yi": -0.07257069283483537,
       "sei": 0.0922950746695492,
+      "year": 2009,
+      "enrollment": 4330.0,
+      "agent1": "placebo",
+      "agent2": "canagliflozin",
       "source_outcome_analysis_id": "105465857"
     },
     {
@@ -68,6 +76,10 @@
       "uci": 0.99,
       "yi": -0.15082288973458366,
       "sei": 0.07425002684391728,
+      "year": 2010,
+      "enrollment": 7064.0,
+      "agent1": "placebo",
+      "agent2": "empagliflozin",
       "source_outcome_analysis_id": "105454763"
     },
     {
@@ -82,6 +94,10 @@
       "uci": 1.004,
       "yi": -0.09431067947124129,
       "sei": 0.04793834501876423,
+      "year": 2010,
+      "enrollment": 14752.0,
+      "agent1": "placebo",
+      "agent2": "exenatide",
       "source_outcome_analysis_id": "105374265"
     },
     {
@@ -96,6 +112,10 @@
       "uci": 0.99,
       "yi": -0.12783337150988489,
       "sei": 0.057570445030531256,
+      "year": 2011,
+      "enrollment": 9901.0,
+      "agent1": "placebo",
+      "agent2": "dulaglutide",
       "source_outcome_analysis_id": "105541043"
     },
     {
@@ -110,6 +130,10 @@
       "uci": 1.17,
       "yi": 0.01980262729617973,
       "sei": 0.06978127333544025,
+      "year": 2013,
+      "enrollment": 6991.0,
+      "agent1": "placebo",
+      "agent2": "linagliptin",
       "source_outcome_analysis_id": "105605324"
     },
     {
@@ -124,6 +148,10 @@
       "uci": 1.114,
       "yi": -0.030459207484708574,
       "sei": 0.06960122401416269,
+      "year": 2013,
+      "enrollment": 8246.0,
+      "agent1": "placebo",
+      "agent2": "ertugliflozin",
       "source_outcome_analysis_id": "105378233"
     },
     {
@@ -138,6 +166,10 @@
       "uci": 0.95,
       "yi": -0.2231435513142097,
       "sei": 0.08907925731388323,
+      "year": 2014,
+      "enrollment": 4401.0,
+      "agent1": "placebo",
+      "agent2": "canagliflozin",
       "source_outcome_analysis_id": "105510228"
     },
     {
@@ -152,6 +184,10 @@
       "uci": 0.9,
       "yi": -0.2484613592984996,
       "sei": 0.07150691731203851,
+      "year": 2015,
+      "enrollment": 9463.0,
+      "agent1": "placebo",
+      "agent2": "albiglutide",
       "source_outcome_analysis_id": "105670168"
     },
     {
@@ -166,6 +202,10 @@
       "uci": 0.96,
       "yi": -0.15082288973458366,
       "sei": 0.0562619444422871,
+      "year": 2019,
+      "enrollment": 9651.0,
+      "agent1": "semaglutide",
+      "agent2": "placebo",
       "source_outcome_analysis_id": "105663815"
     }
   ],
@@ -329,6 +369,50 @@
   },
   "connected": true,
   "has_loops": false,
+  "transitivity": {
+    "by_node": [
+      {
+        "node": "DPP-4 inhibitor",
+        "n_contrasts": 2,
+        "agents": [
+          "linagliptin",
+          "sitagliptin"
+        ]
+      },
+      {
+        "node": "GLP-1 RA",
+        "n_contrasts": 4,
+        "agents": [
+          "albiglutide",
+          "dulaglutide",
+          "exenatide",
+          "semaglutide"
+        ]
+      },
+      {
+        "node": "SGLT2 inhibitor",
+        "n_contrasts": 4,
+        "agents": [
+          "canagliflozin",
+          "empagliflozin",
+          "ertugliflozin"
+        ]
+      },
+      {
+        "node": "placebo",
+        "n_contrasts": 10,
+        "agents": [
+          "placebo"
+        ]
+      }
+    ],
+    "year_span": 2.5,
+    "enroll_ratio": 1.9,
+    "flags": [
+      "class lumping: node 'GLP-1 RA' aggregates 4 distinct agents"
+    ],
+    "assessment": "warn"
+  },
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",
@@ -343,7 +427,8 @@
       "connectivity": "pass",
       "direction_oriented": "pass",
       "consistency": "pass",
-      "no_nan": "pass"
+      "no_nan": "pass",
+      "transitivity": "warn"
     }
   },
   "e156_body": "Among anticoagulants for type 2 diabetes, which option ranks best for major adverse cardiovascular events? This network meta-analysis connects 4 treatments across 10 randomized comparisons from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial contrasts were synthesised with a random-effects model on the log scale, taking placebo as the network reference. By surface under the cumulative ranking curve, DPP-4 inhibitor ranked highest, with a pooled HR of 0.98 (95% CI 0.82 to 1.17) versus placebo. Its ranking statistic was 76 percent, the network was connected, and rankings should not be read as head-to-head superiority across differing trial populations. Because the network forms a tree without closed loops, consistency cannot be assessed, so the indirect comparisons warrant cautious reading. Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials.",

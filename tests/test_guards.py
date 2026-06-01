@@ -1,12 +1,36 @@
 """Data-quality guards."""
 from __future__ import annotations
 
+import duckdb
 import pytest
 
 from aact_engine.guards import (
     reject_negated_count, normalize_intervention_type,
     enforce_derived_hr_null_ci, assert_nonempty,
+    assert_value_present, cohort_field_notes, COHORT_FIELDS, EFFECT_SELECTION_NOTES,
 )
+
+
+def test_assert_value_present_drift_guard():
+    con = duckdb.connect(":memory:")
+    con.execute("CREATE TABLE studies(study_type VARCHAR)")
+    con.execute("INSERT INTO studies VALUES ('Interventional'), ('Observational')")
+    assert assert_value_present(con, "studies", "study_type", "interventional") == 1
+    # a renamed/recased value the snapshot no longer has -> fail closed
+    with pytest.raises(ValueError):
+        assert_value_present(con, "studies", "study_type", "experimental")
+
+
+def test_cohort_field_notes_document_filters():
+    notes = cohort_field_notes()
+    assert len(notes) == len(COHORT_FIELDS)
+    assert any("interventional" in n and "EXCLUDES observational" in n for n in notes)
+    assert any("non-randomized" in n.lower() for n in notes)
+
+
+def test_effect_selection_notes_documented():
+    assert "one record per trial" in EFFECT_SELECTION_NOTES
+    assert "p-value-only" in EFFECT_SELECTION_NOTES
 
 
 def test_negated_count_rejects():

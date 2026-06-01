@@ -152,7 +152,8 @@ def api_build_nma(req: NmaBuildReq):
           "lower_is_better": cfg.get("lower_is_better", True),
           "snapshot_date": ex["provenance"].get("snapshot_date"),
           "provenance": ex["provenance"], "contrasts": ex["contrasts"],
-          "treatments": ex["treatments"], "notes": ex["notes"]}
+          "treatments": ex["treatments"], "notes": ex["notes"],
+          "transitivity": ex.get("transitivity", {})}
     try:
         man = nma_emit(ds, _CAPSULES)
     except (CapsuleInputError, CapsuleEmitError) as e:

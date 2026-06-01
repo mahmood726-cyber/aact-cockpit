@@ -45,6 +45,7 @@
   <span class="tier" id="tier">—</span>
   <span class="chk"><span class="dot pending" id="d-conn"></span>network connected</span>
   <span class="chk"><span class="dot pending" id="d-cons"></span><span id="t-cons">consistency</span></span>
+  <span class="chk"><span class="dot pending" id="d-trans"></span>transitivity</span>
   <span class="chk"><span class="dot pending" id="d-match"></span>dashboard match</span>
   <span class="chk"><span class="dot pending" id="d-r"></span>R netmeta</span>
   <span class="motto" style="margin-left:auto">the capsule must agree with itself before asking the world to agree with it</span>
@@ -75,6 +76,13 @@
   <h2>06 · Loop consistency (Bucher)</h2>
   <div class="muted">For each closed loop, direct evidence is compared with indirect evidence; an inconsistency factor (IF) far from 1 with a small p-value signals disagreement.</div>
   <div class="card" id="consBox"></div>
+
+  <h2>06b · Transitivity &amp; class composition</h2>
+  <div class="muted">Transitivity — clinical comparability across the network — is the assumption behind every
+    indirect comparison, and is separate from the statistical consistency tested above. Each node may lump several
+    distinct agents (a class-effect assumption), and edges may differ in era or trial size; those are effect-modifiers
+    that can bias indirect estimates even when loops look statistically consistent.</div>
+  <div class="card" id="transBox"></div>
 
   <h2>07 · Contrast data (editable — re-fits live)</h2>
   <div class="card"><table id="dataTable"><thead><tr>
@@ -325,6 +333,16 @@ document.getElementById('bodyMeta').textContent=
 const ck=CAPSULE.self_audit;
 document.getElementById('auditBox').innerHTML='<b>Tier checks</b><br>'+Object.entries(ck.checks).map(([k,v])=>`${k}: ${v}`).join(' · ')+
   '<br><br><b>NMA invariants</b><br>'+Object.entries(ck.aact_stats).map(([k,v])=>`${k}: ${v}`).join(' · ');
+const TR=CAPSULE.transitivity||{};
+const transBox=document.getElementById('transBox');
+if(TR.by_node&&TR.by_node.length){
+  let th=`<b>Assessment: ${TR.assessment==='warn'?'&#9888; heterogeneity flagged':'&#10003; no major heterogeneity'}</b> `+
+    `<span class="muted">(edge start-year span ${TR.year_span} yrs · edge enrolment ratio ${TR.enroll_ratio}&times;)</span>`;
+  if(TR.flags&&TR.flags.length) th+='<ul class="find" style="margin:6px 0 0;padding-left:18px">'+TR.flags.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>';
+  th+='<table style="margin-top:8px"><thead><tr><th>node</th><th>contrasts</th><th style="text-align:left">agents lumped into this node</th></tr></thead><tbody>'+
+    TR.by_node.map(n=>`<tr><td>${esc(n.node)}</td><td>${n.n_contrasts}</td><td style="text-align:left">${(n.agents||[]).map(esc).join(', ')||'—'}</td></tr>`).join('')+'</tbody></table>';
+  transBox.innerHTML=th; setDot('d-trans',TR.assessment==='warn'?'warn':'ok');
+} else { transBox.innerHTML='<span class="muted">No transitivity covariates available for this network.</span>'; setDot('d-trans','ok'); }
 document.getElementById('notesBox').textContent=CAPSULE.notes&&CAPSULE.notes.length?('Notes: '+CAPSULE.notes.join('; ')):'';
 document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults();persist();render();});
 document.getElementById('inspectBtn').addEventListener('click',()=>{const o=document.getElementById('inspectOut');
