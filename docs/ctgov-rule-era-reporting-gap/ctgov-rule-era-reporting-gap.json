@@ -7,7 +7,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T08:39:31Z"
+    "extracted_at": "2026-06-01T09:07:39Z"
   },
   "source_url": "https://github.com/mahmood726-cyber/ctgov-rule-era-reporting-gap",
   "source_repo": "ctgov-rule-era-reporting-gap",
@@ -64,7 +64,7 @@
   "findings": [
     "No-results rate runs 92.0% (Pre-Fdaaa (<2008)) to 75.9% (Final-Rule Era (2017+))."
   ],
-  "caveats": "Policy-era bins are completion-date proxies; they do not establish that any given study was legally an applicable clinical trial under FDAAA 801.",
+  "caveats": "Policy-era bins are completion-date proxies; they do not establish that any given study was legally an applicable clinical trial under FDAAA 801. Era differences also partly reflect time since completion, since older cohorts have had longer to post results, so this is not a clean policy effect.",
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",

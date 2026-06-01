@@ -7,7 +7,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T08:39:31Z"
+    "extracted_at": "2026-06-01T09:07:38Z"
   },
   "source_url": "https://github.com/mahmood726-cyber/ctgov-condition-hiddenness-map",
   "source_repo": "ctgov-condition-hiddenness-map",
@@ -145,7 +145,7 @@
     "Other / Unmapped is the largest named family (105,316 studies).",
     "Healthy Volunteer is the most obscured named family (81.7% ghost-protocol)."
   ],
-  "caveats": "Classification is keyword-based and single-label; multi-topic trials are compressed into one family and some records remain in a broad other bucket. Results visibility here means a posted results record, not confirmed publication linkage.",
+  "caveats": "Classification is keyword-based and single-label; multi-topic trials are compressed into one family and some records remain in a broad other bucket. Families also differ in study phase, so early-phase-heavy areas such as healthy-volunteer studies look quieter partly because such trials rarely post efficacy results. Results visibility here means a posted results record, not confirmed publication linkage.",
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",

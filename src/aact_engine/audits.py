@@ -201,7 +201,9 @@ def condition_hiddenness_map(con) -> dict:
         "metric_order": ["ghost_pct", "no_results_pct", "visible_pct"],
         "metric_labels": _METRIC_LABELS, "findings": findings,
         "caveats": ("Classification is keyword-based and single-label; multi-topic trials are compressed "
-                    "into one family and some records remain in a broad other bucket. Results visibility "
+                    "into one family and some records remain in a broad other bucket. Families also differ "
+                    "in study phase, so early-phase-heavy areas such as healthy-volunteer studies look "
+                    "quieter partly because such trials rarely post efficacy results. Results visibility "
                     "here means a posted results record, not confirmed publication linkage."),
     }
 
@@ -244,7 +246,9 @@ def rule_era_reporting_gap(con) -> dict:
         "metric_order": ["no_results_pct", "ghost_pct", "visible_pct"],
         "metric_labels": _METRIC_LABELS, "findings": findings,
         "caveats": ("Policy-era bins are completion-date proxies; they do not establish that any given "
-                    "study was legally an applicable clinical trial under FDAAA 801."),
+                    "study was legally an applicable clinical trial under FDAAA 801. Era differences also "
+                    "partly reflect time since completion, since older cohorts have had longer to post "
+                    "results, so this is not a clean policy effect."),
     }
 
 
@@ -255,11 +259,13 @@ def fdaaa_debt(con) -> dict:
     cut = _snapshot_year(con) - 2
     era = (f"CASE WHEN {_COMP_YEAR} < 2017 THEN '1 Pre-Final-Rule (<2017)' "
            f"ELSE '2 Final-Rule era (2017+)' END")
-    # conservative proxy: FDA-regulated drug/device intervention with a US-nexus flag
+    # FDA-regulated drug/device interventional study = conservative FDAAA-applicability
+    # proxy. is_us_export is deliberately NOT used: in AACT it flags products EXPORTED
+    # from the US for study abroad (~3% of trials), not US-located trials, so it cannot
+    # stand in for U.S. nexus. True U.S. location needs the facilities table (not ingested).
     elig = (f"lower(s.study_type) = 'interventional' AND s.overall_status IN {_CLOSED} "
             f"AND ({_OLDER.format(cut=cut)}) "
-            f"AND (s.is_fda_regulated_drug = 't' OR s.is_fda_regulated_device = 't') "
-            f"AND s.is_us_export = 't'")
+            f"AND (s.is_fda_regulated_drug = 't' OR s.is_fda_regulated_device = 't')")
     rows = _pct(con, elig, era)
     groups = _rows_to_groups(rows)
     groups.sort(key=lambda x: x["label"])
@@ -273,7 +279,7 @@ def fdaaa_debt(con) -> dict:
         FROM studies s WHERE {elig}
     """).fetchone()
     n_debt, debt_enroll = debt[0], int(debt[1] or 0)
-    findings = [f"{n_debt:,} probable-ACT studies still carry no posted results, "
+    findings = [f"{n_debt:,} FDA-regulated studies still carry no posted results, "
                 f"covering {debt_enroll:,} enrolled participants."]
     if groups:
         findings.append(f"No-results rate is {groups[0]['metrics']['no_results_pct']}% in "
@@ -281,23 +287,26 @@ def fdaaa_debt(con) -> dict:
                         f"{groups[-1]['label']}." if len(groups) > 1 else "."))
     return {
         "kind": "audit", "audit_id": "ctgov-probable-act-fdaaa-debt",
-        "title": "Probable ACT / FDAAA reporting debt",
+        "title": "FDA-regulated reporting debt",
         "source_repo": "ctgov-probable-act-fdaaa-debt",
         "source_url": _SRC + "ctgov-probable-act-fdaaa-debt",
         "snapshot_date": con.execute("SELECT snapshot_date FROM _meta LIMIT 1").fetchone()[0],
         "provenance": _provenance(con).to_dict(),
-        "question": ("How large is the likely U.S.-nexus FDA-regulated reporting backlog among older "
-                     "closed ClinicalTrials.gov studies?"),
-        "estimand": "No-results rate among probable applicable clinical trials, by policy era",
+        "question": ("How large is the FDA-regulated reporting backlog among older closed "
+                     "ClinicalTrials.gov studies?"),
+        "estimand": "No-results rate among FDA-regulated interventional studies, by policy era",
         "scope": {"n_eligible": n_elig, "n_debt": n_debt, "debt_enrollment": debt_enroll,
-                  "definition": (f"closed interventional studies first posted in {cut} or earlier, FDA-"
-                                 "regulated (drug or device) with a U.S.-export flag — a conservative "
-                                 "probable-ACT proxy")},
+                  "definition": (f"closed interventional studies first posted in {cut} or earlier that are "
+                                 "FDA-regulated (drug or device) — a conservative proxy for FDAAA 801 "
+                                 "applicability")},
         "groups": groups, "primary_metric": "no_results_pct",
         "metric_order": ["no_results_pct", "ghost_pct", "visible_pct"],
         "metric_labels": _METRIC_LABELS, "findings": findings,
-        "caveats": ("Regulated-status and U.S.-export flags are conservative proxies for FDAAA 801 "
-                    "applicability, not a legal determination; true ACT status requires case review."),
+        "caveats": ("FDA-regulated status is a conservative proxy for FDAAA 801 applicability, not a legal "
+                    "determination; U.S. nexus is not established here because AACT's export flag denotes "
+                    "products studied abroad, not U.S.-located trials, and facility locations are not in "
+                    "this warehouse. Ghost-protocol closely tracks no-results because disposition records "
+                    "are rarely populated."),
     }
 
 

@@ -66,7 +66,8 @@
   <div class="card"><svg id="barPlot" role="img" aria-label="Primary metric by group"></svg></div>
 
   <h2>04 · Full disclosure metrics</h2>
-  <div class="card"><table id="metricTable"></table></div>
+  <div class="card"><table id="metricTable"></table>
+    <div class="muted" id="metricNote" style="margin-top:8px"></div></div>
 
   <h2>05 · What the audit found</h2>
   <div class="card"><ul class="find" id="findBox"></ul></div>
@@ -79,6 +80,16 @@
   <div class="muted">Deterministic SQL over the AACT warehouse. The exact engine is <code>aact_engine/audits.py</code>; this is the shape of the aggregation.</div>
   <div class="card"><pre id="sqlcode"></pre></div>
 
+  <div id="liveSection" style="display:none">
+    <h2>07b · Live cross-check — PubMed + Europe PMC <span class="muted">(not frozen)</span></h2>
+    <div class="muted" id="liveNote"></div>
+    <div class="card">
+      <button id="liveBtn">↻ Run live PubMed + Europe PMC check</button>
+      <span class="muted" id="liveProg" style="margin-left:10px"></span>
+      <div id="liveOut" style="margin-top:12px"></div>
+    </div>
+  </div>
+
   <h2>08 · Assurance &amp; inspector</h2>
   <div class="card" id="auditBox"></div>
   <div class="card"><button id="inspectBtn">show the exact reconciliation code that ran</button>
@@ -87,7 +98,7 @@
 </div>
 <script>
 "use strict";
-const CAPSULE = {"slug": "ctgov-condition-hiddenness-map", "title": "Condition hiddenness map", "kind": "audit", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-06-01T08:39:31Z"}, "source_url": "https://github.com/mahmood726-cyber/ctgov-condition-hiddenness-map", "source_repo": "ctgov-condition-hiddenness-map", "question": "Which therapeutic areas look quietest on ClinicalTrials.gov once older closed interventional studies are grouped into keyword-based condition families?", "estimand": "Ghost-protocol and no-results rates by dominant condition family", "scope": {"n_eligible": 282562, "definition": "closed interventional studies first posted in 2024 or earlier, each assigned one dominant keyword-based condition family from title + conditions"}, "groups": [{"label": "Other / Unmapped", "n": 105316, "metrics": {"no_results_pct": 75.7, "ghost_pct": 74.7, "reason_missing_pct": 0.0, "visible_pct": 24.3}}, {"label": "Oncology", "n": 48102, "metrics": {"no_results_pct": 70.2, "ghost_pct": 68.9, "reason_missing_pct": 0.0, "visible_pct": 29.8}}, {"label": "Healthy Volunteer", "n": 25052, "metrics": {"no_results_pct": 82.3, "ghost_pct": 81.7, "reason_missing_pct": 0.0, "visible_pct": 17.7}}, {"label": "Cardiovascular", "n": 23585, "metrics": {"no_results_pct": 76.9, "ghost_pct": 76.0, "reason_missing_pct": 0.0, "visible_pct": 23.1}}, {"label": "Metabolic / Endocrine", "n": 18565, "metrics": {"no_results_pct": 76.0, "ghost_pct": 74.4, "reason_missing_pct": 0.0, "visible_pct": 24.0}}, {"label": "Infectious Disease", "n": 18457, "metrics": {"no_results_pct": 71.1, "ghost_pct": 69.7, "reason_missing_pct": 0.0, "visible_pct": 28.9}}, {"label": "Neurology", "n": 11877, "metrics": {"no_results_pct": 69.9, "ghost_pct": 68.4, "reason_missing_pct": 0.0, "visible_pct": 30.1}}, {"label": "Mental Health", "n": 9083, "metrics": {"no_results_pct": 73.7, "ghost_pct": 72.4, "reason_missing_pct": 0.0, "visible_pct": 26.3}}, {"label": "Gastrointestinal", "n": 7896, "metrics": {"no_results_pct": 75.2, "ghost_pct": 74.3, "reason_missing_pct": 0.0, "visible_pct": 24.8}}, {"label": "Respiratory", "n": 7722, "metrics": {"no_results_pct": 73.8, "ghost_pct": 72.5, "reason_missing_pct": 0.0, "visible_pct": 26.2}}, {"label": "Musculoskeletal", "n": 6907, "metrics": {"no_results_pct": 72.9, "ghost_pct": 71.4, "reason_missing_pct": 0.0, "visible_pct": 27.1}}], "primary_metric": "ghost_pct", "metric_order": ["ghost_pct", "no_results_pct", "visible_pct"], "metric_labels": {"no_results_pct": "no results posted", "ghost_pct": "ghost protocol (no results, no disposition)", "reason_missing_pct": "stop-reason field missing", "visible_pct": "results visible"}, "findings": ["Other / Unmapped is the largest named family (105,316 studies).", "Healthy Volunteer is the most obscured named family (81.7% ghost-protocol)."], "caveats": "Classification is keyword-based and single-label; multi-topic trials are compressed into one family and some records remain in a broad other bucket. Results visibility here means a posted results record, not confirmed publication linkage.", "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"proportions_valid": "pass", "denominators_positive": "pass", "partition_reconciles": "pass", "primary_present": "pass", "no_nan": "pass"}}, "e156_body": "Which therapeutic areas look quietest on ClinicalTrials.gov once older closed interventional studies are grouped into keyword-based condition families? We analysed 282,562 closed interventional studies first posted in 2024 or earlier, each assigned one dominant keyword-based condition family from title + conditions from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate ghost-protocol and no-results rates by dominant condition family, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. Other / Unmapped is the largest named family (105,316 studies). Healthy Volunteer is the most obscured named family (81.7 percent ghost-protocol). These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.", "e156_validation": {"ok": true, "word_count": 147, "sentence_count": 7}, "tier": "silver", "notes": []};
+const CAPSULE = {"slug": "ctgov-condition-hiddenness-map", "title": "Condition hiddenness map", "kind": "audit", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-06-01T09:07:38Z"}, "source_url": "https://github.com/mahmood726-cyber/ctgov-condition-hiddenness-map", "source_repo": "ctgov-condition-hiddenness-map", "question": "Which therapeutic areas look quietest on ClinicalTrials.gov once older closed interventional studies are grouped into keyword-based condition families?", "estimand": "Ghost-protocol and no-results rates by dominant condition family", "scope": {"n_eligible": 282562, "definition": "closed interventional studies first posted in 2024 or earlier, each assigned one dominant keyword-based condition family from title + conditions"}, "groups": [{"label": "Other / Unmapped", "n": 105316, "metrics": {"no_results_pct": 75.7, "ghost_pct": 74.7, "reason_missing_pct": 0.0, "visible_pct": 24.3}}, {"label": "Oncology", "n": 48102, "metrics": {"no_results_pct": 70.2, "ghost_pct": 68.9, "reason_missing_pct": 0.0, "visible_pct": 29.8}}, {"label": "Healthy Volunteer", "n": 25052, "metrics": {"no_results_pct": 82.3, "ghost_pct": 81.7, "reason_missing_pct": 0.0, "visible_pct": 17.7}}, {"label": "Cardiovascular", "n": 23585, "metrics": {"no_results_pct": 76.9, "ghost_pct": 76.0, "reason_missing_pct": 0.0, "visible_pct": 23.1}}, {"label": "Metabolic / Endocrine", "n": 18565, "metrics": {"no_results_pct": 76.0, "ghost_pct": 74.4, "reason_missing_pct": 0.0, "visible_pct": 24.0}}, {"label": "Infectious Disease", "n": 18457, "metrics": {"no_results_pct": 71.1, "ghost_pct": 69.7, "reason_missing_pct": 0.0, "visible_pct": 28.9}}, {"label": "Neurology", "n": 11877, "metrics": {"no_results_pct": 69.9, "ghost_pct": 68.4, "reason_missing_pct": 0.0, "visible_pct": 30.1}}, {"label": "Mental Health", "n": 9083, "metrics": {"no_results_pct": 73.7, "ghost_pct": 72.4, "reason_missing_pct": 0.0, "visible_pct": 26.3}}, {"label": "Gastrointestinal", "n": 7896, "metrics": {"no_results_pct": 75.2, "ghost_pct": 74.3, "reason_missing_pct": 0.0, "visible_pct": 24.8}}, {"label": "Respiratory", "n": 7722, "metrics": {"no_results_pct": 73.8, "ghost_pct": 72.5, "reason_missing_pct": 0.0, "visible_pct": 26.2}}, {"label": "Musculoskeletal", "n": 6907, "metrics": {"no_results_pct": 72.9, "ghost_pct": 71.4, "reason_missing_pct": 0.0, "visible_pct": 27.1}}], "primary_metric": "ghost_pct", "metric_order": ["ghost_pct", "no_results_pct", "visible_pct"], "metric_labels": {"no_results_pct": "no results posted", "ghost_pct": "ghost protocol (no results, no disposition)", "reason_missing_pct": "stop-reason field missing", "visible_pct": "results visible"}, "findings": ["Other / Unmapped is the largest named family (105,316 studies).", "Healthy Volunteer is the most obscured named family (81.7% ghost-protocol)."], "caveats": "Classification is keyword-based and single-label; multi-topic trials are compressed into one family and some records remain in a broad other bucket. Families also differ in study phase, so early-phase-heavy areas such as healthy-volunteer studies look quieter partly because such trials rarely post efficacy results. Results visibility here means a posted results record, not confirmed publication linkage.", "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"proportions_valid": "pass", "denominators_positive": "pass", "partition_reconciles": "pass", "primary_present": "pass", "no_nan": "pass"}}, "e156_body": "Which therapeutic areas look quietest on ClinicalTrials.gov once older closed interventional studies are grouped into keyword-based condition families? We analysed 282,562 closed interventional studies first posted in 2024 or earlier, each assigned one dominant keyword-based condition family from title + conditions from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate ghost-protocol and no-results rates by dominant condition family, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. Other / Unmapped is the largest named family (105,316 studies). Healthy Volunteer is the most obscured named family (81.7 percent ghost-protocol). These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.", "e156_validation": {"ok": true, "word_count": 147, "sentence_count": 7}, "tier": "silver", "notes": []};
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const nf = n => (n==null||!isFinite(n)) ? "n/a" : Number(n).toLocaleString("en-US");
 const f1 = x => (x==null||!isFinite(x)) ? "n/a" : Number(x).toFixed(1);
@@ -149,7 +160,8 @@ document.getElementById('provBox').innerHTML =
   `Source: ${esc((CAPSULE.provenance&&CAPSULE.provenance.source)||'ClinicalTrials.gov via AACT')} · `+
   `snapshot <b>${esc(CAPSULE.snapshot_date)}</b>. Reproduces the published analysis at `+
   `<a href="${esc(CAPSULE.source_url)}" target="_blank" rel="noopener">${esc(CAPSULE.source_repo)}</a> `+
-  `on this AACT snapshot — exact figures differ from the original run because the registry snapshot differs. `+
+  `on this AACT snapshot — figures differ from the original run because the registry snapshot and the `+
+  `operational eligibility definitions are adapted to the warehouse, so these are reanalyses, not exact reruns. `+
   `Fixed snapshot, not live; no legal or operational adjudication.`;
 document.getElementById('qBox').innerHTML =
   `<b>${esc(CAPSULE.question)}</b><br><span class="muted">Estimand: ${esc(CAPSULE.estimand)}.</span>`;
@@ -178,6 +190,60 @@ document.getElementById('inspectBtn').addEventListener('click',()=>{const o=docu
   o.style.display=o.style.display==='none'?'block':'none';o.textContent=[reconcile,renderBars,renderTable].map(fn=>fn.toString()).join('\n\n');});
 
 renderBars(); renderTable();
+const _mn = document.getElementById('metricNote');
+if (_mn && (CAPSULE.metric_order || []).includes('ghost_pct'))
+  _mn.textContent = 'Note: the ghost-protocol rate closely tracks the no-results rate because disposition ' +
+    'records are rarely populated in the registry, so those two columns are near-duplicates, not independent signals.';
+
+// ---- live cross-check: re-run the original external-audit method in the browser.
+// Optional, non-frozen, fully separate from the certified baseline + Node witness. ----
+const SAMPLE = CAPSULE.live_sample || null;
+if (SAMPLE && SAMPLE.length) {
+  document.getElementById('liveSection').style.display = 'block';
+  document.getElementById('liveNote').textContent = CAPSULE.live_note || '';
+  const liveBtn = document.getElementById('liveBtn');
+  const napms = ms => new Promise(r => setTimeout(r, ms));
+  const pmUrl = q => `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&tool=aact-cockpit&term=${encodeURIComponent(q)}%5Bsi%5D`;
+  const epUrl = q => `https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=idlist&pageSize=1&query=${encodeURIComponent(q)}`;
+  async function pubmedHit(q){ const r = await fetch(pmUrl(q)); const j = await r.json(); return parseInt(j.esearchresult.count, 10) > 0; }
+  async function epmcHit(q){ const r = await fetch(epUrl(q)); const j = await r.json(); return (j.hitCount || 0) > 0; }
+  let running = false;
+  liveBtn.addEventListener('click', async () => {
+    if (running) return; running = true; liveBtn.disabled = true;
+    const prog = document.getElementById('liveProg'), out = document.getElementById('liveOut');
+    out.innerHTML = '';
+    let derivedN = 0, pubN = 0, epmcN = 0, anyN = 0, errN = 0, done = 0;
+    for (const row of SAMPLE) {
+      if (row.aact_derived) derivedN++;
+      let pm = false, ep = false;
+      try { pm = await pubmedHit(row.nct_id); } catch (e) { errN++; }
+      try { ep = await epmcHit(row.nct_id); } catch (e) { errN++; }
+      if (pm) pubN++; if (ep) epmcN++; if (pm || ep) anyN++;
+      done++;
+      prog.textContent = `${done} / ${SAMPLE.length} queried${errN ? ` (${errN} fetch errors)` : ''}`;
+      await napms(350);   // PubMed allows ~3 requests/sec without an API key
+    }
+    const n = SAMPLE.length, pcNum = x => 100 * x / n, pc = x => pcNum(x).toFixed(1);
+    const fetched = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const margin = (100 * 1.96 * Math.sqrt(0.25 / n)).toFixed(0);
+    out.innerHTML =
+      `<div style="margin-bottom:8px"><b>In plain terms:</b> the frozen AACT link rate should match live ` +
+      `PubMed (same mechanism); Europe PMC usually finds more papers — that extra is the indexing gap.</div>` +
+      `<table><thead><tr><th>Signal (live sub-sample of ${n})</th><th>rate</th></tr></thead><tbody>` +
+      `<tr><td>AACT indexed (derived link) — the frozen mechanism</td><td>${pc(derivedN)}%</td></tr>` +
+      `<tr><td>Live PubMed [si] match</td><td>${pc(pubN)}%</td></tr>` +
+      `<tr><td>Live any-match (PubMed &#8746; Europe PMC)</td><td>${pc(anyN)}%</td></tr>` +
+      `<tr><td>Europe PMC rescue over PubMed alone</td><td>${pc(anyN - pubN)} pts</td></tr>` +
+      `<tr><td>Live PubMed vs AACT-derived (delta)</td><td>${(pcNum(pubN) - pcNum(derivedN)).toFixed(1)} pts</td></tr>` +
+      `</tbody></table>` +
+      `<div class="muted" style="margin-top:6px">Live, non-frozen &middot; fetched ${fetched} UTC` +
+      `${errN ? ` &middot; ${errN} fetch errors counted as no match` : ''}. Each rate is a ${n}-NCT sub-sample ` +
+      `with roughly &plusmn;${margin} points of binomial sampling error. Reproduces the original PubMed-only ` +
+      `versus Europe-PMC-rescue method; not part of the certified Silver baseline.</div>`;
+    running = false; liveBtn.disabled = false;
+  });
+}
+
 const rec = reconcile();
 const reconOk = Object.values(ck.aact_stats).every(v=>v==='pass');
 setDot('d-recon', reconOk?'ok':'warn'); document.getElementById('t-recon').textContent = reconOk?'reconciliation passed':'reconciliation issue';
