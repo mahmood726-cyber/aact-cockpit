@@ -7,7 +7,7 @@
     "snapshot_date": "2026-04-12",
     "source": "ClinicalTrials.gov via AACT",
     "db_path": null,
-    "extracted_at": "2026-06-01T08:39:32Z"
+    "extracted_at": "2026-06-01T08:56:28Z"
   },
   "source_url": "https://github.com/mahmood726-cyber/ctgov-publication-undercount-audit",
   "source_repo": "ctgov-publication-undercount-audit",
@@ -105,6 +105,310 @@
     "OTHER_GOV no-link studies are best covered (32.3% with a PubMed trail)."
   ],
   "caveats": "This warehouse-native reproduction uses AACT pre-indexed derived PubMed links, which are more complete than the original paper's live identifier-based PubMed search, so the trail rate is much higher than the published 1.2 percent; it cannot capture papers omitting the NCT identifier.",
+  "live_sample": [
+    {
+      "nct_id": "NCT01794455",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT01964222",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04671017",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT03655834",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT00535977",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT01279954",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02907229",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT00376961",
+      "sponsor_class": "NETWORK",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04198623",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02495857",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT01227564",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT05455242",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT03684694",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT03570216",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT05058222",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT03730857",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT06580522",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT01407393",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04014920",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT04994574",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04980027",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT00184171",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT03834311",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT02303249",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02079233",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT06343246",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT01572103",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02747147",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02718781",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04919993",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT00994006",
+      "sponsor_class": "OTHER_GOV",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT00887653",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02059408",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT00407563",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT00724256",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT06155656",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04746105",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT01365312",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02403622",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT03905876",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02812966",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT05025748",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT05476120",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT00431067",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT05040113",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02733471",
+      "sponsor_class": "OTHER_GOV",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT03915951",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT05767632",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04426708",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT01380665",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02915211",
+      "sponsor_class": "INDUSTRY",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02966873",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT03279107",
+      "sponsor_class": "OTHER_GOV",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT06001372",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT06529510",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT04228627",
+      "sponsor_class": "OTHER_GOV",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT04857853",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT00871052",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    },
+    {
+      "nct_id": "NCT03034538",
+      "sponsor_class": "OTHER",
+      "aact_derived": false
+    },
+    {
+      "nct_id": "NCT02736760",
+      "sponsor_class": "OTHER",
+      "aact_derived": true
+    }
+  ],
+  "live_sample_size": 60,
+  "live_note": "Live cross-check re-queries PubMed (NCT secondary-source ID) and Europe PMC for this deterministic sub-sample; it is not part of the certified baseline.",
   "self_audit": {
     "checks": {
       "citation_cascade": "pass",

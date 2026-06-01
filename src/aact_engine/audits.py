@@ -317,6 +317,23 @@ def _nolink_elig(cut: int) -> str:
             f"AND ({_OLDER.format(cut=cut)}) AND NOT {_has_ref('result')}")
 
 
+def _live_sample(con, elig: str, k: int = 60) -> list[dict]:
+    """A deterministic no-link NCT sub-sample (with AACT's own derived-link flag)
+    that the capsule re-checks live against PubMed + Europe PMC. ORDER BY hash is
+    stable across runs, so the embedded sample is reproducible."""
+    rows = con.execute(f"""
+        SELECT s.nct_id,
+               coalesce((SELECT max(sp.agency_class) FROM sponsors sp
+                         WHERE sp.nct_id = s.nct_id AND sp.lead_or_collaborator = 'lead'),
+                        '(unspecified)') AS cls,
+               {_has_ref('derived')} AS aact_derived
+        FROM studies s WHERE {elig}
+        ORDER BY hash(s.nct_id) LIMIT {k}
+    """).fetchall()
+    return [{"nct_id": str(n), "sponsor_class": str(c), "aact_derived": bool(d)}
+            for n, c, d in rows]
+
+
 # --------------------------------------------------------------------------- #
 # Audit 5 — publication undercount: external PubMed trail among no-link studies
 # --------------------------------------------------------------------------- #
@@ -368,6 +385,9 @@ def publication_undercount(con) -> dict:
         "scope": {"n_eligible": n_elig,
                   "definition": (f"closed interventional studies first posted in {cut} or earlier that carry "
                                  "no sponsor-submitted ClinicalTrials.gov result publication link")},
+        "live_sample": _live_sample(con, elig), "live_sample_size": 60,
+        "live_note": ("Live cross-check re-queries PubMed (NCT secondary-source ID) and Europe PMC for "
+                      "this deterministic sub-sample; it is not part of the certified baseline."),
         "groups": groups, "primary_metric": "pubmed_trail_pct",
         "metric_order": ["pubmed_trail_pct", "external_only_pct"],
         "metric_labels": {"pubmed_trail_pct": "external PubMed trail (derived link)",
@@ -421,6 +441,9 @@ def publication_index_gap(con) -> dict:
         "scope": {"n_eligible": total,
                   "definition": (f"closed interventional studies first posted in {cut} or earlier with no "
                                  "sponsor-submitted result publication link, partitioned by external-reference tier")},
+        "live_sample": _live_sample(con, elig), "live_sample_size": 60,
+        "live_note": ("Live cross-check re-queries PubMed (NCT secondary-source ID) and Europe PMC for "
+                      "this deterministic sub-sample; it is not part of the certified baseline."),
         "groups": groups, "primary_metric": "share_of_nolink_pct",
         "metric_order": ["share_of_nolink_pct"],
         "metric_labels": {"share_of_nolink_pct": "share of no-link studies"},

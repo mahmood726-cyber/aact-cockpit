@@ -82,6 +82,23 @@ def test_e156_body_valid_and_bounded():
     assert "limited to" in body.lower()
 
 
+def test_live_sample_passthrough_and_rendered():
+    a = _audit()
+    a["live_sample"] = [{"nct_id": "NCT01234567", "sponsor_class": "OTHER", "aact_derived": True}]
+    a["live_sample_size"] = 1
+    a["live_note"] = "live note here"
+    r = render(a)
+    assert r["capsule"]["live_sample"][0]["nct_id"] == "NCT01234567"
+    assert "NCT01234567" in r["html"]            # sample embedded for the browser to query
+    assert "liveSection" in r["html"]            # live-refresh UI present
+    assert "eutils.ncbi.nlm.nih.gov" in r["html"] and "europepmc" in r["html"]
+
+
+def test_no_live_sample_key_when_absent():
+    r = render(_audit())  # baseline audit carries no live sample
+    assert "live_sample" not in r["capsule"]
+
+
 def test_no_leak():
     r = render(_audit())
     script = r["html"].split("<script>")[1]
@@ -114,5 +131,9 @@ def test_engine_runs_and_reconciles():
             assert a["scope"]["n_eligible"] == sum(g["n"] for g in a["groups"])
             assert all(0 <= p <= 100 for g in a["groups"] for p in g["metrics"].values())
             render(a)  # must produce a valid capsule
+            if "publication" in aid:
+                assert len(a["live_sample"]) == 60
+                assert all(set(x) == {"nct_id", "sponsor_class", "aact_derived"}
+                           for x in a["live_sample"])
     finally:
         con.close()
