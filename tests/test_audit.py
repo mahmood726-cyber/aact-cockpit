@@ -92,11 +92,14 @@ def test_no_leak():
 
 # --- engine smoke test, only when a warehouse exists ---
 def _have_warehouse():
+    # discover_snapshot_root() fails closed with SystemExit when no AACT snapshot
+    # is present (e.g. CI), which is BaseException, not Exception — catch both so
+    # collection never crashes.
     try:
         from aact_engine.paths import discover_snapshot_root, detect_snapshot_date
         from aact_engine.ingest import default_db_path
         return Path(default_db_path(detect_snapshot_date(discover_snapshot_root()))).is_file()
-    except Exception:
+    except BaseException:
         return False
 
 
