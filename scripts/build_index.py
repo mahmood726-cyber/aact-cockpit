@@ -38,7 +38,7 @@ def collect(d: Path) -> list[dict]:
         if "tier" not in c:
             continue
         kind = c.get("kind", "pairwise")
-        if "pico" not in c and kind != "atlas":
+        if "pico" not in c and kind not in ("atlas", "audit"):
             continue
         slug = c["slug"]
         html = f"{slug}/{slug}-capsule.html"
@@ -53,6 +53,17 @@ def collect(d: Path) -> list[dict]:
                 "tier": c["tier"], "html": html,
                 "headline": (f"{sc.get('n_analyses', 0):,} analyses · {sc.get('n_trials', 0):,} trials · "
                              f"{sc.get('pct_significant', 0):.1f}% significant"),
+                "snapshot": c.get("snapshot_date", "?"),
+            })
+            continue
+        if kind == "audit":
+            sc = c.get("scope", {})
+            find = (c.get("findings") or [""])[0]
+            rows.append({
+                "title": c.get("title", "ct.gov registry audit"),
+                "kind": kind, "k": sc.get("n_eligible", ""),
+                "tier": c["tier"], "html": html,
+                "headline": find or f"{sc.get('n_eligible', 0):,} eligible studies audited",
                 "snapshot": c.get("snapshot_date", "?"),
             })
             continue

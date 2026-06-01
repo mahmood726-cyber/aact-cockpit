@@ -57,7 +57,8 @@ def verify(docs: Path) -> int:
         # numeric witness (per capsule kind)
         witness = {"tsa": "tests/node/tsa_check.mjs",
                    "nma": "tests/node/nma_check.mjs",
-                   "atlas": "tests/node/atlas_check.mjs"}.get(kind, "tests/node/repool_check.mjs")
+                   "atlas": "tests/node/atlas_check.mjs",
+                   "audit": "tests/node/audit_check.mjs"}.get(kind, "tests/node/repool_check.mjs")
         r = subprocess.run(["node", str(_ROOT / witness), str(html)],
                            capture_output=True, text=True)
         status = "PASS" if r.returncode == 0 else "FAIL"

@@ -1,0 +1,87 @@
+{
+  "slug": "ctgov-probable-act-fdaaa-debt",
+  "title": "Probable ACT / FDAAA reporting debt",
+  "kind": "audit",
+  "snapshot_date": "2026-04-12",
+  "provenance": {
+    "snapshot_date": "2026-04-12",
+    "source": "ClinicalTrials.gov via AACT",
+    "db_path": null,
+    "extracted_at": "2026-06-01T07:46:53Z"
+  },
+  "source_url": "https://github.com/mahmood726-cyber/ctgov-probable-act-fdaaa-debt",
+  "source_repo": "ctgov-probable-act-fdaaa-debt",
+  "question": "How large is the likely U.S.-nexus FDA-regulated reporting backlog among older closed ClinicalTrials.gov studies?",
+  "estimand": "No-results rate among probable applicable clinical trials, by policy era",
+  "scope": {
+    "n_eligible": 6361,
+    "n_debt": 3203,
+    "debt_enrollment": 434133,
+    "definition": "closed interventional studies first posted in 2024 or earlier, FDA-regulated (drug or device) with a U.S.-export flag — a conservative probable-ACT proxy"
+  },
+  "groups": [
+    {
+      "label": "Pre-Final-Rule (<2017)",
+      "n": 294,
+      "metrics": {
+        "no_results_pct": 31.0,
+        "ghost_pct": 30.3,
+        "reason_missing_pct": 0.3,
+        "visible_pct": 69.0
+      }
+    },
+    {
+      "label": "Final-Rule Era (2017+)",
+      "n": 6067,
+      "metrics": {
+        "no_results_pct": 51.3,
+        "ghost_pct": 50.4,
+        "reason_missing_pct": 0.1,
+        "visible_pct": 48.7
+      }
+    }
+  ],
+  "primary_metric": "no_results_pct",
+  "metric_order": [
+    "no_results_pct",
+    "ghost_pct",
+    "visible_pct"
+  ],
+  "metric_labels": {
+    "no_results_pct": "no results posted",
+    "ghost_pct": "ghost protocol (no results, no disposition)",
+    "reason_missing_pct": "stop-reason field missing",
+    "visible_pct": "results visible"
+  },
+  "findings": [
+    "3,203 probable-ACT studies still carry no posted results, covering 434,133 enrolled participants.",
+    "No-results rate is 31.0% in Pre-Final-Rule (<2017) versus 51.3% in Final-Rule Era (2017+)."
+  ],
+  "caveats": "Regulated-status and U.S.-export flags are conservative proxies for FDAAA 801 applicability, not a legal determination; true ACT status requires case review.",
+  "self_audit": {
+    "checks": {
+      "citation_cascade": "pass",
+      "data_file_present": "pass",
+      "code_runs": "pass",
+      "dashboard_match": "pass",
+      "claim_language": "pass",
+      "analysis_rerun": "not-run",
+      "external_review": "not-run"
+    },
+    "aact_stats": {
+      "proportions_valid": "pass",
+      "denominators_positive": "pass",
+      "partition_reconciles": "pass",
+      "primary_present": "pass",
+      "no_nan": "pass"
+    }
+  },
+  "e156_body": "How large is the likely U.S.-nexus FDA-regulated reporting backlog among older closed ClinicalTrials.gov studies? We analysed 6,361 closed interventional studies first posted in 2024 or earlier, FDA-regulated (drug or device) with a U.S.-export flag — a conservative probable-ACT proxy from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results rate among probable applicable clinical trials, by policy era, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. 3,203 probable-ACT studies still carry no posted results, covering 434,133 enrolled participants. No-results rate is 31.0 percent in Pre-Final-Rule (<2017) versus 51.3 percent in Final-Rule Era (2017+). These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.",
+  "e156_validation": {
+    "ok": true,
+    "word_count": 153,
+    "sentence_count": 7
+  },
+  "tier": "silver",
+  "notes": []
+}

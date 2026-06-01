@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>e156 capsule · ct.gov registry audit</title>
+<meta property="og:title" content="e156 living evidence capsule — ClinicalTrials.gov registry audit"/>
+<meta property="og:description" content="Self-auditing reproduction of a ClinicalTrials.gov disclosure/reporting audit over the AACT registry."/>
+<style>
+  :root{--bg:#fbfbfd;--ink:#1a1a1f;--mut:#5a5a66;--line:#e3e3ea;--card:#fff;--accent:#7a2cc6;
+        --ok:#1f8a4c;--warn:#c47f17;--pend:#9aa0ab;--gold:#b8860b;--silver:#8a8f99;--bronze:#a9712e;
+        --bar:#7a2cc6;--bar2:#1f8a4c;}
+  @media (prefers-color-scheme:dark){:root{--bg:#15161a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1d1f25;}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 18px 80px}
+  .ribbon{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+          padding:8px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .tier{font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
+  .tier.gold{background:var(--gold)} .tier.silver{background:var(--silver)}
+  .tier.bronze{background:var(--bronze)} .tier.none{background:#b33}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mut)}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.pending{background:var(--pend)}
+  h1{font-size:24px;margin:22px 0 4px} h2{font-size:18px;margin:30px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  .motto{font-style:italic;color:var(--mut);font-size:13px}
+  pre{background:#0d1117;color:#d6deeb;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.4}
+  .body156{background:var(--card);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0}
+  button{font:inherit;padding:5px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;cursor:pointer}
+  .muted{color:var(--mut);font-size:12.5px}
+  svg{max-width:100%;height:auto}
+  .stat{display:inline-block;min-width:140px;margin:6px 18px 6px 0}
+  .stat b{display:block;font-size:24px;font-weight:800;color:var(--accent);line-height:1.1}
+  .stat span{font-size:12.5px;color:var(--mut)}
+  .barlbl{fill:var(--ink);font-size:12px} .barval{fill:var(--mut);font-size:11px}
+  a{color:var(--accent)}
+  ul.find{margin:6px 0 0;padding-left:18px} ul.find li{margin:3px 0}
+</style>
+</head>
+<body>
+<div class="ribbon">
+  <span class="tier" id="tier">—</span>
+  <span class="chk"><span class="dot pending" id="d-recon"></span><span id="t-recon">reconciliation</span></span>
+  <span class="chk"><span class="dot pending" id="d-match"></span>self-consistency</span>
+  <span class="chk"><span class="dot pending" id="d-snap"></span><span id="t-snap">snapshot</span></span>
+  <span class="motto" style="margin-left:auto">the capsule must agree with itself before asking the world to agree with it</span>
+</div>
+<div class="wrap">
+  <h1 id="title">ct.gov registry audit</h1>
+  <div class="sub" id="subtitle"></div>
+  <div class="card muted" id="provBox"></div>
+
+  <h2>01 · Question</h2>
+  <div class="card" id="qBox"></div>
+
+  <h2>02 · Scope</h2>
+  <div class="card" id="scopeBox"></div>
+
+  <h2>03 · <span id="primaryHdr">Primary metric</span> by group</h2>
+  <div class="muted" id="chartNote"></div>
+  <div class="card"><svg id="barPlot" role="img" aria-label="Primary metric by group"></svg></div>
+
+  <h2>04 · Full disclosure metrics</h2>
+  <div class="card"><table id="metricTable"></table></div>
+
+  <h2>05 · What the audit found</h2>
+  <div class="card"><ul class="find" id="findBox"></ul></div>
+
+  <h2>06 · 156-word summary (E156)</h2>
+  <div class="body156" id="bodyBox"></div>
+  <div class="muted" id="bodyMeta"></div>
+
+  <h2>07 · Reproduce it (DuckDB / SQL)</h2>
+  <div class="muted">Deterministic SQL over the AACT warehouse. The exact engine is <code>aact_engine/audits.py</code>; this is the shape of the aggregation.</div>
+  <div class="card"><pre id="sqlcode"></pre></div>
+
+  <h2>08 · Assurance &amp; inspector</h2>
+  <div class="card" id="auditBox"></div>
+  <div class="card"><button id="inspectBtn">show the exact reconciliation code that ran</button>
+    <pre id="inspectOut" style="display:none"></pre></div>
+  <p class="muted" id="caveatBox"></p>
+</div>
+<script>
+"use strict";
+const CAPSULE = {"slug": "ctgov-stopped-trial-disclosure-gap", "title": "Stopped-trial disclosure gap", "kind": "audit", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-06-01T07:46:51Z"}, "source_url": "https://github.com/mahmood726-cyber/ctgov-stopped-trial-disclosure-gap", "source_repo": "ctgov-stopped-trial-disclosure-gap", "question": "How much worse do stopped trials look on ClinicalTrials.gov than completed trials once older closed interventional studies are grouped by final status?", "estimand": "No-results and ghost-protocol rates across final-status groups", "scope": {"n_eligible": 282562, "definition": "interventional studies with a closed final status (completed/terminated/withdrawn/suspended) first posted in 2024 or earlier"}, "groups": [{"label": "Completed", "n": 239335, "metrics": {"no_results_pct": 74.9, "ghost_pct": 73.8, "reason_missing_pct": 0.0, "visible_pct": 25.1}}, {"label": "Terminated", "n": 28724, "metrics": {"no_results_pct": 60.9, "ghost_pct": 59.1, "reason_missing_pct": 10.2, "visible_pct": 39.1}}, {"label": "Withdrawn", "n": 13182, "metrics": {"no_results_pct": 100.0, "ghost_pct": 100.0, "reason_missing_pct": 13.1, "visible_pct": 0.0}}, {"label": "Suspended", "n": 1321, "metrics": {"no_results_pct": 99.7, "ghost_pct": 99.5, "reason_missing_pct": 9.5, "visible_pct": 0.3}}], "primary_metric": "no_results_pct", "metric_order": ["no_results_pct", "ghost_pct", "reason_missing_pct"], "metric_labels": {"no_results_pct": "no results posted", "ghost_pct": "ghost protocol (no results, no disposition)", "reason_missing_pct": "stop-reason field missing", "visible_pct": "results visible"}, "findings": ["Withdrawn studies reach 100.0% no-results and 100.0% ghost-protocol.", "Completed studies sit at 74.9% no-results versus 60.9% for terminated."], "caveats": "Final-status labels and missing reason fields are registry entries and do not adjudicate operational history or legal reporting obligations.", "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"proportions_valid": "pass", "denominators_positive": "pass", "partition_reconciles": "pass", "primary_present": "pass", "no_nan": "pass"}}, "e156_body": "How much worse do stopped trials look on ClinicalTrials.gov than completed trials once older closed interventional studies are grouped by final status? We analysed 282,562 interventional studies with a closed final status (completed/terminated/withdrawn/suspended) first posted in 2024 or earlier from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Records were grouped to estimate no-results and ghost-protocol rates across final-status groups, with disclosure measured as the no-results rate and the ghost-protocol rate, meaning no posted results and no disposition record. Withdrawn studies reach 100.0 percent no-results and 100.0 percent ghost-protocol. Completed studies sit at 74.9 percent no-results versus 60.9 percent for terminated. These descriptive registry patterns reflect what sponsors posted, not the conduct or merit of any individual trial, and warrant cautious reading. This reproduction is limited to registry metadata and conservative status proxies, cannot adjudicate legal reporting obligations, and may not generalise beyond the eligible older cohort.", "e156_validation": {"ok": true, "word_count": 145, "sentence_count": 7}, "tier": "silver", "notes": []};
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const nf = n => (n==null||!isFinite(n)) ? "n/a" : Number(n).toLocaleString("en-US");
+const f1 = x => (x==null||!isFinite(x)) ? "n/a" : Number(x).toFixed(1);
+
+// ---- in-browser reconciliation: subgroups must partition the eligible set,
+// and every displayed proportion must be a valid percentage. The dot is green
+// only if both hold — the capsule checking its own arithmetic. ----
+function reconcile(){
+  const g = CAPSULE.groups, s = CAPSULE.scope;
+  const sum = g.reduce((a,x)=>a+x.n, 0);
+  const partition = sum === s.n_eligible;
+  const pctsOk = g.every(x => Object.values(x.metrics).every(p => p>=0 && p<=100));
+  const posOk = g.every(x => x.n > 0);
+  return {partition, pctsOk, posOk, ok: partition && pctsOk && posOk, sum};
+}
+
+function renderBars(){
+  const g = CAPSULE.groups, pm = CAPSULE.primary_metric;
+  const svg = document.getElementById('barPlot');
+  const rowH=34, padL=170, padR=70, padT=10, W=720, H=padT*2+rowH*g.length;
+  svg.setAttribute('viewBox',`0 0 ${W} ${Math.max(60,H)}`);
+  const pmax = Math.max(20, ...g.map(x=>x.metrics[pm]||0)); const pw=W-padL-padR;
+  let s='';
+  g.forEach((x,i)=>{const y=padT+i*rowH; const v=x.metrics[pm]||0; const bw=(v/pmax)*pw;
+    s+=`<text class="barlbl" x="${padL-8}" y="${y+rowH/2+4}" text-anchor="end">${esc(x.label)}</text>`+
+       `<rect x="${padL}" y="${y+6}" width="${bw}" height="${rowH-14}" fill="var(--bar)" opacity="0.85" rx="3"/>`+
+       `<text class="barval" x="${padL+bw+6}" y="${y+rowH/2+4}">${f1(v)}% · n=${nf(x.n)}</text>`;});
+  svg.innerHTML=s;
+}
+
+function renderTable(){
+  const g = CAPSULE.groups, order = CAPSULE.metric_order, lab = CAPSULE.metric_labels;
+  const head = "<thead><tr><th>Group</th><th>n</th>" +
+    order.map(m=>`<th>${esc((lab[m]||m).split(' (')[0])}</th>`).join("") + "</tr></thead>";
+  const body = "<tbody>" + g.map(x=>`<tr><td>${esc(x.label)}</td><td>${nf(x.n)}</td>`+
+    order.map(m=>`<td>${f1(x.metrics[m])}%</td>`).join("")+"</tr>").join("") + "</tbody>";
+  document.getElementById('metricTable').innerHTML = head + body;
+}
+
+function sqlCode(){
+  const pm = CAPSULE.primary_metric;
+  return `-- ${esc(CAPSULE.title)} · AACT snapshot ${CAPSULE.snapshot_date}\n`+
+  `-- eligible = ${esc(CAPSULE.scope.definition)}\n`+
+  `SELECT <group> AS g, count(*) AS n,\n`+
+  `       round(100.0*avg(CASE WHEN results_first_posted_date IS NULL THEN 1 ELSE 0 END),1) AS no_results_pct,\n`+
+  `       round(100.0*avg(CASE WHEN results_first_posted_date IS NULL\n`+
+  `                             AND disposition_first_posted_date IS NULL THEN 1 ELSE 0 END),1) AS ghost_pct\n`+
+  `FROM studies s\n`+
+  `WHERE lower(s.study_type) = 'interventional'   -- plus the eligibility filter above\n`+
+  `GROUP BY 1 ORDER BY n DESC;   -- primary metric reported here: ${pm}`;
+}
+
+function setDot(id,st){const d=document.getElementById(id);if(d)d.className='dot '+st;}
+
+document.getElementById('title').textContent = CAPSULE.title;
+document.getElementById('subtitle').textContent =
+  "Reproduction of a ClinicalTrials.gov registry audit as a self-auditing capsule.";
+document.getElementById('provBox').innerHTML =
+  `Source: ${esc((CAPSULE.provenance&&CAPSULE.provenance.source)||'ClinicalTrials.gov via AACT')} · `+
+  `snapshot <b>${esc(CAPSULE.snapshot_date)}</b>. Reproduces the published analysis at `+
+  `<a href="${esc(CAPSULE.source_url)}" target="_blank" rel="noopener">${esc(CAPSULE.source_repo)}</a> `+
+  `on this AACT snapshot — exact figures differ from the original run because the registry snapshot differs. `+
+  `Fixed snapshot, not live; no legal or operational adjudication.`;
+document.getElementById('qBox').innerHTML =
+  `<b>${esc(CAPSULE.question)}</b><br><span class="muted">Estimand: ${esc(CAPSULE.estimand)}.</span>`;
+const s = CAPSULE.scope;
+let scopeHtml = `<div class="stat"><b>${nf(s.n_eligible)}</b><span>eligible studies</span></div>`;
+if(s.n_debt!=null) scopeHtml += `<div class="stat"><b>${nf(s.n_debt)}</b><span>probable reporting debt</span></div>`;
+if(s.debt_enrollment!=null) scopeHtml += `<div class="stat"><b>${nf(s.debt_enrollment)}</b><span>participants in debt</span></div>`;
+scopeHtml += `<div class="muted" style="margin-top:8px">Eligible = ${esc(s.definition)}.</div>`;
+document.getElementById('scopeBox').innerHTML = scopeHtml;
+const lab = CAPSULE.metric_labels[CAPSULE.primary_metric] || CAPSULE.primary_metric;
+document.getElementById('primaryHdr').textContent = lab.charAt(0).toUpperCase()+lab.slice(1);
+document.getElementById('chartNote').textContent =
+  "Share of each group's studies meeting the primary disclosure metric; bars recomputed from the embedded counts.";
+document.getElementById('findBox').innerHTML = CAPSULE.findings.map(f=>`<li>${esc(f)}</li>`).join("");
+document.getElementById('bodyBox').textContent = CAPSULE.e156_body;
+document.getElementById('bodyMeta').textContent =
+  `${CAPSULE.e156_validation.sentence_count} sentences · ${CAPSULE.e156_validation.word_count} words · E156 ${CAPSULE.e156_validation.ok?'PASS':'FAIL'}`;
+document.getElementById('sqlcode').textContent = sqlCode();
+document.getElementById('caveatBox').textContent = "Boundary: " + CAPSULE.caveats;
+const ck = CAPSULE.self_audit;
+document.getElementById('auditBox').innerHTML = '<b>Tier checks</b><br>'+
+  Object.entries(ck.checks).map(([k,v])=>`${k}: ${v}`).join(' · ')+
+  '<br><br><b>Internal reconciliation</b><br>'+
+  Object.entries(ck.aact_stats).map(([k,v])=>`${k}: ${v}`).join(' · ');
+document.getElementById('inspectBtn').addEventListener('click',()=>{const o=document.getElementById('inspectOut');
+  o.style.display=o.style.display==='none'?'block':'none';o.textContent=[reconcile,renderBars,renderTable].map(fn=>fn.toString()).join('\n\n');});
+
+renderBars(); renderTable();
+const rec = reconcile();
+const reconOk = Object.values(ck.aact_stats).every(v=>v==='pass');
+setDot('d-recon', reconOk?'ok':'warn'); document.getElementById('t-recon').textContent = reconOk?'reconciliation passed':'reconciliation issue';
+setDot('d-match', rec.ok?'ok':'warn');
+setDot('d-snap', CAPSULE.snapshot_date?'ok':'warn'); document.getElementById('t-snap').textContent='snapshot '+(CAPSULE.snapshot_date||'?');
+const tier=document.getElementById('tier');tier.textContent=CAPSULE.tier;tier.className='tier '+CAPSULE.tier;
+</script>
+</body>
+</html>

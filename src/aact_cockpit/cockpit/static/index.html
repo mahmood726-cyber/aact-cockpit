@@ -198,6 +198,20 @@
   </div>
 
   <!-- LIBRARY -->
+  <div class="card" id="cardAudits">
+    <div class="step"><span class="n">⚖</span> ct.gov registry audits — reproduced from your GitHub papers</div>
+    <p class="lede" style="margin-top:0">Reproductions of your standalone ct.gov disclosure/reporting audits as self-auditing
+      capsules: how reporting debt (no results, ghost protocols) varies by final status, condition family, policy era,
+      and FDA-regulated status. Each links its source paper and notes the snapshot delta.</p>
+    <div class="selwrap"><select id="auditPreset"><option value="">— loading… —</option></select></div>
+    <button class="btn sec" id="auditBtn" style="margin-top:14px"><span class="spin"></span><span class="lbl">Build audit capsule</span></button>
+    <div class="status" id="auditStatus"></div>
+    <div class="hide" id="auditResult" style="margin-top:12px">
+      <span class="tier" id="auditTier"></span> <span class="big" id="auditLine"></span>
+      <a class="dl" id="auditDl" target="_blank" rel="noopener" style="margin-left:10px">Open the audit capsule ↗</a>
+    </div>
+  </div>
+
   <div class="card" id="cardAtlas">
     <div class="step"><span class="n">★</span> Registry atlas — an analysis no one has done before</div>
     <p class="lede" style="margin-top:0">Not one question — the <b>whole</b> reported-evidence base. Characterises how
@@ -317,7 +331,7 @@ $("buildBtn").addEventListener("click", async () => {
 });
 
 // ----- capsule library -----
-const KIND_LABEL = {pairwise:"pairwise", tsa:"TSA", nma:"network"};
+const KIND_LABEL = {pairwise:"pairwise", tsa:"TSA", nma:"network", atlas:"atlas", audit:"ct.gov audit"};
 async function refreshLibrary(){
   try{
     const r = await (await fetch("/api/capsules")).json();
@@ -372,6 +386,31 @@ $("atlasBtn").addEventListener("click", async () => {
     $("atlasStatus").textContent = ""; refreshLibrary();
   }catch(e){ $("atlasStatus").innerHTML = `<span class="err">Build failed: ${e.message}</span>`; }
   busy($("atlasBtn"),false);
+});
+
+// ----- ct.gov registry audits -----
+(async () => {
+  try{
+    const r = await (await fetch("/api/audits")).json();
+    $("auditPreset").innerHTML = '<option value="">— pick an audit —</option>' +
+      r.audits.map(a => `<option value="${a.id}">${a.label}</option>`).join("");
+  }catch(e){ $("auditPreset").innerHTML = '<option value="">(none available)</option>'; }
+})();
+$("auditBtn").addEventListener("click", async () => {
+  const id = $("auditPreset").value;
+  if(!id){ $("auditStatus").innerHTML = '<span class="err">Pick an audit first.</span>'; return; }
+  busy($("auditBtn"),true); $("auditStatus").textContent = "Auditing the registry (a few seconds)…";
+  try{
+    const r = await fetch("/api/audit?audit="+encodeURIComponent(id));
+    const man = await r.json();
+    if(!r.ok) throw new Error(man.detail || ("HTTP "+r.status));
+    $("auditTier").textContent = man.tier; $("auditTier").className = "tier "+man.tier;
+    $("auditLine").textContent = "registry audit · " + man.tier;
+    $("auditDl").href = man.download_url;
+    $("auditResult").classList.remove("hide"); $("auditResult").classList.add("row-fade");
+    $("auditStatus").textContent = ""; refreshLibrary();
+  }catch(e){ $("auditStatus").innerHTML = `<span class="err">Build failed: ${e.message}</span>`; }
+  busy($("auditBtn"),false);
 });
 </script>
 </body>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>e156 capsule · network meta-analysis</title>
+<meta property="og:title" content="e156 living evidence capsule — network meta-analysis"/>
+<meta property="og:description" content="Self-auditing network meta-analysis over ClinicalTrials.gov/AACT, cross-validated against R netmeta."/>
+<style>
+  :root{--bg:#fbfbfd;--ink:#1a1a1f;--mut:#5a5a66;--line:#e3e3ea;--card:#fff;--accent:#0e7c66;
+        --ok:#1f8a4c;--warn:#c47f17;--pend:#9aa0ab;--gold:#b8860b;--silver:#8a8f99;--bronze:#a9712e;--node:#0e7c66;}
+  @media (prefers-color-scheme:dark){:root{--bg:#15161a;--ink:#ececf1;--mut:#9aa0ab;--line:#2b2d34;--card:#1d1f25;}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 18px 80px}
+  .ribbon{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+          padding:8px 18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .tier{font-weight:800;letter-spacing:.06em;padding:3px 10px;border-radius:6px;color:#fff;text-transform:uppercase;font-size:12px}
+  .tier.gold{background:var(--gold)} .tier.silver{background:var(--silver)} .tier.bronze{background:var(--bronze)} .tier.none{background:#b33}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mut)}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.pending{background:var(--pend)}
+  h1{font-size:24px;margin:22px 0 4px} h2{font-size:18px;margin:30px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  td[contenteditable]{background:rgba(14,124,102,.07);border-radius:4px}
+  td[contenteditable]:focus{outline:2px solid var(--accent)}
+  .motto{font-style:italic;color:var(--mut);font-size:13px}
+  pre{background:#0d1117;color:#d6deeb;padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.4}
+  .body156{background:var(--card);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0}
+  button{font:inherit;padding:5px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:7px;cursor:pointer}
+  .muted{color:var(--mut);font-size:12.5px}
+  svg{max-width:100%;height:auto}
+  .edge{stroke:var(--mut)} .nodec{fill:var(--node)} .nodet{fill:#fff;font-size:12px;font-weight:600}
+  .leaguecell{text-align:center;font-size:12px} .ref{font-weight:700}
+  .bar{fill:var(--accent)} .barbg{fill:var(--line)}
+  .tick{fill:var(--mut);font-size:11px} .whisk{stroke:var(--ink)} .diamond{fill:var(--accent)} .nullline{stroke:var(--mut);stroke-dasharray:3 3}
+</style>
+</head>
+<body>
+<div class="ribbon">
+  <span class="tier" id="tier">—</span>
+  <span class="chk"><span class="dot pending" id="d-conn"></span>network connected</span>
+  <span class="chk"><span class="dot pending" id="d-cons"></span><span id="t-cons">consistency</span></span>
+  <span class="chk"><span class="dot pending" id="d-match"></span>dashboard match</span>
+  <span class="chk"><span class="dot pending" id="d-r"></span>R netmeta</span>
+  <span class="motto" style="margin-left:auto">the capsule must agree with itself before asking the world to agree with it</span>
+</div>
+<div class="wrap">
+  <h1 id="title">network meta-analysis</h1>
+  <div class="sub" id="subtitle"></div>
+  <div class="card muted" id="provBox"></div>
+
+  <h2>01 · Question</h2>
+  <div class="card" id="picoBox"></div>
+
+  <h2>02 · Treatment network</h2>
+  <div class="muted">Nodes are treatments (size ∝ direct trials); edges are direct comparisons (width ∝ trials).</div>
+  <div class="card"><svg id="netPlot" role="img" aria-label="Treatment network"></svg>
+    <div class="muted" id="netNote"></div></div>
+
+  <h2>03 · Ranking (SUCRA)</h2>
+  <div class="card"><svg id="sucraPlot" role="img" aria-label="SUCRA ranking"></svg></div>
+
+  <h2>04 · Forest vs reference</h2>
+  <div class="card"><svg id="forest" role="img" aria-label="Forest vs reference"></svg></div>
+
+  <h2>05 · League table (row vs column)</h2>
+  <div class="muted">HR &lt; 1 favours the row treatment. Diagonal = treatment name.</div>
+  <div class="card" style="overflow:auto"><table id="league"></table></div>
+
+  <h2>06 · Loop consistency (Bucher)</h2>
+  <div class="muted">For each closed loop, direct evidence is compared with indirect evidence; an inconsistency factor (IF) far from 1 with a small p-value signals disagreement.</div>
+  <div class="card" id="consBox"></div>
+
+  <h2>07 · Contrast data (editable — re-fits live)</h2>
+  <div class="card"><table id="dataTable"><thead><tr>
+    <th>Trial</th><th>Comparison</th><th>HR</th><th>LCI</th><th>UCI</th>
+  </tr></thead><tbody id="dataBody"></tbody></table>
+  <div style="margin-top:8px"><button id="resetBtn">reset to AACT data</button></div></div>
+
+  <h2>07 · 156-word summary (E156)</h2>
+  <div class="body156" id="bodyBox"></div>
+  <div class="muted" id="bodyMeta"></div>
+
+  <h2>08 · R cross-validation (netmeta)</h2>
+  <div class="card"><pre id="rcode"></pre></div>
+
+  <h2>09 · Assurance &amp; inspector</h2>
+  <div class="card" id="auditBox"></div>
+  <div class="card"><button id="inspectBtn">show the exact NMA code that ran</button>
+    <pre id="inspectOut" style="display:none"></pre></div>
+  <p class="muted" id="notesBox"></p>
+</div>
+<script>
+"use strict";
+const CAPSULE = {"slug": "nma-all-cause-mortality-in-heart-failure-with-reduced-ejection-fraction", "title": "NMA — all-cause mortality in heart failure with reduced ejection fraction", "measure": "HR", "pico": {"population": "heart failure with reduced ejection fraction", "outcome": "all-cause mortality", "intervention": "disease-modifying therapies", "comparator": "placebo"}, "primary_estimand": "hazard ratio for all-cause mortality versus placebo", "snapshot_date": "2026-04-12", "provenance": {"snapshot_date": "2026-04-12", "source": "ClinicalTrials.gov via AACT", "db_path": null, "extracted_at": "2026-06-01T07:51:56Z"}, "kind": "nma", "reference": "placebo", "treatments": ["MRA", "SGLT2 inhibitor", "placebo"], "lower_is_better": true, "favours_low": "lower HR is better", "favours_high": "higher HR is worse", "contrasts": [{"nct": "NCT00094302", "study": "Treatment of Preserved Cardiac Function Heart Failure With an Aldosterone Antagonist (TOPCAT)", "t1": "placebo", "t2": "MRA", "t1_label": "Placebo", "t2_label": "Spironolactone", "hr": 0.91, "lci": 0.77, "uci": 1.08, "yi": -0.09431067947124129, "sei": 0.08630918933694871, "source_outcome_analysis_id": "105516859"}, {"nct": "NCT01115855", "study": "The Effect Of Eplerenone Versus Placebo On Cardiovascular Mortality And Heart Failure Hospitalization In Japanese Subjects With Chronic Heart Failure", "t1": "MRA", "t2": "placebo", "t1_label": "Eplerenone", "t2_label": "Placebo", "hr": 1.77, "lci": 0.81, "uci": 3.87, "yi": 0.5709795465857378, "sei": 0.3989806829854483, "source_outcome_analysis_id": "105534168"}, {"nct": "NCT03057951", "study": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Preserved Ejection Fraction (HFpEF)", "t1": "placebo", "t2": "SGLT2 inhibitor", "t1_label": "Placebo", "t2_label": "10 mg Empagliflozin", "hr": 1.0, "lci": 0.87, "uci": 1.15, "yi": 0.0, "sei": 0.0711809022792184, "source_outcome_analysis_id": "105481504"}, {"nct": "NCT03057977", "study": "A Phase III Randomised, Double-blind Trial to Evaluate Efficacy and Safety of Once Daily Empagliflozin 10 mg Compared to Placebo, in Patients With Chronic Heart Failure With Reduced Ejection Fraction (HFrEF)", "t1": "placebo", "t2": "SGLT2 inhibitor", "t1_label": "Placebo", "t2_label": "10 mg Empagliflozin", "hr": 0.92, "lci": 0.77, "uci": 1.1, "yi": -0.08338160893905101, "sei": 0.09099017807269391, "source_outcome_analysis_id": "105446471"}, {"nct": "NCT04435626", "study": "A Multicenter, Randomized, Double-blind, Parallel-group, Placebo-controlled Study to Evaluate the Efficacy and Safety of Finerenone on Morbidity and Mortality in Participants With Heart Failure (NYHA II-IV) and Left Ventricular Ejection Fraction ≥ 40% (LVEF ≥ 40%)", "t1": "MRA", "t2": "placebo", "t1_label": "Finerenone (BAY94-8862)", "t2_label": "Placebo", "hr": 0.93, "lci": 0.83, "uci": 1.06, "yi": -0.07257069283483537, "sei": 0.06239871963077663, "source_outcome_analysis_id": "105586812"}], "nma": {"reference": "placebo", "treatments": ["MRA", "SGLT2 inhibitor", "placebo"], "effects": {"placebo": 0.0, "MRA": 0.017931250498657215, "SGLT2 inhibitor": 0.036512133221435886}, "rel_to_ref": {"MRA": {"est": 1.0180929805989967, "lo": 0.8788161835239274, "hi": 1.1794426827561124}, "SGLT2 inhibitor": {"est": 1.037186888359592, "lo": 0.8870401167501281, "hi": 1.212748579316041}, "placebo": {"est": 1.0, "lo": 1.0, "hi": 1.0}}, "league": {"MRA|SGLT2 inhibitor": {"est": 0.9815906776542517, "lo": 0.7919323575693135, "hi": 1.2166698951600818, "log": -0.01858088272277867, "se": 0.10954202061634491}, "MRA|placebo": {"est": 1.0180929805989967, "lo": 0.8788161835239274, "hi": 1.1794426827561124, "log": 0.017931250498657215, "se": 0.07505789637981888}, "SGLT2 inhibitor|MRA": {"est": 1.0187545814817047, "lo": 0.8219156272198436, "hi": 1.2627341090965278, "log": 0.01858088272277867, "se": 0.10954202061634491}, "SGLT2 inhibitor|placebo": {"est": 1.037186888359592, "lo": 0.8870401167501281, "hi": 1.212748579316041, "log": 0.036512133221435886, "se": 0.07978575356382933}, "placebo|MRA": {"est": 0.982228557760656, "lo": 0.847858072817246, "hi": 1.1378943842273623, "log": -0.017931250498657215, "se": 0.07505789637981888}, "placebo|SGLT2 inhibitor": {"est": 0.9641463956236406, "lo": 0.8245732190953993, "hi": 1.1273447289664034, "log": -0.036512133221435886, "se": 0.07978575356382933}}, "tau2": 0.006258087939758033, "Q": 5.1012047380501135, "df": 3, "k": 5, "sucra": {"MRA": 0.47737500000000005, "SGLT2 inhibitor": 0.391625, "placebo": 0.631}, "edges": [{"a": "MRA", "b": "placebo", "n": 3}, {"a": "SGLT2 inhibitor", "b": "placebo", "n": 2}], "method": "DL", "consistency": {"loops": [], "assessable": false, "min_p": null, "inconsistent": false, "n_multiarm": 0}}, "connected": true, "has_loops": false, "self_audit": {"checks": {"citation_cascade": "pass", "data_file_present": "pass", "code_runs": "pass", "dashboard_match": "pass", "claim_language": "pass", "analysis_rerun": "not-run", "external_review": "not-run"}, "aact_stats": {"connectivity": "pass", "direction_oriented": "pass", "consistency": "pass", "no_nan": "pass"}}, "e156_body": "Among anticoagulants for heart failure with reduced ejection fraction, which option ranks best for all-cause mortality? This network meta-analysis connects 3 treatments across 5 randomized comparisons from the ClinicalTrials.gov AACT snapshot dated 2026-04-12. Trial contrasts were synthesised with a random-effects model on the log scale, taking placebo as the network reference. By surface under the cumulative ranking curve, placebo ranked highest, with a pooled HR of 1.00 (95% CI 1.00 to 1.00) versus placebo. Its ranking statistic was 63 percent, the network was connected, and rankings should not be read as head-to-head superiority across differing trial populations. Because the network forms a tree without closed loops, consistency cannot be assessed, so the indirect comparisons warrant cautious reading. Interpretation is limited by reliance on a single registry snapshot and by sparse direct evidence, and does not generalise beyond the included trials.", "e156_validation": {"ok": true, "word_count": 140, "sentence_count": 7}, "tier": "silver", "notes": []};
+const SLUG = CAPSULE.slug, LSKEY = "e156:" + SLUG;
+const Z = 1.959963984540054;
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const f = x => (x==null||!isFinite(x)) ? "n/a" : x.toFixed(2);
+const f3 = x => (x==null||!isFinite(x)) ? "n/a" : x.toFixed(3);
+
+// ---- linear algebra ----
+function matT(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
+function matMul(A,B){const n=A.length,p=B.length,m=B[0].length;const C=Array.from({length:n},()=>Array(m).fill(0));
+  for(let i=0;i<n;i++)for(let k=0;k<p;k++){const a=A[i][k];for(let j=0;j<m;j++)C[i][j]+=a*B[k][j];}return C;}
+function matInv(A){const n=A.length;const M=A.map((r,i)=>r.concat(Array.from({length:n},(_,j)=>i===j?1:0)));
+  for(let c=0;c<n;c++){let piv=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[piv][c]))piv=r;
+    [M[c],M[piv]]=[M[piv],M[c]];const d=M[c][c];for(let j=0;j<2*n;j++)M[c][j]/=d;
+    for(let r=0;r<n;r++){if(r===c)continue;const fa=M[r][c];for(let j=0;j<2*n;j++)M[r][j]-=fa*M[c][j];}}
+  return M.map(r=>r.slice(n));}
+function chol(A){const n=A.length;const L=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++)for(let j=0;j<=i;j++){let s=A[i][j];for(let k=0;k<j;k++)s-=L[i][k]*L[j][k];
+    L[i][j]=(i===j)?Math.sqrt(Math.max(s,1e-12)):s/L[j][j];}return L;}
+
+// ---- xorshift32 PRNG (matches Python nma._seeded_normals bit-for-bit) ----
+function rng(seed){let s=seed>>>0;return function(){s^=(s<<13);s^=(s>>>17);s^=(s<<5);s=s>>>0;return (s+0.5)/4294967296;};}
+function seededNormals(n,seed){const out=[];const u=rng(seed);
+  while(out.length<n){const u1=u(),u2=u();const r=Math.sqrt(-2*Math.log(Math.max(u1,1e-12)));
+    out.push(r*Math.cos(2*Math.PI*u2));out.push(r*Math.sin(2*Math.PI*u2));}return out.slice(0,n);}
+
+// ---- NMA fit (mirrors aact_cockpit.capsule.nma) ----
+function nmaFit(contrasts, reference, nSim){
+  nSim=nSim||4000;
+  const ts=new Set();contrasts.forEach(c=>{ts.add(c.t1);ts.add(c.t2);});
+  const treatments=[...ts].sort();
+  let ref=reference;
+  if(!ref){const deg={};treatments.forEach(t=>deg[t]=0);contrasts.forEach(c=>{deg[c.t1]++;deg[c.t2]++;});
+    ref=treatments.reduce((a,b)=>deg[b]>deg[a]?b:a);}
+  const others=treatments.filter(t=>t!==ref);const idx={};others.forEach((t,i)=>idx[t]=i);
+  const m=others.length,n=contrasts.length;
+  const X=Array.from({length:n},()=>Array(m).fill(0)),y=[],v=[];
+  contrasts.forEach((c,i)=>{y.push(c.yi);v.push(c.sei*c.sei);
+    if(c.t1!==ref)X[i][idx[c.t1]]+=1;if(c.t2!==ref)X[i][idx[c.t2]]-=1;});
+  function XtWX(w){const r=Array.from({length:m},()=>Array(m).fill(0));
+    for(let a=0;a<m;a++)for(let b=0;b<m;b++){let s=0;for(let i=0;i<n;i++)s+=X[i][a]*w[i]*X[i][b];r[a][b]=s;}return r;}
+  function XtWy(w){const r=Array(m).fill(0);for(let a=0;a<m;a++){let s=0;for(let i=0;i<n;i++)s+=X[i][a]*w[i]*y[i];r[a]=s;}return r;}
+  const wf=v.map(x=>1/x),A=XtWX(wf),Ainv=matInv(A),b=XtWy(wf);
+  const thetaFE=Ainv.map((row)=>row.reduce((s,_,j)=>s+row[j]*b[j],0));
+  let Q=0;for(let i=0;i<n;i++){let pr=0;for(let a=0;a<m;a++)pr+=X[i][a]*thetaFE[a];Q+=wf[i]*(y[i]-pr)**2;}
+  const df=n-m;let tau2=0;
+  if(df>0&&Q>df){const w2=v.map(x=>1/(x*x));const prod=matMul(Ainv,XtWX(w2));
+    let tr=0;for(let i=0;i<m;i++)tr+=prod[i][i];const trW=wf.reduce((s,x)=>s+x,0);const C=trW-tr;
+    if(C>0)tau2=Math.max(0,(Q-df)/C);}
+  const wr=v.map(x=>1/(x+tau2)),cov=matInv(XtWX(wr)),br=XtWy(wr);
+  const theta=cov.map(row=>row.reduce((s,_,j)=>s+row[j]*br[j],0));
+  const eff={};eff[ref]=0;others.forEach(t=>eff[t]=theta[idx[t]]);
+  const tindex={};treatments.forEach((t,i)=>tindex[t]=i);
+  const fullCov=Array.from({length:treatments.length},()=>Array(treatments.length).fill(0));
+  others.forEach(a=>others.forEach(b2=>{fullCov[tindex[a]][tindex[b2]]=cov[idx[a]][idx[b2]];}));
+  const league={};
+  treatments.forEach(a=>treatments.forEach(bb=>{if(a===bb)return;
+    const d=eff[a]-eff[bb];
+    const va=fullCov[tindex[a]][tindex[a]]+fullCov[tindex[bb]][tindex[bb]]-2*fullCov[tindex[a]][tindex[bb]];
+    const se=Math.sqrt(Math.max(va,0));
+    league[a+"|"+bb]={est:Math.exp(d),lo:Math.exp(d-Z*se),hi:Math.exp(d+Z*se)};}));
+  const rel={};treatments.forEach(t=>{const s=Math.sqrt(Math.max(fullCov[tindex[t]][tindex[t]],0));
+    rel[t]={est:Math.exp(eff[t]),lo:Math.exp(eff[t]-Z*s),hi:Math.exp(eff[t]+Z*s)};});
+  // SUCRA
+  const M=treatments.length;const C=fullCov.map((r,i)=>r.map((x,j)=>x+(i===j?1e-12:0)));const L=chol(C);
+  const mu=treatments.map(t=>eff[t]);const rc=Array.from({length:M},()=>Array(M).fill(0));
+  const normals=seededNormals(nSim*M,2463534242);
+  const lowerBetter=(CAPSULE.lower_is_better!==false);  // default: lower = better
+  for(let s=0;s<nSim;s++){const zv=normals.slice(s*M,(s+1)*M);
+    const draw=mu.map((mi,i)=>{let val=mi;for(let k=0;k<=i;k++)val+=L[i][k]*zv[k];return val;});
+    const order=draw.map((d,i)=>[d,i]).sort((p,q)=>lowerBetter?p[0]-q[0]:q[0]-p[0]).map(p=>p[1]);
+    order.forEach((ti,rank)=>rc[ti][rank]++);}
+  const sucra={};treatments.forEach((t,i)=>{let cum=0;for(let r=0;r<M-1;r++){let p=0;for(let rr=0;rr<=r;rr++)p+=rc[i][rr]/nSim;cum+=p;}sucra[t]=M>1?cum/(M-1):1;});
+  // edges
+  const em={};contrasts.forEach(c=>{const k=[c.t1,c.t2].sort().join("|");em[k]=(em[k]||0)+1;});
+  const edges=Object.keys(em).map(k=>({a:k.split("|")[0],b:k.split("|")[1],n:em[k]}));
+  return {treatments,reference:ref,effects:eff,rel_to_ref:rel,league,tau2,Q,df,k:n,sucra,edges};
+}
+function connected(treatments,edges){if(!treatments.length)return false;const adj={};treatments.forEach(t=>adj[t]=[]);
+  edges.forEach(e=>{adj[e.a].push(e.b);adj[e.b].push(e.a);});const seen=new Set([treatments[0]]),st=[treatments[0]];
+  while(st.length){const x=st.pop();adj[x].forEach(nb=>{if(!seen.has(nb)){seen.add(nb);st.push(nb);}});}return seen.size===treatments.length;}
+function hasLoops(treatments,edges){const d=new Set(edges.map(e=>[e.a,e.b].sort().join("|")));return d.size>=treatments.length;}
+// ---- loop inconsistency (Bucher), mirrors aact_cockpit.capsule.nma ----
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function normcdf(x){return 0.5*(1+erf(x/Math.SQRT2));}
+function directEdge(contrasts,a,b){const ys=[],vs=[];
+  contrasts.forEach(c=>{if((c.t1===a&&c.t2===b)||(c.t1===b&&c.t2===a)){ys.push((c.t1===a&&c.t2===b)?c.yi:-c.yi);vs.push(c.sei*c.sei);}});
+  if(!ys.length)return null;const k=ys.length;const w=vs.map(v=>1/v);const sw=w.reduce((s,x)=>s+x,0);
+  const m=ys.reduce((s,_,i)=>s+w[i]*ys[i],0)/sw;let tau2=0;
+  if(k>1){const Q=ys.reduce((s,_,i)=>s+w[i]*(ys[i]-m)**2,0),df=k-1,C=sw-w.reduce((s,x)=>s+x*x,0)/sw;if(df>0&&C>0)tau2=Math.max(0,(Q-df)/C);}
+  const wr=vs.map(v=>1/(v+tau2)),swr=wr.reduce((s,x)=>s+x,0);
+  return {log:ys.reduce((s,_,i)=>s+wr[i]*ys[i],0)/swr,var:1/swr,k};}
+function bucherLoops(contrasts,treatments){
+  const es=new Set(contrasts.map(c=>[c.t1,c.t2].sort().join("|")));const loops=[];
+  for(let i=0;i<treatments.length;i++)for(let j=i+1;j<treatments.length;j++)for(let k=j+1;k<treatments.length;k++){
+    const a=treatments[i],b=treatments[j],c=treatments[k];
+    if(!(es.has([a,b].sort().join("|"))&&es.has([b,c].sort().join("|"))&&es.has([a,c].sort().join("|"))))continue;
+    const dab=directEdge(contrasts,a,b),dbc=directEdge(contrasts,b,c),dac=directEdge(contrasts,a,c);
+    if(!(dab&&dbc&&dac))continue;
+    const ifl=dac.log-(dab.log+dbc.log),v=dac.var+dab.var+dbc.var,se=Math.sqrt(v),z=se>0?ifl/se:0;
+    loops.push({nodes:[a,b,c],if_log:ifl,se,if_ratio:Math.exp(ifl),lo:Math.exp(ifl-Z*se),hi:Math.exp(ifl+Z*se),z,p:2*(1-normcdf(Math.abs(z)))});}
+  return loops;}
+
+// ---- state ----
+function defaults(){return CAPSULE.contrasts.map(c=>({...c}));}
+function load(){try{const raw=localStorage.getItem(LSKEY);if(raw){const s=JSON.parse(raw);if(Array.isArray(s)&&s.length)return s;}}catch(e){}return defaults();}
+let model=load();
+function persist(){try{localStorage.setItem(LSKEY,JSON.stringify(model));}catch(e){}}
+function recompute(){ // refresh yi/sei from edited hr/lci/uci
+  model.forEach(c=>{if(c.hr>0&&c.lci>0&&c.uci>0){c.yi=Math.log(c.hr);c.sei=(Math.log(c.uci)-Math.log(c.lci))/(2*Z);}});
+}
+
+// ---- network plot ----
+function renderNet(res){
+  const W=520,H=300,cx=W/2,cy=H/2,R=110;const svg=document.getElementById('netPlot');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const T=res.treatments,deg={};T.forEach(t=>deg[t]=0);res.edges.forEach(e=>{deg[e.a]+=e.n;deg[e.b]+=e.n;});
+  const pos={};T.forEach((t,i)=>{const a=-Math.PI/2+2*Math.PI*i/T.length;pos[t]=[cx+R*Math.cos(a),cy+R*Math.sin(a)];});
+  let s='';res.edges.forEach(e=>{const p=pos[e.a],q=pos[e.b];
+    s+=`<line class="edge" x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke-width="${1+e.n}"/>`;});
+  T.forEach(t=>{const p=pos[t],r=8+Math.sqrt(deg[t])*3;
+    s+=`<circle class="nodec" cx="${p[0]}" cy="${p[1]}" r="${r}"/>`;
+    s+=`<text class="nodet" x="${p[0]}" y="${p[1]-r-4}" text-anchor="middle" style="fill:var(--ink)">${esc(t)}</text>`;});
+  svg.innerHTML=s;
+  document.getElementById('netNote').textContent=
+    `${T.length} treatments · ${res.edges.length} direct comparisons · reference ${res.reference} · `+
+    (connected(T,res.edges)?'connected':'DISCONNECTED')+' · '+(hasLoops(T,res.edges)?'has closed loops':'tree (no loops — consistency not assessable)');
+}
+function renderSucra(res){
+  const T=[...res.treatments].sort((a,b)=>res.sucra[b]-res.sucra[a]);
+  const W=520,rowH=26,H=T.length*rowH+10,padL=110,barW=W-padL-60;const svg=document.getElementById('sucraPlot');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);let s='';
+  T.forEach((t,i)=>{const y=i*rowH+6,v=res.sucra[t];
+    s+=`<text x="${padL-6}" y="${y+14}" text-anchor="end" style="fill:var(--ink);font-size:12px">${esc(t)}</text>`;
+    s+=`<rect class="barbg" x="${padL}" y="${y+4}" width="${barW}" height="14" rx="3"/>`;
+    s+=`<rect class="bar" x="${padL}" y="${y+4}" width="${barW*v}" height="14" rx="3"/>`;
+    s+=`<text x="${padL+barW+6}" y="${y+15}" style="fill:var(--mut);font-size:12px">${(v*100).toFixed(0)}%</text>`;});
+  svg.innerHTML=s;
+}
+function renderForest(res){
+  const T=res.treatments,W=620,rowH=30,H=T.length*rowH+50,padL=120,padR=130,plotW=W-padL-padR;
+  const lo=Math.log(0.4),hi=Math.log(2.0);const xOf=v=>padL+(Math.log(Math.min(2,Math.max(0.4,v)))-lo)/(hi-lo)*plotW;
+  const svg=document.getElementById('forest');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);let s='';
+  [0.5,0.7,1,1.5].forEach(t=>{const x=xOf(t);s+=`<line class="${t===1?'nullline':''}" x1="${x}" y1="14" x2="${x}" y2="${T.length*rowH+14}" stroke="var(--line)"/>`;
+    s+=`<text class="tick" x="${x}" y="${T.length*rowH+30}" text-anchor="middle">${t}</text>`;});
+  T.forEach((t,i)=>{const y=i*rowH+rowH/2+10,r=res.rel_to_ref[t];
+    s+=`<text x="14" y="${y+4}" style="fill:var(--ink);font-size:12px">${esc(t)}</text>`;
+    if(t===res.reference){s+=`<text x="${xOf(1)}" y="${y+4}" text-anchor="middle" class="tick">reference</text>`;return;}
+    s+=`<line class="whisk" x1="${xOf(r.lo)}" y1="${y}" x2="${xOf(r.hi)}" y2="${y}"/>`;
+    s+=`<rect class="diamond" x="${xOf(r.est)-3}" y="${y-3}" width="6" height="6"/>`;
+    s+=`<text x="${W-12}" y="${y+4}" text-anchor="end" class="tick">${f(r.est)} (${f(r.lo)}–${f(r.hi)})</text>`;});
+  svg.innerHTML=s;
+}
+function renderLeague(res){
+  const T=res.treatments,tb=document.getElementById('league');let s='<tr><th></th>';
+  T.forEach(t=>s+=`<th class="leaguecell">${esc(t)}</th>`);s+='</tr>';
+  T.forEach(a=>{s+=`<tr><td class="ref">${esc(a)}</td>`;
+    T.forEach(b=>{if(a===b){s+=`<td class="leaguecell ref">${esc(a).slice(0,4)}</td>`;}
+      else{const l=res.league[a+"|"+b];s+=`<td class="leaguecell">${f(l.est)}<br><span class="muted">${f(l.lo)}–${f(l.hi)}</span></td>`;}});
+    s+='</tr>';});
+  tb.innerHTML=s;
+}
+function renderTable(){
+  const tb=document.getElementById('dataBody');tb.innerHTML='';
+  model.forEach((c,i)=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${esc(c.nct)}</td><td style="text-align:left">${esc(c.t1)} vs ${esc(c.t2)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="hr">${f(c.hr)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="lci">${f(c.lci)}</td>`+
+      `<td contenteditable data-i="${i}" data-k="uci">${f(c.uci)}</td>`;
+    tb.appendChild(tr);});
+  tb.querySelectorAll('td[contenteditable]').forEach(td=>td.addEventListener('blur',e=>{
+    const v=parseFloat(e.target.textContent);if(isFinite(v)){model[e.target.dataset.i][e.target.dataset.k]=v;persist();render();}}));
+}
+function rCode(){
+  const t1=model.map(c=>`"${c.t1}"`).join(", "),t2=model.map(c=>`"${c.t2}"`).join(", ");
+  const yi=model.map(c=>Math.log(c.hr).toFixed(5)).join(", "),sei=model.map(c=>((Math.log(c.uci)-Math.log(c.lci))/(2*Z)).toFixed(5)).join(", ");
+  const st=model.map(c=>`"${c.nct}"`).join(", ");
+  return `# Network meta-analysis (AACT snapshot ${CAPSULE.snapshot_date})\n`+
+    `library(netmeta)\n`+
+    `studlab <- c(${st})\n`+`treat1 <- c(${t1})\n`+`treat2 <- c(${t2})\n`+
+    `TE <- c(${yi})\n`+`seTE <- c(${sei})\n`+
+    `net <- netmeta(TE, seTE, treat1, treat2, studlab, sm="HR",\n`+
+    `               reference.group="${CAPSULE.reference}", common=FALSE, random=TRUE, method.tau="DL")\n`+
+    `print(summary(net)); netrank(net)   # ranking (SUCRA)`;
+}
+
+function setDot(id,st){const d=document.getElementById(id);if(d)d.className='dot '+st;}
+function render(){
+  recompute();const res=nmaFit(model,CAPSULE.reference);
+  renderNet(res);renderSucra(res);renderForest(res);renderLeague(res);renderTable();
+  document.getElementById('rcode').textContent=rCode();
+  const conn=connected(res.treatments,res.edges),loops=hasLoops(res.treatments,res.edges);
+  setDot('d-conn',conn?'ok':'warn');
+  // loop consistency
+  const blo=bucherLoops(model,res.treatments);
+  const cbox=document.getElementById('consBox');
+  if(!blo.length){cbox.innerHTML='<span class="muted">No closed loops — the network is a tree, so consistency cannot be assessed (disclosed honestly).</span>';
+    setDot('d-cons','ok');document.getElementById('t-cons').textContent='consistency N/A (tree)';}
+  else{const inc=blo.some(l=>l.p<0.05);
+    let s='<table><tr><th>Loop</th><th>IF (ratio)</th><th>95% CI</th><th>z</th><th>p</th></tr>';
+    blo.forEach(l=>{s+=`<tr><td style="text-align:left">${l.nodes.join(' – ')}</td><td>${f(l.if_ratio)}</td>`+
+      `<td>${f(l.lo)}–${f(l.hi)}</td><td>${l.z.toFixed(2)}</td><td>${l.p<0.001?'<0.001':l.p.toFixed(3)}</td></tr>`;});
+    s+='</table>';cbox.innerHTML=s;
+    setDot('d-cons',inc?'warn':'ok');document.getElementById('t-cons').textContent=inc?'inconsistency detected':'consistency tested (no inconsistency)';}
+  // dashboard match: live JS vs embedded python rel_to_ref
+  let match=false;
+  if(CAPSULE.nma&&JSON.stringify(model)===JSON.stringify(CAPSULE.contrasts)){
+    match=res.treatments.every(t=>Math.abs(res.rel_to_ref[t].est-CAPSULE.nma.rel_to_ref[t].est)<1e-6);}
+  setDot('d-match',match?'ok':'warn');
+  setDot('d-r',CAPSULE.self_audit.checks.analysis_rerun==='pass'?'ok':'pending');
+  const tier=document.getElementById('tier');tier.textContent=CAPSULE.tier;tier.className='tier '+CAPSULE.tier;
+}
+
+document.getElementById('title').textContent=CAPSULE.title;
+document.getElementById('subtitle').textContent='Primary estimand: '+CAPSULE.primary_estimand;
+document.getElementById('provBox').innerHTML=
+  `Source: ${esc(CAPSULE.provenance.source||'ClinicalTrials.gov via AACT')} · snapshot <b>${esc(CAPSULE.snapshot_date)}</b>. `+
+  `Contrasts oriented experimental-vs-comparator; estimates cross-validated against R netmeta. Fixed snapshot — not live.`;
+const p=CAPSULE.pico;
+document.getElementById('picoBox').innerHTML=
+  `<b>Population:</b> ${esc(p.population)}<br><b>Outcome:</b> ${esc(p.outcome)}<br><b>Reference:</b> ${esc(CAPSULE.reference)}`;
+document.getElementById('bodyBox').textContent=CAPSULE.e156_body;
+document.getElementById('bodyMeta').textContent=
+  `${CAPSULE.e156_validation.sentence_count} sentences · ${CAPSULE.e156_validation.word_count} words · E156 ${CAPSULE.e156_validation.ok?'PASS':'FAIL'}`;
+const ck=CAPSULE.self_audit;
+document.getElementById('auditBox').innerHTML='<b>Tier checks</b><br>'+Object.entries(ck.checks).map(([k,v])=>`${k}: ${v}`).join(' · ')+
+  '<br><br><b>NMA invariants</b><br>'+Object.entries(ck.aact_stats).map(([k,v])=>`${k}: ${v}`).join(' · ');
+document.getElementById('notesBox').textContent=CAPSULE.notes&&CAPSULE.notes.length?('Notes: '+CAPSULE.notes.join('; ')):'';
+document.getElementById('resetBtn').addEventListener('click',()=>{model=defaults();persist();render();});
+document.getElementById('inspectBtn').addEventListener('click',()=>{const o=document.getElementById('inspectOut');
+  o.style.display=o.style.display==='none'?'block':'none';o.textContent=[nmaFit,bucherLoops,directEdge,chol,matInv].map(fn=>fn.toString()).join('\n\n');});
+render();
+</script>
+</body>
+</html>

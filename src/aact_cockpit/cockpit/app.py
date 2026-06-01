@@ -176,14 +176,15 @@ def api_capsules():
             continue
         if "tier" not in c:
             continue
-        if "pico" not in c and c.get("kind") != "atlas":
+        if "pico" not in c and c.get("kind") not in ("atlas", "audit"):
             continue
         slug = c["slug"]
         html = _CAPSULES / slug / f"{slug}-capsule.html"
         if not html.is_file():
             continue
         n = (c.get("pooled", {}).get("k") or c.get("tsa", {}).get("k")
-             or c.get("nma", {}).get("k") or c.get("scope", {}).get("n_analyses") or "")
+             or c.get("nma", {}).get("k") or c.get("scope", {}).get("n_analyses")
+             or c.get("scope", {}).get("n_eligible") or "")
         out.append({"slug": slug, "title": c.get("title", slug),
                     "kind": c.get("kind", "pairwise"), "tier": c["tier"], "n": n,
                     "download_url": f"/capsules/{slug}/{slug}-capsule.html",
@@ -206,6 +207,40 @@ def api_atlas():
         con.close()
     try:
         man = atlas_emit(data, _CAPSULES)
+    except (CapsuleInputError, CapsuleEmitError) as e:
+        raise HTTPException(422, str(e))
+    slug = man["slug"]
+    man["download_url"] = f"/capsules/{slug}/{slug}-capsule.html"
+    return man
+
+
+@app.get("/api/audits")
+def api_audits():
+    """List the available ct.gov registry-audit reproductions."""
+    from aact_engine.audits import AUDITS
+    titles = {
+        "ctgov-stopped-trial-disclosure-gap": "Stopped-trial disclosure gap",
+        "ctgov-condition-hiddenness-map": "Condition hiddenness map",
+        "ctgov-rule-era-reporting-gap": "Rule-era reporting gap",
+        "ctgov-probable-act-fdaaa-debt": "Probable ACT / FDAAA reporting debt",
+    }
+    return {"audits": [{"id": a, "label": titles.get(a, a)} for a in AUDITS]}
+
+
+@app.get("/api/audit")
+def api_audit(audit: str):
+    """Run one ct.gov registry audit over the warehouse and emit its capsule."""
+    from aact_engine.audits import run_audit, AUDITS
+    from aact_cockpit.capsule.generate_audit_capsule import emit as audit_emit
+    if audit not in AUDITS:
+        raise HTTPException(404, f"unknown audit {audit!r}")
+    con = open_warehouse()
+    try:
+        data = run_audit(audit, con=con)
+    finally:
+        con.close()
+    try:
+        man = audit_emit(data, _CAPSULES)
     except (CapsuleInputError, CapsuleEmitError) as e:
         raise HTTPException(422, str(e))
     slug = man["slug"]

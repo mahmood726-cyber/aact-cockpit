@@ -1,0 +1,22 @@
+{
+  "comment": "Network meta-analysis of disease-modifying therapy CLASSES for all-cause mortality in heart failure, versus placebo. Inspired by the AACT-powered NMA examples in trialforge (github.com/mahmood726-cyber/trialforge); reproduced here as a self-auditing capsule on the warehouse snapshot. Nodes without a usable mortality contrast drop out of the network automatically.",
+  "condition": "heart failure",
+  "outcome_like": ["all-cause mortality", "death from any cause", "overall survival"],
+  "measure_like": "hazard",
+  "reference": "placebo",
+  "nodes": {
+    "SGLT2 inhibitor": ["empagliflozin", "dapagliflozin"],
+    "ARNI": ["sacubitril", "valsartan"],
+    "MRA": ["spironolactone", "eplerenone", "finerenone"],
+    "beta-blocker": ["carvedilol", "bisoprolol", "metoprolol", "nebivolol"],
+    "placebo": ["placebo"]
+  },
+  "pico": {
+    "population": "heart failure with reduced ejection fraction",
+    "outcome": "all-cause mortality",
+    "intervention": "disease-modifying therapies",
+    "comparator": "placebo"
+  },
+  "primary_estimand": "hazard ratio for all-cause mortality versus placebo",
+  "lower_is_better": true
+}
